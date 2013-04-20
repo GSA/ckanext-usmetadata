@@ -4,7 +4,7 @@ import sys, os
 version = '0.1'
 
 setup(
-        name='usmetadata',
+        name='ckan-usmetadata',
         version=version,
         description="Adds US metadata schema fields.",
         long_description="""\
@@ -26,7 +26,7 @@ setup(
         """
         [ckan.plugins]
         # Add plugins here, eg
-        usmetadata=ckanext.usmetadata:PluginClass
+        usmetadata=ckanext.usmetadata.plugin:USMetadataPlugin
         """,
 )
 
