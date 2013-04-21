@@ -1,5 +1,18 @@
 {% ckan_extends %}
 
 {% block package_basic_fields_custom %}
-  {{ form.input('custom_text', label=_('Custom Text'), id='field-custom_text', placeholder=_('custom text'), value=data.custom_text, error=errors.custom_text, classes=['control-medium']) }}
+
+<div class="control-group">
+    <label class="control-label" for="field-data_dictionary">{{ _("Data Dictionary") }}</label>
+    <div class="controls">
+      <select id="field-access_level" name="data_dictionary" data-module="autocomplete">
+        {% for access_level in h.access_levels()  %}
+          <option value="{{ access_level }}" {% if access_level in data.get('access_level', []) %}selected="selected"{% endif %}>{{ access_level }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+{{ form.input('custom_text', label=_('Custom Text'), id='field-custom_text', placeholder=_('custom text'), value=data.custom_text, error=errors.custom_text, classes=['control-medium']) }}
+
 {% endblock %}

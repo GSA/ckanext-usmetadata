@@ -38,20 +38,15 @@ def access_levels():
     except tk.ObjectNotFound:
         return None
 
-
-
 class IFacetPlugin(plugins.SingletonPlugin):
 
     plugins.implements(plugins.IFacets, inherit=True)
 
     def dataset_facets(self, facets_dict, dataset_type):
 
-        return OrderedDict([
-            ('groups', _('Cheese')),
-#            ('tags', _('Tags')),
- #           ('res_format', _('Formats')),
-            ('license', _('Licence')),
-        ])
+        facets_dict = {'tags': 'Keywords', 'access_level': 'Access Level', 'data_dictionary': 'Data Dictionary'}
+
+        return facets_dict
 
 class USMetadataPlugin(plugins.SingletonPlugin,
         tk.DefaultDatasetForm):
@@ -126,15 +121,21 @@ class USMetadataPlugin(plugins.SingletonPlugin,
         schema['tags']['__extras'].append(tk.get_converter('free_tags_only'))
 
         # Add our custom access_level metadata field to the schema.
-        schema.update({
-            'access_level': [
-                tk.get_converter('convert_from_tags')('access_levels'),
-                tk.get_validator('ignore_missing')]
-            })
+        #schema.update({
+        #    'access_level': [
+        #        tk.get_converter('convert_from_tags')('access_levels'),
+        #        tk.get_validator('ignore_missing')]
+        #    })
 
         # Add our data_dictionary field to the dataset schema.
         schema.update({
             'data_dictionary': [tk.get_converter('convert_from_extras'),
+                tk.get_validator('ignore_missing')]
+            })
+
+		# Add our data_dictionary field to the dataset schema.
+	    schema.update({
+            'access_level': [tk.get_converter('convert_from_extras'),
                 tk.get_validator('ignore_missing')]
             })
 

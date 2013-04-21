@@ -9,5 +9,10 @@
     <p><strong>Access Level</strong>: {{ pkg.access_level[0] }}</p>
     </section>
   {% endif %}
+  {% if pkg.get('data_dictionary') %}
+    <section id="dataset-data_dictionary" class="resources module-content">
+    <p><strong>Data Dictionary</strong>: {{ pkg.data_dictionary[0] }}</p>
+    </section>
+  {% endif %}
 
 {% endblock %}
