@@ -27,6 +27,7 @@ setup(
         [ckan.plugins]
         # Add plugins here, eg
         usmetadata=ckanext.usmetadata.plugin:USMetadataPlugin
+		updatefacets=ckanext.usmetadata.plugin:IFacetPlugin
         """,
 )
 
