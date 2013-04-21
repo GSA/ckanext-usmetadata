@@ -3,6 +3,11 @@ import logging
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as tk
 
+# FIXME OrderedDict should be available via the toolkit
+try:
+    from collections import OrderedDict # 2.7
+except ImportError:
+    from sqlalchemy.util import OrderedDict
 
 def create_access_levels():
     '''Create access_levels vocab and tags, if they don't exist already.'''
@@ -33,6 +38,20 @@ def access_levels():
     except tk.ObjectNotFound:
         return None
 
+
+
+class IFacetPlugin(plugins.SingletonPlugin):
+
+    plugins.implements(plugins.IFacets, inherit=True)
+
+    def dataset_facets(self, facets_dict, dataset_type):
+
+        return OrderedDict([
+            ('groups', _('Cheese')),
+#            ('tags', _('Tags')),
+ #           ('res_format', _('Formats')),
+            ('license', _('Licence')),
+        ])
 
 class USMetadataPlugin(plugins.SingletonPlugin,
         tk.DefaultDatasetForm):
