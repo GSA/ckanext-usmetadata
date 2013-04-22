@@ -2,17 +2,27 @@
 
 {% block package_description %}
   {{ super() }}
-
+  {{ pkg }}
   {# Add our custom access_level field to the dataset read page. #}
-  {% if pkg.get('access_level') %}
+  {% if pkg.get('accessLevel') %}
     <section id="dataset-access_level" class="resources module-content">
-    <p><strong>Access Level</strong>: {{ pkg.access_level[0] }}</p>
+    <p><strong>Access Level</strong>: {{ pkg.accessLevel }}</p>
     </section>
   {% endif %}
-  {% if pkg.get('data_dictionary') %}
+  {% if pkg.get('dataDictionary') %}
     <section id="dataset-data_dictionary" class="resources module-content">
-    <p><strong>Data Dictionary</strong>: {{ pkg.data_dictionary[0] }}</p>
+    <p><strong>Data Dictionary</strong>: {{ pkg.dataDictionary }}</p>
     </section>
   {% endif %}
-
+  {% if pkg.get('systemOfRecords') %}
+    <section id="dataset-systemOfRecords" class="resources module-content">
+    <p><strong>System of Records</strong>: {{ pkg.systemOfRecords }}</p>
+    </section>
+  {% endif %}
+  {% if pkg.get('granularity') %}
+    <section id="dataset-granularity" class="resources module-content">
+    <p><strong>Granularity</strong>: {{ pkg.granularity }}</p>
+    </section>
+  {% endif %}
 {% endblock %}
+

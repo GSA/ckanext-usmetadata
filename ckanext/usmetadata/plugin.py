@@ -44,7 +44,7 @@ class IFacetPlugin(plugins.SingletonPlugin):
 
     def dataset_facets(self, facets_dict, dataset_type):
 
-        facets_dict = {'tags': 'Keywords', 'access_level': 'Access Level', 'data_dictionary': 'Data Dictionary'}
+        facets_dict = {'accessLevel': 'Access Level', 'tags': 'Keywords'}
 
         return facets_dict
 
@@ -77,7 +77,7 @@ class USMetadataPlugin(plugins.SingletonPlugin,
         tk.add_template_directory(config, 'templates')
 
     def get_helpers(self):
-        return {'access_levels': access_levels}
+        return {'accessLevels': accessLevels}
 
     def is_fallback(self):
         # Return True to register this plugin as the default handler for
@@ -90,15 +90,34 @@ class USMetadataPlugin(plugins.SingletonPlugin,
         return []
 
     def _modify_package_schema(self, schema):
-        # Add our custom access_level metadata field to the schema.
+        #schema.update({
+        #        'access_level': [tk.get_validator('ignore_missing'),
+        #            tk.get_converter('convert_to_tags')('access_levels')]
+        #        })
+
+        # Add custom access_level as extra field
         schema.update({
-                'access_level': [tk.get_validator('ignore_missing'),
-                    tk.get_converter('convert_to_tags')('access_levels')]
+                'accessLevel': [tk.get_validator('ignore_missing'),
+                    tk.get_converter('convert_to_extras')]
                 })
-        # Add our custom_test metadata field to the schema, this one will use
+
+        # Add custom systemOfRecord as extra field
+        schema.update({
+                'systemOfRecords': [tk.get_validator('ignore_missing'),
+                    tk.get_converter('convert_to_extras')]
+                })
+
+        # Add custom granularity as extra field
+        schema.update({
+                'granularity': [tk.get_validator('ignore_missing'),
+                    tk.get_converter('convert_to_extras')]
+                })
+
+
+        # Add our custom_text metadata field to the schema, this one will use               
         # convert_to_extras instead of convert_to_tags.
         schema.update({
-                'data_dictionary': [tk.get_validator('ignore_missing'),
+                'dataDictionary': [tk.get_validator('ignore_missing'),
                     tk.get_converter('convert_to_extras')]
                 })
         return schema
@@ -122,24 +141,37 @@ class USMetadataPlugin(plugins.SingletonPlugin,
 
         # Add our custom access_level metadata field to the schema.
         #schema.update({
-        #    'access_level': [
-        #        tk.get_converter('convert_from_tags')('access_levels'),
+        #    'accessLevel': [
+        #        tk.get_converter('convert_from_tags')('accessLevels'),
         #        tk.get_validator('ignore_missing')]
         #    })
 
-        # Add our data_dictionary field to the dataset schema.
+        # Add our accessLevel field to the dataset schema.
         schema.update({
-            'data_dictionary': [tk.get_converter('convert_from_extras'),
+            'accessLevel': [tk.get_converter('convert_from_extras'),
                 tk.get_validator('ignore_missing')]
             })
 
-		# Add our data_dictionary field to the dataset schema.
-	    schema.update({
-            'access_level': [tk.get_converter('convert_from_extras'),
+        # Add our dataDictionary field to the dataset schema.
+        schema.update({
+            'dataDictionary': [tk.get_converter('convert_from_extras'),
+                tk.get_validator('ignore_missing')]
+            })
+
+       	# Add our systemOfRecords field to the dataset schema.
+        schema.update({
+            'systemOfRecords': [tk.get_converter('convert_from_extras'),
+                tk.get_validator('ignore_missing')]
+            })
+
+        # Add our granularity field to the dataset schema.
+        schema.update({
+            'granularity': [tk.get_converter('convert_from_extras'),
                 tk.get_validator('ignore_missing')]
             })
 
         return schema
+
 
     # These methods just record how many times they're called, for testing
     # purposes.
