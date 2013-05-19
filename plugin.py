@@ -44,7 +44,7 @@ class IFacetPlugin(plugins.SingletonPlugin):
 
     def dataset_facets(self, facets_dict, dataset_type):
 
-        facets_dict = {'accessLevel': 'Access Level', 'tags': 'Keywords'}
+        facets_dict = {'access_level': 'Access Level', 'tags': 'Keywords'}
 
         return facets_dict
 
@@ -77,7 +77,7 @@ class USMetadataPlugin(plugins.SingletonPlugin,
         tk.add_template_directory(config, 'templates')
 
     def get_helpers(self):
-        return {'accessLevels': accessLevels}
+        return {'access_levels': access_levels}
 
     def is_fallback(self):
         # Return True to register this plugin as the default handler for
@@ -97,7 +97,7 @@ class USMetadataPlugin(plugins.SingletonPlugin,
 
         # Add custom access_level as extra field
         schema.update({
-                'accessLevel': [tk.get_validator('ignore_missing'),
+                'access_level': [tk.get_validator('ignore_missing'),
                     tk.get_converter('convert_to_extras')]
                 })
 
@@ -148,7 +148,7 @@ class USMetadataPlugin(plugins.SingletonPlugin,
 
         # Add our accessLevel field to the dataset schema.
         schema.update({
-            'accessLevel': [tk.get_converter('convert_from_extras'),
+            'access_level': [tk.get_converter('convert_from_extras'),
                 tk.get_validator('ignore_missing')]
             })
 
