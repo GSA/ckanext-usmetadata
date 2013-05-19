@@ -10,31 +10,31 @@ except ImportError:
     from sqlalchemy.util import OrderedDict
 
 def create_access_levels():
-    '''Create access_levels vocab and tags, if they don't exist already.'''
+    '''Create accessLevels vocab and tags, if they don't exist already.'''
     user = tk.get_action('get_site_user')({'ignore_auth': True}, {})
     context = {'user': user['name']}
     try:
-        data = {'id': 'access_levels'}
+        data = {'id': 'accessLevels'}
         tk.get_action('vocabulary_show')(context, data)
         logging.info("Example genre vocabulary already exists, skipping.")
     except tk.ObjectNotFound:
-        logging.info("Creating vocab 'access_levels'")
-        data = {'name': 'access_levels'}
+        logging.info("Creating vocab 'accessLevels'")
+        data = {'name': 'accessLevels'}
         vocab = tk.get_action('vocabulary_create')(context, data)
         for tag in (u'public', u'restricted', u'private'):
             logging.info(
-                    "Adding tag {0} to vocab 'access_levels'".format(tag))
+                    "Adding tag {0} to vocab 'accessLevels'".format(tag))
             data = {'name': tag, 'vocabulary_id': vocab['id']}
             tk.get_action('tag_create')(context, data)
 
 
-def access_levels():
-    '''Return the list of access levels from the access levels vocabulary.'''
+def accessLevels():
+    '''Return the list of access levels from the accessLevels vocabulary.'''
     create_access_levels()
     try:
         access_levels = tk.get_action('tag_list')(
-                data_dict={'vocabulary_id': 'access_levels'})
-        return access_levels
+                data_dict={'vocabulary_id': 'accessLevels'})
+        return accessLevels
     except tk.ObjectNotFound:
         return None
 
@@ -44,7 +44,7 @@ class IFacetPlugin(plugins.SingletonPlugin):
 
     def dataset_facets(self, facets_dict, dataset_type):
 
-        facets_dict = {'extras_access_levels': 'Access Level', 'tags': 'Keywords', 'organization': 'Organizations', 'res_format': ('File Format')}
+        facets_dict = {'extras_accessLevels': 'Access Level', 'tags': 'Keywords', 'organization': 'Organizations', 'res_format': ('File Format')}
 
         return facets_dict
 
@@ -77,7 +77,7 @@ class USMetadataPlugin(plugins.SingletonPlugin,
         tk.add_template_directory(config, 'templates')
 
     def get_helpers(self):
-        return {'access_levels': access_levels}
+        return {'accessLevels': accessLevels}
 
     def is_fallback(self):
         # Return True to register this plugin as the default handler for
@@ -97,7 +97,7 @@ class USMetadataPlugin(plugins.SingletonPlugin,
 
         # Add custom access_level as extra field
         schema.update({
-                'access_level': [tk.get_validator('ignore_missing'),
+                'accessLevel': [tk.get_validator('ignore_missing'),
                     tk.get_converter('convert_to_extras')]
                 })
 
@@ -140,17 +140,17 @@ class USMetadataPlugin(plugins.SingletonPlugin,
         schema['tags']['__extras'].append(tk.get_converter('free_tags_only'))
 
         # Add our custom access_level metadata field to the schema.
-        schema.update({
-            'access_level': [
-                tk.get_converter('convert_from_tags')('access_levels'),
-                tk.get_validator('ignore_missing')]
-            })
-
-        # Add our accessLevel field to the dataset schema.
-        # schema.update({
-        #    'access_level': [tk.get_converter('convert_from_extras'),
+        #schema.update({
+        #    'access_level': [
+        #        tk.get_converter('convert_from_tags')('access_levels'),
         #        tk.get_validator('ignore_missing')]
         #    })
+
+        # Add our accessLevel field to the dataset schema.
+         schema.update({
+            'accessLevel': [tk.get_converter('convert_from_extras'),
+                tk.get_validator('ignore_missing')]
+            })
 
         # Add our dataDictionary field to the dataset schema.
         schema.update({
