@@ -147,7 +147,7 @@ class USMetadataPlugin(plugins.SingletonPlugin,
         #    })
 
         # Add our accessLevel field to the dataset schema.
-         schema.update({
+        schema.update({
             'accessLevel': [tk.get_converter('convert_from_extras'),
                 tk.get_validator('ignore_missing')]
             })
