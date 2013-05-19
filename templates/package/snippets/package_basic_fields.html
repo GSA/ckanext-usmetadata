@@ -3,11 +3,11 @@
 {% block package_basic_fields_custom %}
 
 <div class="control-group">
-  <label class="control-label" for="field-accessLevel">{{ _("Access Level") }}</label>
+  <label class="control-label" for="field-access_level">{{ _("Access Level") }}</label>
   <div class="controls">
-    <select id="field-accessLevel" name="accessLevel" data-module="autocomplete">
-      {% for accessLevel in h.accessLevels()  %}
-        <option value="{{ accessLevel }}" {% if accessLevel in data.get('accessLevel', []) %}selected="selected"{% endif %}>{{ accessLevel }}</option>
+    <select id="field-access_level" name="access_level" data-module="autocomplete">
+      {% for access_level in h.access_levels()  %}
+        <option value="{{ access_level }}" {% if access_level in data.get('access_level', []) %}selected="selected"{% endif %}>{{ access_level }}</option>
       {% endfor %}
     </select>
   </div>
