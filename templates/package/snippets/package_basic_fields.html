@@ -6,9 +6,9 @@
   <label class="control-label" for="field-accessLevel">{{ _("Access Level") }}</label>
   <div class="controls">
     <select id="field-accessLevel" name="accessLevel" data-module="autocomplete">
-      {% for level in h.accessLevel()  %}
-        <option value="{{ level }}" {% if level in data.get('level', []) %}selected="selected"{% endif %}>{{ level }}</option>
-      {% endfor %}
+      <option value="public" >Public</option>
+      <option value="restricted" >Restricted</option>
+      <option value="private" >Private</option>
     </select>
   </div>
 </div>
