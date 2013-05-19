@@ -44,7 +44,7 @@ class IFacetPlugin(plugins.SingletonPlugin):
 
     def dataset_facets(self, facets_dict, dataset_type):
 
-        facets_dict = {'access_levels': 'Access Level', 'tags': 'Keywords', 'organization': 'Organizations'}
+        facets_dict = {'extras_access_levels': 'Access Level', 'tags': 'Keywords', 'organization': 'Organizations', 'res_format': ('File Format')}
 
         return facets_dict
 
