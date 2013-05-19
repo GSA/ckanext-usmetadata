@@ -2,7 +2,7 @@
 
 {% block package_description %}
   {{ super() }}
-  {{ pkg }}
+
   {# Add our custom access_level field to the dataset read page. #}
   {% if pkg.get('accessLevel') %}
     <section id="dataset-access_level" class="resources module-content">
