@@ -140,17 +140,17 @@ class USMetadataPlugin(plugins.SingletonPlugin,
         schema['tags']['__extras'].append(tk.get_converter('free_tags_only'))
 
         # Add our custom access_level metadata field to the schema.
-        #schema.update({
-        #    'access_level': [
-        #        tk.get_converter('convert_from_tags')('access_levels'),
-        #        tk.get_validator('ignore_missing')]
-        #    })
-
-        # Add our accessLevel field to the dataset schema.
         schema.update({
-            'accessLevel': [tk.get_converter('convert_from_extras'),
+            'accessLevel': [
+                tk.get_converter('convert_from_tags')('accessLevels'),
                 tk.get_validator('ignore_missing')]
             })
+
+        # Add our accessLevel field to the dataset schema.
+        #schema.update({
+        #    'accessLevel': [tk.get_converter('convert_from_extras'),
+        #        tk.get_validator('ignore_missing')]
+        #    })
 
         # Add our dataDictionary field to the dataset schema.
         schema.update({
