@@ -21,6 +21,6 @@ setup(
 	entry_points=\
 	"""
         [ckan.plugins]
-	    usmetadata=ckanext.usmetadata.plugin:USMetadata
+	    usmetadata=ckanext.usmetadata.plugin:USMetadataPlugin
 	""",
 )
