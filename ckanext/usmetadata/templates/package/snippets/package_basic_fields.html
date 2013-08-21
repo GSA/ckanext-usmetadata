@@ -1,5 +1,38 @@
 {% ckan_extends %}
 
+{# Here we capture the common core required fields as found at https://github.com/project-open-data/project-open-data.github.io/blob/master/schema.md#common-core-required-fields #}
+
+{% block package_basic_fields_title %}
+{{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. A descriptive title'), value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target', 'title': 'Human-readable name of the asset. Should be in plain English and include sufficient detail to facilitate search and discovery.'}, is_required=true) }}
+{% endblock %}
+
+{% block package_basic_fields_description %}
+{{ form.markdown('notes', id='field-notes', label=_('Description'), placeholder=_('eg. Some useful notes about the data'), value=data.notes, error=errors.notes, attrs={'title' : 'Human-readable description (e.g., an abstract) with sufficient detail to enable a user to quickly understand whether the asset is of interest.'}, is_required=true) }}
+{% endblock %}
+
+{% block package_basic_fields_tags %}
+{% set tag_attrs = {'data-module': 'autocomplete', 'data-module-tags': '', 'data-module-source': '/api/2/util/tag/autocomplete?incomplete=?', 'title':'Tags (or keywords) help users discover your dataset, please include terms that would be used by technical and non-technical users.'} %}
+{{ form.input('tag_string', id='field-tags', label=_('Tags'), placeholder=_('eg. economy, mental health, government'), value=data.tag_string, error=errors.tags, classes=['control-full'], attrs=tag_attrs, is_required=true) }}
+{% endblock %}
+
+{% block package_basic_fields_license %}
+{# TODO: this parts hacky...the inputs should be declared inside their own block instead of in license' #}
+{{ form.input('publisher', id='field-publisher', label=_('Publisher'), placeholder=_('eg. Federal Bureau of Investigation'), value=data.publisher, error=errors.publisher, classes=['control-full', 'control-medium'], attrs={'title': 'The publishing agency.'}, is_required=true) }}
+
+
+{{ form.input('contactname', id='field-contname', label=_('Contact Name'), placeholder=_('eg. John Smith'), value=data.contname, error=errors.contname, classes=['control-full', 'control-medium'], attrs={'title': 'Contact person\'s name for the asset.'}, is_required=true) }}
+
+
+
+{{ form.input('contactemail', id='field-contemail', label=_('Contact Email'), placeholder=_('eg. john.smith@fbi.gov'), value=data.contemail, error=errors.contemail, classes=['control-full', 'control-medium'], attrs={'title': " Contact person's email address. "}, is_required=true) }}
+
+
+{{ form.input('uid', id='field-uid', label=_('Unique ID'), placeholder=_('eg. doj-a327-73809'), value=data.uid, error=errors.uid, classes=['control-full', 'control-medium'], attrs={'title': 'A unique identifier for the dataset or API as maintained within an Agency catalog or database.'}, is_required=true) }}
+
+
+{{ super() }}
+{% endblock %}
+
 {% block package_basic_fields_custom %}
 
 <div class="control-group">
@@ -8,7 +41,6 @@
     <select id="field-accessLevel" name="accessLevel" data-module="autocomplete">
       <option value="public" >Public</option>
       <option value="restricted" >Restricted</option>
-      <option value="private" >Private</option>
     </select>
   </div>
 </div>

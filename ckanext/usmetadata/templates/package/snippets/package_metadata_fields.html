@@ -7,10 +7,12 @@ won't work. #}
 {% block custom_fields %}
 {% endblock %}
 
+{#
 {% block package_metadata_fields %}
 
   {{ form.input('dataDictionary', label=_('Data Dictionary'), id='field-dataDictionary', placeholder=_('URL of Data Dictionary'), value=data.dataDictionary, error=errors.dataDictionary, classes=['contro
 l-medium']) }}
+
 
   {{ form.input('systemOfRecords', label=_('System of Records'), id='field-systemOfRecords', placeholder=_('URL to systemOfRecords'), value=data.systemOfRecords, error=errors.systemOfRecords, classes=['
 control-medium']) }}
@@ -20,4 +22,4 @@ control-medium']) }}
   {{ super() }}
 
 {% endblock %}
-
+#}
