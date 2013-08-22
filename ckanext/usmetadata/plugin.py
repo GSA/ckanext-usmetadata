@@ -39,6 +39,17 @@ def get_access_levels():
 
     return access_levels
 
+#excluded title, description, tags and last update as they're part of the default ckan dataset metadata
+required_metadata = ['public_access_level', 'publisher', 'contact_name', 'contact_email', 'unique_id']
+
+#excluded download_url, endpoint, format and license as they may be discoverable
+required_if_applicable_metadata = ['data_dictionary', 'endpoint', 'spatial', 'temporal']
+
+#some of these could be excluded (e.g. related_documents) which can be captured from other ckan default data
+expanded_metadata = ['release_date', 'frequency', 'language', 'granularity', 'data_quality', 'category',
+                     'related_documents', 'size', 'homepage_url', 'rss_feed', 'system_of_records',
+                     'system_of_records_none_related_to_this_dataset']
+
 class CommonCoreMetadataForm(SingletonPlugin, toolkit.DefaultDatasetForm):
     '''This plugin adds fields for the metadata (known as the Common Core) defined at
     https://github.com/project-open-data/project-open-data.github.io/blob/master/schema.md
@@ -65,45 +76,13 @@ class CommonCoreMetadataForm(SingletonPlugin, toolkit.DefaultDatasetForm):
 
     def _modify_package_schema(self, schema):
         log.debug("_modify_package_schema called")
-        schema.update({
-            'public_access_level': [toolkit.get_validator('ignore_missing'),
-                              toolkit.get_converter('convert_to_extras')]
-        })
+        #TODO change ignore_missing to not_empty
+        for metadata in required_metadata:
+            schema.update({
+                metadata: [toolkit.get_validator('ignore_missing'),
+                           toolkit.get_converter('convert_to_extras')]
+            })
 
-        # schema.update({
-        #     'publisher': [toolkit.get_validator('ignore_missing'),
-        #                       toolkit.get_converter('convert_to_extras')]
-        # })
-        #
-        # schema.update({
-        #     'contact_name': [toolkit.get_validator('ignore_missing'),
-        #                       toolkit.get_converter('convert_to_extras')]
-        # })
-        #
-        # schema.update({
-        #     'contact_email': [toolkit.get_validator('ignore_missing'),
-        #                       toolkit.get_converter('convert_to_extras')]
-        # })
-        #
-        # schema.update({
-        #     'unique_id': [toolkit.get_validator('ignore_missing'),
-        #                       toolkit.get_converter('convert_to_extras')]
-        # })
-
-        # schema.update({
-        #     'system_of_record': [toolkit.get_validator('ignore_missing'),
-        #                          toolkit.get_converter('convert_to_extras')]
-        # })
-        #
-        # schema.update({
-        #     'granularity': [toolkit.get_validator('ignore_missing'),
-        #                     toolkit.get_converter('convert_to_extras')]
-        # })
-        #
-        # schema.update({
-        #     'data_dictionary': [toolkit.get_validator('ignore_missing'),
-        #                        toolkit.get_converter('convert_to_extras')]
-        # })
         return schema
 
     def create_package_schema(self):
@@ -127,12 +106,6 @@ class CommonCoreMetadataForm(SingletonPlugin, toolkit.DefaultDatasetForm):
         schema['tags']['__extras'].append(toolkit.get_converter('free_tags_only'))
         schema = self._modify_package_schema(schema)
         return schema
-
-    def _form_to_db_schema(self):
-        log.debug('form_to_db_schema called!')
-
-    def _db_to_form_schema(self):
-        log.debug('_db_to_form_schema called!')
 
     #Method below allows functions and other methods to be called from the Jinja template using the h variable
     def get_helpers(self):
