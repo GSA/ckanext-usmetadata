@@ -1,11 +1,12 @@
-<!-- Snippet package_common_core_metadata_fields.html start -->
+{% import "macros/form.html" as form %}
 
-        <h1>TEST FOR GENERATING COMMON CORE!!!!</h1>
+{% set data = data or {} %}
+{% set errors = errors or {} %}
 
-{% block package_required_metadata %}
+       <h1>Required Core Metadata</h1>
 
+{# block package_required_metadata #}
 
-{#
 {{ form.input('publisher', id='field-publisher', label=_('Publisher'), placeholder=_('eg. Federal Bureau of Investigation'), value=data.publisher, error=errors.publisher, classes=['control-full', 'control-medium'], attrs={'title': 'The publishing agency.'}, is_required=true) }}
 
 {{ form.input('contact_name', id='field-contact_name', label=_('Contact Name'), placeholder=_('eg. John Smith'), value=data.contact_name, error=errors.contname, classes=['control-full', 'control-medium'], attrs={'title': 'Contact person\'s name for the asset.'}, is_required=true) }}
@@ -27,12 +28,10 @@
     </select>
   </div>
 </div>
-}#
-        <h1>Aardvark: {{data.aardvark}}</h1>
 
-{% endblock %}
+{# endblock #}
 
-{% block package_required_if_applicable_metadata %}
+{# block package_required_if_applicable_metadata #}
 {#
   {{ form.input('dataDictionary', label=_('Data Dictionary'), id='field-dataDictionary', placeholder=_('URL of Data Dictionary'), value=data.dataDictionary, error=errors.dataDictionary, classes=['contro
 l-medium']) }}
@@ -43,5 +42,4 @@ control-medium']) }}
 
   {{ form.input('granularity', label=_('Granularity'), id='field-granularity', placeholder=_('level of granularity'), value=data.granularity, error=errors.granularity, classes=['control-medium']) }}
 #}
-{% endblock %}
-<!-- Snippet package_common_core_metadata_fields.html end -->
+{# endblock #}

@@ -1,8 +1,11 @@
 {% ckan_extends %}
 
-{% block custom_fields %}
-    {{ h.render_metadata() }}
-{% endblock %}
+{% block package_metadata_fields_custom %}
+    {% set data = h.load_data_into_dict(data) %}
+    {% snippet 'package/snippets/package_common_core_metadata_fields.html', data=data, errors=errors%}
+
+    {% snippet 'snippets/custom_form_fields.html', extras=data.extras, errors=errors, limit=3 %}
+{% endblock package_metadata_fields_custom %}
 
 
 

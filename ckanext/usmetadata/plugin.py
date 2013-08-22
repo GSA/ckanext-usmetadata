@@ -50,6 +50,25 @@ expanded_metadata = ['release_date', 'frequency', 'language', 'granularity', 'da
                      'related_documents', 'size', 'homepage_url', 'rss_feed', 'system_of_records',
                      'system_of_records_none_related_to_this_dataset']
 
+#TODO test this function!
+def _load_data_into_dict(dict):
+    '''
+    Load the required_metadata directly into the dict as key:value pairs, removing them from the 'extras'
+    '''
+    reduced_extras = [];
+    for x in dict['extras']:
+        found = False
+        for y in required_metadata:
+            if(y == x['key']):
+                dict[x['key']]=x['value']
+                found = True
+                break
+        if(not found):
+            reduced_extras.append(x)
+    dict['extras'] = reduced_extras
+
+    return dict
+
 class CommonCoreMetadataForm(SingletonPlugin, toolkit.DefaultDatasetForm):
     '''This plugin adds fields for the metadata (known as the Common Core) defined at
     https://github.com/project-open-data/project-open-data.github.io/blob/master/schema.md
@@ -59,9 +78,9 @@ class CommonCoreMetadataForm(SingletonPlugin, toolkit.DefaultDatasetForm):
     implements(IConfigurer, inherit=False)
     implements(IDatasetForm, inherit=False)
 
-    def render_metadata(self):
-        log.debug('render_metadata called')
-        toolkit.render_snippet('package/snippets/package_common_core_metadata_fields.html', data={'aardvark':'scratch'})
+    # def render_metadata(self):
+    #     log.debug('render_metadata called')
+    #     toolkit.render_snippet('package/snippets/package_common_core_metadata_fields.html', data={'aardvark':'scratch'})
         #toolkit.render('package/snippets/package_common_core_metadata_fields.html', extra_vars={'aardvark':'scratch'}, renderer='snippet')
 
     def is_fallback(self):
@@ -108,10 +127,12 @@ class CommonCoreMetadataForm(SingletonPlugin, toolkit.DefaultDatasetForm):
         # Don't show vocab tags mixed in with normal 'free' tags
         # (e.g. on dataset pages, or on the search page)
         schema['tags']['__extras'].append(toolkit.get_converter('free_tags_only'))
+
+        #TODO does the schema NEED to be modified every time it is shown?
         schema = self._modify_package_schema(schema)
         return schema
 
     #Method below allows functions and other methods to be called from the Jinja template using the h variable
     def get_helpers(self):
         log.debug('get_helpers() called, getting the access levels')
-        return {'public_access_levels': get_access_levels, 'required_metadata': required_metadata, 'render_metadata': self.render_metadata}
+        return {'public_access_levels': get_access_levels, 'required_metadata': required_metadata, 'load_data_into_dict':_load_data_into_dict}
