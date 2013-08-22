@@ -1,18 +1,8 @@
 {% ckan_extends %}
 
-{#
-{% block package_metadata_fields %}
-
-  {{ form.input('dataDictionary', label=_('Data Dictionary'), id='field-dataDictionary', placeholder=_('URL of Data Dictionary'), value=data.dataDictionary, error=errors.dataDictionary, classes=['contro
-l-medium']) }}
-
-
-  {{ form.input('systemOfRecords', label=_('System of Records'), id='field-systemOfRecords', placeholder=_('URL to systemOfRecords'), value=data.systemOfRecords, error=errors.systemOfRecords, classes=['
-control-medium']) }}
-
-  {{ form.input('granularity', label=_('Granularity'), id='field-granularity', placeholder=_('level of granularity'), value=data.granularity, error=errors.granularity, classes=['control-medium']) }}
-
-  {{ super() }}
-
+{% block custom_fields %}
+    {{ h.render_metadata() }}
 {% endblock %}
-#}
+
+
+

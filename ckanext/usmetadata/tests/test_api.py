@@ -8,9 +8,6 @@ class MetadataPluginTest(unittest.TestCase):
     original_get_action = None
     original_plugin = None
 
-    def test_get_access_levels(self):
-        assert plugin.get_access_levels() != None
-
     # def setup_func(self):
     #     self.original_get_action = toolkit.get_action
     #     self.original_plugin = self.plugin

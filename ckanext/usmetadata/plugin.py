@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from ckan.plugins import implements, SingletonPlugin, toolkit, IConfigurer, ITemplateHelpers, IDatasetForm
+from ckan.plugins import implements, SingletonPlugin, toolkit, IConfigurer, ITemplateHelpers, IDatasetForm, IPackageController
 
 log = getLogger(__name__)
 
@@ -59,6 +59,11 @@ class CommonCoreMetadataForm(SingletonPlugin, toolkit.DefaultDatasetForm):
     implements(IConfigurer, inherit=False)
     implements(IDatasetForm, inherit=False)
 
+    def render_metadata(self):
+        log.debug('render_metadata called')
+        toolkit.render_snippet('package/snippets/package_common_core_metadata_fields.html', data={'aardvark':'scratch'})
+        #toolkit.render('package/snippets/package_common_core_metadata_fields.html', extra_vars={'aardvark':'scratch'}, renderer='snippet')
+
     def is_fallback(self):
         # Return True so that we use the extension's dataset form instead of CKAN's default for
         # /dataset/new and /dataset/edit
@@ -82,7 +87,6 @@ class CommonCoreMetadataForm(SingletonPlugin, toolkit.DefaultDatasetForm):
                 metadata: [toolkit.get_validator('ignore_missing'),
                            toolkit.get_converter('convert_to_extras')]
             })
-
         return schema
 
     def create_package_schema(self):
@@ -110,4 +114,4 @@ class CommonCoreMetadataForm(SingletonPlugin, toolkit.DefaultDatasetForm):
     #Method below allows functions and other methods to be called from the Jinja template using the h variable
     def get_helpers(self):
         log.debug('get_helpers() called, getting the access levels')
-        return {'public_access_levels': get_access_levels}
+        return {'public_access_levels': get_access_levels, 'required_metadata': required_metadata, 'render_metadata': self.render_metadata}

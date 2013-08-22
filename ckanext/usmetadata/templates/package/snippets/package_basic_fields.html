@@ -15,37 +15,3 @@
 {{ form.input('tag_string', id='field-tags', label=_('Tags'), placeholder=_('eg. economy, mental health, government'), value=data.tag_string, error=errors.tags, classes=['control-full'], attrs=tag_attrs, is_required=true) }}
 {% endblock %}
 
-{% block package_basic_fields_license %}
-{# TODO: this parts hacky...the inputs should be declared inside their own block instead of in license' #}
-
-{{ form.input('publisher', id='field-publisher', label=_('Publisher'), placeholder=_('eg. Federal Bureau of Investigation'), value=data.publisher, error=errors.publisher, classes=['control-full', 'control-medium'], attrs={'title': 'The publishing agency.'}, is_required=true) }}
-
-
-{{ form.input('contact_name', id='field-contact_name', label=_('Contact Name'), placeholder=_('eg. John Smith'), value=data.contact_name, error=errors.contname, classes=['control-full', 'control-medium'], attrs={'title': 'Contact person\'s name for the asset.'}, is_required=true) }}
-
-{{ form.input('contact_email', id='field-contact_email', label=_('Contact Email'), placeholder=_('eg. john.smith@fbi.gov'), value=data.contact_email, error=errors.contemail, classes=['control-full', 'control-medium'], attrs={'title': " Contact person's email address. "}, is_required=true) }}
-
-
-{{ form.input('unique_id', id='field-unique_id', label=_('Unique ID'), placeholder=_('eg. doj-a327-73809'), value=data.unique_id, error=errors.uid, classes=['control-full', 'control-medium'], attrs={'title': 'A unique identifier for the dataset or API as maintained within an Agency catalog or database.'}, is_required=true) }}
-
-{{ super() }}
-{% endblock %}
-
-{% block package_basic_fields_custom %}
-
-
-<div class="control-group">
-  <label class="control-label" for="field-public_access_level">{{ _("Access Level") }}</label>
-  <div class="controls">
-    <select id="field-public_access_level" name="public_access_level" data-module="autocomplete">
-        {% for level in h.public_access_levels() %}
-
-      <option value="{{ level }}">
-        {{ level }}
-      </option>
-        {% endfor %}
-    </select>
-  </div>
-</div>
-
-{% endblock %}

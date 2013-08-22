@@ -1,0 +1,47 @@
+<!-- Snippet package_common_core_metadata_fields.html start -->
+
+        <h1>TEST FOR GENERATING COMMON CORE!!!!</h1>
+
+{% block package_required_metadata %}
+
+
+{#
+{{ form.input('publisher', id='field-publisher', label=_('Publisher'), placeholder=_('eg. Federal Bureau of Investigation'), value=data.publisher, error=errors.publisher, classes=['control-full', 'control-medium'], attrs={'title': 'The publishing agency.'}, is_required=true) }}
+
+{{ form.input('contact_name', id='field-contact_name', label=_('Contact Name'), placeholder=_('eg. John Smith'), value=data.contact_name, error=errors.contname, classes=['control-full', 'control-medium'], attrs={'title': 'Contact person\'s name for the asset.'}, is_required=true) }}
+
+{{ form.input('contact_email', id='field-contact_email', label=_('Contact Email'), placeholder=_('eg. john.smith@fbi.gov'), value=data.contact_email, error=errors.contemail, classes=['control-full', 'control-medium'], attrs={'title': " Contact person's email address. "}, is_required=true) }}
+
+{{ form.input('unique_id', id='field-unique_id', label=_('Unique ID'), placeholder=_('eg. doj-a327-73809'), value=data.unique_id, error=errors.uid, classes=['control-full', 'control-medium'], attrs={'title': 'A unique identifier for the dataset or API as maintained within an Agency catalog or database.'}, is_required=true) }}
+
+<div class="control-group">
+  <label class="control-label" for="field-public_access_level">{{ _("Access Level") }}</label>
+  <div class="controls">
+    <select id="field-public_access_level" name="public_access_level" data-module="autocomplete">
+        {% for level in h.public_access_levels() %}
+
+      <option value="{{ level }}">
+        {{ level }}
+      </option>
+        {% endfor %}
+    </select>
+  </div>
+</div>
+}#
+        <h1>Aardvark: {{data.aardvark}}</h1>
+
+{% endblock %}
+
+{% block package_required_if_applicable_metadata %}
+{#
+  {{ form.input('dataDictionary', label=_('Data Dictionary'), id='field-dataDictionary', placeholder=_('URL of Data Dictionary'), value=data.dataDictionary, error=errors.dataDictionary, classes=['contro
+l-medium']) }}
+
+
+  {{ form.input('systemOfRecords', label=_('System of Records'), id='field-systemOfRecords', placeholder=_('URL to systemOfRecords'), value=data.systemOfRecords, error=errors.systemOfRecords, classes=['
+control-medium']) }}
+
+  {{ form.input('granularity', label=_('Granularity'), id='field-granularity', placeholder=_('level of granularity'), value=data.granularity, error=errors.granularity, classes=['control-medium']) }}
+#}
+{% endblock %}
+<!-- Snippet package_common_core_metadata_fields.html end -->
