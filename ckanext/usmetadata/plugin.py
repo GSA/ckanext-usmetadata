@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from ckan.plugins import implements, SingletonPlugin, toolkit, IConfigurer, ITemplateHelpers
+from ckan.plugins import implements, SingletonPlugin, toolkit, IConfigurer, ITemplateHelpers, IDatasetForm
 
 log = getLogger(__name__)
 
@@ -13,7 +13,7 @@ def _create_access_level_vocabulary():
     data = {'name': 'public_access_level'}
     vocab = toolkit.get_action('vocabulary_create')(context, data)
     log.debug('Vocab created: %s' % vocab)
-    for tag in (u'public', u'restricted', u'private'):
+    for tag in (u'public', u'restricted'):
         log.debug(
             "Adding tag {0} to vocab 'public_access_levels'".format(tag))
         data = {'name': tag, 'vocabulary_id': vocab['id']}
@@ -46,6 +46,7 @@ class CommonCoreMetadataForm(SingletonPlugin, toolkit.DefaultDatasetForm):
 
     implements(ITemplateHelpers, inherit=False)
     implements(IConfigurer, inherit=False)
+    implements(IDatasetForm, inherit=False)
 
     def is_fallback(self):
         # Return True so that we use the extension's dataset form instead of CKAN's default for
@@ -65,39 +66,44 @@ class CommonCoreMetadataForm(SingletonPlugin, toolkit.DefaultDatasetForm):
     def _modify_package_schema(self, schema):
         log.debug("_modify_package_schema called")
         schema.update({
-            'public_access_levels': [toolkit.get_validator('not_empty'),
-                              toolkit.get_converter('convert_to_tags')]
+            'public_access_level': [toolkit.get_validator('ignore_missing'),
+                              toolkit.get_converter('convert_to_extras')]
         })
 
-        schema.update({
-            'publisher': [toolkit.get_validator('not_empty'),
-                              toolkit.get_converter('convert_to_tags')]
-        })
+        # schema.update({
+        #     'publisher': [toolkit.get_validator('ignore_missing'),
+        #                       toolkit.get_converter('convert_to_extras')]
+        # })
+        #
+        # schema.update({
+        #     'contact_name': [toolkit.get_validator('ignore_missing'),
+        #                       toolkit.get_converter('convert_to_extras')]
+        # })
+        #
+        # schema.update({
+        #     'contact_email': [toolkit.get_validator('ignore_missing'),
+        #                       toolkit.get_converter('convert_to_extras')]
+        # })
+        #
+        # schema.update({
+        #     'unique_id': [toolkit.get_validator('ignore_missing'),
+        #                       toolkit.get_converter('convert_to_extras')]
+        # })
 
-        schema.update({
-            'contact_name': [toolkit.get_validator('not_empty'),
-                              toolkit.get_converter('convert_to_tags')]
-        })
-
-        schema.update({
-            'contact_email': [toolkit.get_validator('not_empty'),
-                              toolkit.get_converter('convert_to_tags')]
-        })
-
-        schema.update({
-            'system_of_record': [toolkit.get_validator('not_empty'),
-                                 toolkit.get_converter('convert_to_tags')]
-        })
-
-        schema.update({
-            'granularity': [toolkit.get_validator('not_empty'),
-                            toolkit.get_converter('convert_to_tags')]
-        })
-
-        schema.update({
-            'data_dictionary': [toolkit.get_validator('not_empty'),
-                               toolkit.get_converter('convert_to_extras')]
-        })
+        # schema.update({
+        #     'system_of_record': [toolkit.get_validator('ignore_missing'),
+        #                          toolkit.get_converter('convert_to_extras')]
+        # })
+        #
+        # schema.update({
+        #     'granularity': [toolkit.get_validator('ignore_missing'),
+        #                     toolkit.get_converter('convert_to_extras')]
+        # })
+        #
+        # schema.update({
+        #     'data_dictionary': [toolkit.get_validator('ignore_missing'),
+        #                        toolkit.get_converter('convert_to_extras')]
+        # })
         return schema
 
     def create_package_schema(self):
@@ -121,6 +127,12 @@ class CommonCoreMetadataForm(SingletonPlugin, toolkit.DefaultDatasetForm):
         schema['tags']['__extras'].append(toolkit.get_converter('free_tags_only'))
         schema = self._modify_package_schema(schema)
         return schema
+
+    def _form_to_db_schema(self):
+        log.debug('form_to_db_schema called!')
+
+    def _db_to_form_schema(self):
+        log.debug('_db_to_form_schema called!')
 
     #Method below allows functions and other methods to be called from the Jinja template using the h variable
     def get_helpers(self):
