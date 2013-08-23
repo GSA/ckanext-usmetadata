@@ -7,22 +7,10 @@
 
 {% block package_required_if_applicable_metadata %}
 
-{{ form.input('data_dictionary', label=_('Data Dictionary'), id='field-data_dictionary', placeholder=_('http://my.gov/datadictionary'), value=data.data_dictionary, error=errors.data_dictionary, classes=['control-medium']) }}
+{{ form.input('data_dictionary', label=_('Data Dictionary'), id='field-data_dictionary', placeholder=_('http://www.my.gov/datadictionary'), value=data.data_dictionary, error=errors.data_dictionary, classes=['control-medium'], attrs={'title': 'URL to the data dictionary for the dataset or API. Note that documentation other than a Data Dictionary can be referenced using Related Documents as shown in the expanded fields.'}) }}
 
-{{ form.input('spatial', label=_('Data Dictionary'), id='field-data_dictionary', placeholder=_('http://my.gov/datadictionary'), value=data.data_dictionary, error=errors.data_dictionary, classes=['control-medium']) }}
+{{ form.input('spatial', label=_('Spatial'), id='field-spatial', placeholder=_('Lincoln, Nebraska'), value=data.spatial, error=errors.spatial, classes=['control-medium'], attrs={'title': 'The range of spatial applicability of a dataset. Could include a spatial region like a bounding box or a named place.'}) }}
 
-{{ form.input('temporal', label=_('Data Dictionary'), id='field-data_dictionary', placeholder=_('http://my.gov/datadictionary'), value=data.data_dictionary, error=errors.data_dictionary, classes=['control-medium']) }}
-
-
-{#
-{{ form.input('publisher', id='field-publisher', label=_('Publisher'), placeholder=_('eg. Federal Bureau of Investigation'), value=data.publisher, error=errors.publisher, classes=['control-full', 'control-medium'], attrs={'title': 'The publishing agency.'}, ) }}
-
-{{ form.input('contact_name', id='field-contact_name', label=_('Contact Name'), placeholder=_('eg. John Smith'), value=data.contact_name, error=errors.contname, classes=['control-full', 'control-medium'], attrs={'title': 'Contact person\'s name for the asset.'}, ) }}
-
-{{ form.input('contact_email', id='field-contact_email', label=_('Contact Email'), placeholder=_('eg. john.smith@fbi.gov'), value=data.contact_email, error=errors.contemail, classes=['control-full', 'control-medium'], attrs={'title': " Contact person's email address. "}, ) }}
-
-{{ form.input('unique_id', id='field-unique_id', label=_('Unique ID'), placeholder=_('eg. doj-a327-73809'), value=data.unique_id, error=errors.uid, classes=['control-full', 'control-medium'], attrs={'title': 'A unique identifier for the dataset or API as maintained within an Agency catalog or database.'}, ) }}
-#}
-
+{{ form.input('temporal', label=_('Temporal'), id='field-temporal', placeholder=_('2000-01-15 00:45:00,2010-01-15 00:06:00'), value=data.temporal, error=errors.temporal, classes=['control-medium'], attrs={'title': 'The range of temporal applicability of a dataset (i.e., a start and end date of applicability for the data).'}) }}
 
 {% endblock package_required_if_applicable_metadata %}

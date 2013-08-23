@@ -4,6 +4,7 @@ from ckan.plugins import implements, SingletonPlugin, toolkit, IConfigurer, ITem
 
 log = getLogger(__name__)
 
+#Jinja template helper functions
 def _create_access_level_vocabulary():
     '''Create accessLevels vocab and tags, if they don't exist already.'''
     user = toolkit.get_action('get_site_user')({'ignore_auth': True}, {})
@@ -39,6 +40,41 @@ def get_access_levels():
 
     return access_levels
 
+def _create_accrual_periodicity_vocabulary():
+    '''Create accessLevels vocab and tags, if they don't exist already.'''
+    user = toolkit.get_action('get_site_user')({'ignore_auth': True}, {})
+    context = {'user': user['name']}
+
+    log.debug("Creating vocab 'accrual_periodicity'")
+    data = {'name': 'accrual_periodicity'}
+    vocab = toolkit.get_action('vocabulary_create')(context, data)
+    log.debug('Vocab created: %s' % vocab)
+    for tag in (u'hourly', u'daily', u'weekly', u'yearly', u'other'):
+        log.debug(
+            "Adding tag {0} to vocab 'accrual_periodicity'".format(tag))
+        data = {'name': tag, 'vocabulary_id': vocab['id']}
+        toolkit.get_action('tag_create')(context, data)
+    return vocab
+
+def get_accrual_periodicity():
+    log.debug('get_accrual_periodicity() called')
+
+    user = toolkit.get_action('get_site_user')({'ignore_auth': True}, {})
+    context = {'user': user['name']}
+
+    vocab = None
+    try:
+        data = {'id': 'accrual_periodicity'} #we can use the id or name for id param
+        vocab = toolkit.get_action('vocabulary_show')(context, data)
+    except:
+        log.debug("vocabulary_show failed, meaning the vocabulary for accrual periodicity doesn't exist")
+        vocab = _create_accrual_periodicity_vocabulary()
+
+    accrual_periodicity = [x['display_name'] for x in vocab['tags']]
+    log.debug("vocab tags: %s" % accrual_periodicity)
+
+    return accrual_periodicity
+
 #excluded title, description, tags and last update as they're part of the default ckan dataset metadata
 required_metadata = ['public_access_level', 'publisher', 'contact_name', 'contact_email', 'unique_id']
 
@@ -46,7 +82,7 @@ required_metadata = ['public_access_level', 'publisher', 'contact_name', 'contac
 required_if_applicable_metadata = ['data_dictionary', 'endpoint', 'spatial', 'temporal']
 
 #some of these could be excluded (e.g. related_documents) which can be captured from other ckan default data
-expanded_metadata = ['release_date', 'frequency', 'language', 'granularity', 'data_quality', 'category',
+expanded_metadata = ['release_date', 'accrual_periodicity', 'language', 'granularity', 'data_quality', 'category',
                      'related_documents', 'size', 'homepage_url', 'rss_feed', 'system_of_records',
                      'system_of_records_none_related_to_this_dataset']
 
@@ -90,11 +126,6 @@ class CommonCoreMetadataForm(SingletonPlugin, toolkit.DefaultDatasetForm):
     implements(ITemplateHelpers, inherit=False)
     implements(IConfigurer, inherit=False)
     implements(IDatasetForm, inherit=False)
-
-    # def render_metadata(self):
-    #     log.debug('render_metadata called')
-    #     toolkit.render_snippet('package/snippets/required_common_core_fields.html', data={'aardvark':'scratch'})
-        #toolkit.render('package/snippets/required_common_core_fields.html', extra_vars={'aardvark':'scratch'}, renderer='snippet')
 
     def is_fallback(self):
         # Return True so that we use the extension's dataset form instead of CKAN's default for
@@ -148,4 +179,6 @@ class CommonCoreMetadataForm(SingletonPlugin, toolkit.DefaultDatasetForm):
     #Method below allows functions and other methods to be called from the Jinja template using the h variable
     def get_helpers(self):
         log.debug('get_helpers() called, getting the access levels')
-        return {'public_access_levels': get_access_levels, 'required_metadata': required_metadata, 'load_data_into_dict':_load_data_into_dict}
+        return {'public_access_levels': get_access_levels, 'required_metadata': required_metadata,
+                'load_data_into_dict':_load_data_into_dict,
+                'accrual_periodicity': get_accrual_periodicity}
