@@ -144,12 +144,19 @@ class CommonCoreMetadataForm(SingletonPlugin, toolkit.DefaultDatasetForm):
 
     def _modify_package_schema(self, schema):
         log.debug("_modify_package_schema called")
-        #TODO change ignore_missing to not_empty
+        #TODO change ignore_missing to something requiring the fields to be populated
         for metadata in required_metadata:
             schema.update({
                 metadata: [toolkit.get_validator('ignore_missing'),
                            toolkit.get_converter('convert_to_extras')]
             })
+
+        for metadata in (required_if_applicable_metadata + expanded_metadata):
+            schema.update({
+                metadata: [toolkit.get_validator('ignore_missing'),
+                           toolkit.get_converter('convert_to_extras')]
+            })
+
         return schema
 
     def create_package_schema(self):

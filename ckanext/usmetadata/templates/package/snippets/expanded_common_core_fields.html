@@ -6,7 +6,7 @@
 {% set errors = errors or {} %}
 
 {% block package_expanded_metadata %}
-{{ form.input('release_date', label=_('Release Date'), id='field-system_of_records', placeholder=_('TODO'), value=data.system_of_records, error=errors.system_of_records, classes=['control-medium'], attrs={'title': 'Date of formal issuance.'} )}}
+{{ form.input('release_date', label=_('Release Date'), id='field-system_of_records', placeholder=_('2012-01-15'), value=data.system_of_records, error=errors.system_of_records, classes=['control-medium'], attrs={'title': 'Date of formal issuance.Dates should be formatted as YYYY-MM-DD. Specify "01" as the day if unknown. If this file is brand-new, enter the issued date here as well'} )}}
 
 <div class="control-group">
   <label class="control-label" for="field-accrual_periodicity">
@@ -34,7 +34,7 @@
 
 {{ form.input('category', label=_('Category'), id='field-category', placeholder=_('vegetables,non_starchy,green'), value=data.category, error=errors.category, classes=['control-medium'], attrs={'title': 'Main thematic category of the dataset. '} )}}
 
-{{ form.input('related', label=_('Related Documents'), id='field-related', placeholder=_('http://www.agency.gov/fruits/fruits.csv,http://www.agency.gov/legumes/legumes.csv'), value=data.related, error=errors.related, classes=['control-medium'], attrs={'title': 'Related documents such as technical information about a dataset, developer documentation, etc. References not in the data dictionary go here. Separate multiple URLs with commas.'} )}}
+{{ form.input('related_documents', label=_('Related Documents'), id='field-related_documents', placeholder=_('http://www.agency.gov/fruits/fruits.csv,http://www.agency.gov/legumes/legumes.csv'), value=data.related_documents, error=errors.related, classes=['control-medium'], attrs={'title': 'Related documents such as technical information about a dataset, developer documentation, etc. References not in the data dictionary go here. Separate multiple URLs with commas.'} )}}
 
 {{ form.input('size', label=_('Size'), id='field-size', placeholder=_('3MB'), value=data.size, error=errors.size, classes=['control-medium'], attrs={'title': 'The size of the downloadable dataset. Sizes should be formatted as (e.g.), 52kB, 140MB, 2GB.'} )}}
 
