@@ -1,9 +1,11 @@
+{# See https://github.com/project-open-data/project-open-data.github.io/blob/master/schema.md#common-core-required-fields #}
+
 {% import "macros/form.html" as form %}
 
 {% set data = data or {} %}
 {% set errors = errors or {} %}
 
-{# block package_required_metadata #}
+{% block package_required_metadata %}
 
 {{ form.input('publisher', id='field-publisher', label=_('Publisher'), placeholder=_('eg. Federal Bureau of Investigation'), value=data.publisher, error=errors.publisher, classes=['control-full', 'control-medium'], attrs={'title': 'The publishing agency.'}, is_required=true) }}
 
@@ -28,17 +30,4 @@
   </div>
 </div>
 
-{# endblock #}
-
-{# block package_required_if_applicable_metadata #}
-{#
-  {{ form.input('dataDictionary', label=_('Data Dictionary'), id='field-dataDictionary', placeholder=_('URL of Data Dictionary'), value=data.dataDictionary, error=errors.dataDictionary, classes=['contro
-l-medium']) }}
-
-
-  {{ form.input('systemOfRecords', label=_('System of Records'), id='field-systemOfRecords', placeholder=_('URL to systemOfRecords'), value=data.systemOfRecords, error=errors.systemOfRecords, classes=['
-control-medium']) }}
-
-  {{ form.input('granularity', label=_('Granularity'), id='field-granularity', placeholder=_('level of granularity'), value=data.granularity, error=errors.granularity, classes=['control-medium']) }}
-#}
-{# endblock #}
+{% endblock package_required_metadata %}
