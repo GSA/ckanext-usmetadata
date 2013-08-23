@@ -3,8 +3,6 @@
 {% set data = data or {} %}
 {% set errors = errors or {} %}
 
-       <h1>Required Core Metadata</h1>
-
 {# block package_required_metadata #}
 
 {{ form.input('publisher', id='field-publisher', label=_('Publisher'), placeholder=_('eg. Federal Bureau of Investigation'), value=data.publisher, error=errors.publisher, classes=['control-full', 'control-medium'], attrs={'title': 'The publishing agency.'}, is_required=true) }}
@@ -16,12 +14,13 @@
 {{ form.input('unique_id', id='field-unique_id', label=_('Unique ID'), placeholder=_('eg. doj-a327-73809'), value=data.unique_id, error=errors.uid, classes=['control-full', 'control-medium'], attrs={'title': 'A unique identifier for the dataset or API as maintained within an Agency catalog or database.'}, is_required=true) }}
 
 <div class="control-group">
-  <label class="control-label" for="field-public_access_level">{{ _("Access Level") }}</label>
+  <label class="control-label" for="field-public_access_level">
+      <span title="This field is required" class="control-required">*</span>
+      {{ _("Public Access Level") }}</label>
   <div class="controls">
-    <select id="field-public_access_level" name="public_access_level" data-module="autocomplete">
+    <select id="field-public_access_level" name="public_access_level" data-module="autocomplete" title="The degree to which this dataset could be made publicly-available, regardless of whether it has been made available. Choices: Public (is or could be made publicly available), Restricted (available under certain conditions), or Private (never able to be made publicly available)">
         {% for level in h.public_access_levels() %}
-
-      <option value="{{ level }}">
+      <option value="{{ level }}" {% if level == data.public_access_level %}selected{% endif %} >
         {{ level }}
       </option>
         {% endfor %}

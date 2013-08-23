@@ -53,19 +53,32 @@ expanded_metadata = ['release_date', 'frequency', 'language', 'granularity', 'da
 #TODO test this function!
 def _load_data_into_dict(dict):
     '''
-    Load the required_metadata directly into the dict as key:value pairs, removing them from the 'extras'
+    extras contains a list of dicts corresponding to the extras used to store arbitrary key value pairs in CKAN.
+    This function moves any dict in with key matching a core metadata direct dict as key:value pairs, removing them from the 'extras'
+
+    Example:
+    {'hi':'there', 'extras':[{'key': 'publisher', 'value':'USGS'}]}
+    becomes
+    {'hi':'there', 'publisher':'USGS', 'extras':[]}
+
     '''
+    metadata = required_metadata+required_if_applicable_metadata+expanded_metadata
+    log.debug('keys before: %s', dict.keys())
     reduced_extras = [];
-    for x in dict['extras']:
-        found = False
-        for y in required_metadata:
-            if(y == x['key']):
-                dict[x['key']]=x['value']
-                found = True
-                break
-        if(not found):
-            reduced_extras.append(x)
-    dict['extras'] = reduced_extras
+    try:
+        for x in dict['extras']:
+            found = False
+            for y in metadata:
+                if(y == x['key']):
+                    dict[x['key']]=x['value']
+                    found = True
+                    break
+            if(not found):
+                reduced_extras.append(x)
+        dict['extras'] = reduced_extras
+    except KeyError as ex:
+        log.warn('Assumption violation: expected key %s not found, returning original dict', ex.message)
+    log.debug('keys after: %s', dict.keys())
 
     return dict
 
@@ -80,8 +93,8 @@ class CommonCoreMetadataForm(SingletonPlugin, toolkit.DefaultDatasetForm):
 
     # def render_metadata(self):
     #     log.debug('render_metadata called')
-    #     toolkit.render_snippet('package/snippets/package_common_core_metadata_fields.html', data={'aardvark':'scratch'})
-        #toolkit.render('package/snippets/package_common_core_metadata_fields.html', extra_vars={'aardvark':'scratch'}, renderer='snippet')
+    #     toolkit.render_snippet('package/snippets/required_common_core_fields.html', data={'aardvark':'scratch'})
+        #toolkit.render('package/snippets/required_common_core_fields.html', extra_vars={'aardvark':'scratch'}, renderer='snippet')
 
     def is_fallback(self):
         # Return True so that we use the extension's dataset form instead of CKAN's default for

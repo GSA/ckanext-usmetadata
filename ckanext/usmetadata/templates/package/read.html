@@ -1,11 +1,8 @@
 {% ckan_extends %}
 
-{% block package_description %}
-  {{ super() }}
-
-  {# Add our custom access_level field to the dataset read page. #}
-
-
-  
+{% block package_additional_info %}
+    {# filter out core metadata, then display as usual #}
+    {% set pkg = h.load_data_into_dict(pkg) %}
+    {% snippet "package/snippets/additional_info.html", pkg_dict=pkg %}
 {% endblock %}
 
