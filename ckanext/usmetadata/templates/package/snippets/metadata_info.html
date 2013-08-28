@@ -1,5 +1,6 @@
 <section class="additional-info">
   <h3>{{ _('Common Core Metadata') }}</h3>
+
   <table class="table table-striped table-bordered table-condensed">
     <thead>
       <tr>
@@ -11,17 +12,14 @@
     <tbody>
       {% block package_common_core %}
 
-      {# TODO commenting out until able to get metadata to the template
+      {% for meta in pkg_dict.common_core %}
 
-      {% for extra in pkg_dict.common_core %}
-         {% set key, value = extra %}
         <tr rel="dc:relation" resource="_:extra{{ i }}">
-          <th scope="row" class="dataset-label" property="rdfs:label">{{ _(key) }}</th>
-          <td class="dataset-details" property="rdf:value">{{ value }}</td>
+          <th scope="row" class="dataset-label" property="rdfs:label">{{ _(meta) }}</th>
+          <td class="dataset-details" property="rdf:value">{{ pkg_dict.common_core[meta] }}</td>
         </tr>
         {% endfor %}
 
-      #}
       {% endblock package_common_core %}
     </tbody>
   </table>
