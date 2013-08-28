@@ -1,8 +1,13 @@
 {% ckan_extends %}
 
 {% block package_additional_info %}
-    {# filter out core metadata, then display as usual #}
+
     {% set pkg = h.load_data_into_dict(pkg) %}
+
+    {# display common core metadata #}
+    {% snippet "package/snippets/metadata_info.html", pkg_dict=pkg %}
+
+
     {% snippet "package/snippets/additional_info.html", pkg_dict=pkg %}
 {% endblock %}
 

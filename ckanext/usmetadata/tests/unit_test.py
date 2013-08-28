@@ -25,7 +25,7 @@ class MetadataPluginTest(unittest.TestCase):
         '''Verify that load_data_into_dict() moves all entries matching required metadata from value of extras key to
         be (key:value) pairs of the dict.'''
         original = {'aardvark':'foo', 'extras':[{'key':'foo', 'value': 'bar'}, {'key':'publisher','value':'usda'}] }
-        expected = {'aardvark':'foo', 'publisher':'usda', 'extras':[{'key':'foo', 'value': 'bar'}]}
+        expected = {'aardvark':'foo', 'common_core': {'publisher':'usda'}, 'extras':[{'key':'foo', 'value': 'bar'}]}
         actual = plugin.CommonCoreMetadataForm().get_helpers()['load_data_into_dict'](original)
         MetadataPluginTest.check_dicts_match(expected, actual)
 
@@ -33,7 +33,7 @@ class MetadataPluginTest(unittest.TestCase):
         '''Verify that load_data_into_dict() moves all entries matching required metadata from value of extras key to
         be (key:value) pairs of the dict.'''
         original = {'hi':'there', 'extras':[{'key': 'publisher', 'value':'USGS'}]}
-        expected = {'hi':'there', 'publisher':'USGS', 'extras':[]}
+        expected = {'hi':'there', 'common_core': {'publisher':'USGS'}, 'extras':[]}
         actual = plugin.CommonCoreMetadataForm().get_helpers()['load_data_into_dict'](original)
         MetadataPluginTest.check_dicts_match(expected, actual)
 
@@ -41,14 +41,20 @@ class MetadataPluginTest(unittest.TestCase):
         '''Verify that load_data_into_dict() moves all entries matching required metadata from value of extras key to
         be (key:value) pairs of the dict.'''
         original = {'aardvark':'foo', 'extras':[{'key':'spatial','value':'wayoutthere'}, {'key':'foo', 'value': 'bar'}, {'key':'publisher','value':'usda'}] }
-        expected = {'aardvark':'foo', 'publisher':'usda', 'spatial':'wayoutthere', 'extras':[{'key':'foo', 'value': 'bar'}]}
+        expected = {'aardvark':'foo', 'common_core': {'publisher':'usda', 'spatial':'wayoutthere'}, 'extras':[{'key':'foo', 'value': 'bar'}]}
         actual = plugin.CommonCoreMetadataForm().get_helpers()['load_data_into_dict'](original)
         MetadataPluginTest.check_dicts_match(expected, actual)
 
     def test_load_data_into_dict_fails_gracefully(self):
         '''Verify that load_data_into_dict() doesn't generate an error if extras not found'''
         original = {'aardvark':'foo', '__extras':[{'key':'foo', 'value': 'bar'}, {'key':'publisher','value':'usda'}] }
-        expected = original
+        expected = {'aardvark':'foo', 'common_core':{}, '__extras':[{'key':'foo', 'value': 'bar'}, {'key':'publisher','value':'usda'}] }
+        actual = plugin.CommonCoreMetadataForm().get_helpers()['load_data_into_dict'](original)
+        MetadataPluginTest.check_dicts_match(expected, actual)
+
+    def test_load_data_into_dict_large(self):
+        original = {'aardvark':'foo', 'extras': [{u'value': u'daily', u'key': u'accrual_periodicity', '__extras': {u'package_id': u'154dc150-bba6-4201-b4ff-1a684121e27e', u'revision_id': u'0fe96ac4-bac5-4ee5-a7e6-224f58897575'}}, {u'value': u'asdfa', u'key': u'category', '__extras': {u'revision_id': u'0fe96ac4-bac5-4ee5-a7e6-224f58897575', u'package_id': u'154dc150-bba6-4201-b4ff-1a684121e27e'}}, {u'value': u'contactmyemailaddr', u'key': u'contact_email', '__extras': {u'package_id': u'154dc150-bba6-4201-b4ff-1a684121e27e', u'revision_id': u'43774ce1-7b28-45d3-95cb-b98bc3860f6f'}} ]}
+        expected = {'aardvark':'foo', 'common_core':{u'accrual_periodicity':u'value', u'category':'asdfa', u'contact_email':'contactmyemailaddr'}, 'extras':[]}
         actual = plugin.CommonCoreMetadataForm().get_helpers()['load_data_into_dict'](original)
         MetadataPluginTest.check_dicts_match(expected, actual)
 

@@ -1,7 +1,5 @@
 {% ckan_extends %}
 
-{# Here we capture the common core required fields as found at https://github.com/project-open-data/project-open-data.github.io/blob/master/schema.md#common-core-required-fields #}
-
 {% block package_basic_fields_title %}
 {{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. A descriptive title'), value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target', 'title': 'Human-readable name of the asset. Should be in plain English and include sufficient detail to facilitate search and discovery.'}, is_required=true) }}
 {% endblock %}

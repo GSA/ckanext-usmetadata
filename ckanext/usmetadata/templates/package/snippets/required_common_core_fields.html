@@ -7,13 +7,13 @@
 
 {% block package_required_metadata %}
 
-{{ form.input('publisher', id='field-publisher', label=_('Publishing Agency'), placeholder=_('Federal Bureau of Investigation'), value=data.publisher, error=errors.publisher, classes=['control-full', 'control-medium'], attrs={'title': 'The publishing agency.'}, is_required=true) }}
+{{ form.input('publisher', id='field-publisher', label=_('Publishing Agency'), placeholder=_('Federal Bureau of Investigation'), value=data.common_core.publisher, error=errors.publisher, classes=['control-full', 'control-medium'], attrs={'title': 'The publishing agency.'}, is_required=true) }}
 
-{{ form.input('contact_name', id='field-contact_name', label=_('Contact Name'), placeholder=_('John Smith'), value=data.contact_name, error=errors.contname, classes=['control-full', 'control-medium'], attrs={'title': 'Contact person\'s name for the asset.'}, is_required=true) }}
+{{ form.input('contact_name', id='field-contact_name', label=_('Contact Name'), placeholder=_('John Smith'), value=data.common_core.contact_name, error=errors.contname, classes=['control-full', 'control-medium'], attrs={'title': 'Contact person\'s name for the asset.'}, is_required=true) }}
 
-{{ form.input('contact_email', id='field-contact_email', label=_('Contact Email'), placeholder=_('john.smith@fbi.gov'), value=data.contact_email, error=errors.contemail, classes=['control-full', 'control-medium'], attrs={'title': " Contact person's email address. "}, is_required=true) }}
+{{ form.input('contact_email', id='field-contact_email', label=_('Contact Email'), placeholder=_('john.smith@fbi.gov'), value=data.common_core.contact_email, error=errors.contemail, classes=['control-full', 'control-medium'], attrs={'title': " Contact person's email address. "}, is_required=true) }}
 
-{{ form.input('unique_id', id='field-unique_id', label=_('Unique ID'), placeholder=_('doj-a327-73809'), value=data.unique_id, error=errors.uid, classes=['control-full', 'control-medium'], attrs={'title': 'A unique identifier for the dataset or API as maintained within an Agency catalog or database.'}, is_required=true) }}
+{{ form.input('unique_id', id='field-unique_id', label=_('Unique ID'), placeholder=_('doj-a327-73809'), value=data.common_core.unique_id, error=errors.uid, classes=['control-full', 'control-medium'], attrs={'title': 'A unique identifier for the dataset or API as maintained within an Agency catalog or database.'}, is_required=true) }}
 
 <div class="control-group">
   <label class="control-label" for="field-public_access_level">
@@ -22,7 +22,7 @@
   <div class="controls">
     <select id="field-public_access_level" name="public_access_level" data-module="autocomplete" title="The degree to which this dataset could be made publicly-available, regardless of whether it has been made available. Choices: Public (is or could be made publicly available), Restricted (available under certain conditions), or Private (never able to be made publicly available)">
         {% for level in h.public_access_levels() %}
-      <option value="{{ level }}" {% if level == data.public_access_level %}selected{% endif %} >
+      <option value="{{ level }}" {% if level == data.common_core.public_access_level %}selected{% endif %} >
         {{ level }}
       </option>
         {% endfor %}
