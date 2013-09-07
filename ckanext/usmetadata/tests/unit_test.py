@@ -1,5 +1,6 @@
 import unittest
 import ckanext.usmetadata.plugin as plugin
+import ckan.lib.navl.dictization_functions as df
 
 class MetadataPluginTest(unittest.TestCase):
     '''These tests should run fine using a standard testrunner with no database or server backend'''
@@ -57,6 +58,66 @@ class MetadataPluginTest(unittest.TestCase):
         expected = {'aardvark':'foo', 'common_core':{u'accrual_periodicity':u'value', u'category':'asdfa', u'contact_email':'contactmyemailaddr'}, 'extras':[]}
         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
         MetadataPluginTest.check_dicts_match(expected, actual)
+
+    def test_field_validation_public_access_level_public(self):
+
+        data = {'public_access_level':'public'
+        }
+        schema = self.__getSchemaFromMetadataDict__('public_access_level')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
+        data['public_access_level']='Public'
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
+    def test_field_validation_public_access_level_restricted(self):
+
+        data = {'public_access_level':'restricted'
+        }
+        schema = self.__getSchemaFromMetadataDict__('public_access_level')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
+        data['public_access_level']='Restricted'
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
+    def test_field_validation_public_access_level_bad_value(self):
+
+        data = {'public_access_level':'BadValue'
+        }
+        schema = self.__getSchemaFromMetadataDict__('public_access_level')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {'public_access_level':[u'The input is not valid']})
+
+    def test_field_validation_public_access_level_rejects_empty(self):
+
+        data = {'public_access_level':''
+        }
+        schema = self.__getSchemaFromMetadataDict__('public_access_level')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {'public_access_level':[u'Missing value']})
+
+    def test_field_validation_public_access_level_rejects_missing(self):
+
+        data = {}
+        schema = self.__getSchemaFromMetadataDict__('public_access_level')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {'public_access_level':[u'Missing value']})
+
+
+    def __getSchemaFromMetadataDict__(self, id_value):
+        """Convenience function to extract the schema for a given field"""
+        for scheme in plugin.required_metadata:
+            if scheme['id'] == 'public_access_level':
+                return {scheme['id']:scheme['validators']}
+        return {}
 
     # @with_setup(setup_func, teardown_func)
     # def test_get_access_levels(self):

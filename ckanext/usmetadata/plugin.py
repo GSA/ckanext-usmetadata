@@ -7,35 +7,48 @@ from formencode.validators import validators
 log = getLogger(__name__)
 
 #excluded title, description, tags and last update as they're part of the default ckan dataset metadata
-required_metadata = ({'id':'public_access_level', 'validators': [p.toolkit.get_validator('not_missing'), v.Regex(r'^([Pp]ublic)|([Rr]estricted)$')], 'converters': [p.toolkit.get_converter('convert_to_extras')]},
-                     {'id':'publisher', 'validators': [p.toolkit.get_validator('not_missing'), v.String(min=1, max=100)], 'converters': [p.toolkit.get_converter('convert_to_extras')]},
-                     {'id':'contact_name', 'validators': [p.toolkit.get_validator('not_missing'), v.String(min=1, max=100)], 'converters': [p.toolkit.get_converter('convert_to_extras')]},
-                     {'id':'contact_email', 'validators': [p.toolkit.get_validator('not_missing'), v.Email(min=3, max=50)], 'converters': [p.toolkit.get_converter('convert_to_extras')]},
+required_metadata = ({'id':'public_access_level', 'validators': [v.Regex(r'^([Pp]ublic)|([Rr]estricted)$')]},
+                     {'id':'publisher', 'validators': [v.String(min=1, max=100)]},
+                     {'id':'contact_name', 'validators': [v.String(min=1, max=100)]},
+                     {'id':'contact_email', 'validators': [v.Email(min=3, max=50)]},
 
                      #TODO should this unique_id be validated against any other unique IDs for this agency?
-                     {'id':'unique_id', 'validators': [p.toolkit.get_validator('not_missing'), v.String(max=100)], 'converters': [p.toolkit.get_converter('convert_to_extras')]}
+                     {'id':'unique_id', 'validators': [v.String(max=100)]}
 )
+
+#all required_metadata should be required
+for meta in required_metadata:
+    meta['validators'].append(p.toolkit.get_validator('not_empty'))
 
 #excluded download_url, endpoint, format and license as they may be discoverable
 required_if_applicable_metadata = (
-    {'id':'data_dictionary', 'validators': [v.URL(max=350)], 'converters': [p.toolkit.get_converter('convert_to_extras')]},
-    {'id':'endpoint', 'validators': [v.URL(max=350)], 'converters': [p.toolkit.get_converter('convert_to_extras')]},
-    {'id':'spatial', 'validators': [v.String(max=500)], 'converters': [p.toolkit.get_converter('convert_to_extras')]},
-    {'id':'temporal', 'validators': [v.String(max=300)], 'converters': [p.toolkit.get_converter('convert_to_extras')]})
+     {'id':'data_dictionary', 'validators': [v.URL(max=350)]},
+     {'id':'endpoint', 'validators': [v.URL(max=350)]},
+     {'id':'spatial', 'validators': [v.String(max=500)]},
+     {'id':'temporal', 'validators': [v.String(max=300)]})
+
+for meta in required_if_applicable_metadata:
+    meta['validators'].append(p.toolkit.get_validator('ignore_missing'))
 
 #some of these could be excluded (e.g. related_documents) which can be captured from other ckan default data
-expanded_metadata = ({'id': 'release_date', 'validators': [v.String(max=500)], 'converters': [p.toolkit.get_converter('convert_to_extras')]},
-                     {'id':'accrual_periodicity', 'validators': [v.Regex(r'^([Dd]aily)|([Hh]ourly)|([Ww]eekly)|([yY]early)|([oO]ther)$')], 'converters': [p.toolkit.get_converter('convert_to_extras')]},
-                     {'id':'language', 'validators': [v.String(max=500)], 'converters': [p.toolkit.get_converter('convert_to_extras')]},
-                     {'id':'granularity', 'validators': [v.String(max=500)], 'converters': [p.toolkit.get_converter('convert_to_extras')]},
-                     {'id':'data_quality', 'validators': [v.String(max=1000)], 'converters': [p.toolkit.get_converter('convert_to_extras')]},
-                     {'id':'category', 'validators': [v.String(max=1000)], 'converters': [p.toolkit.get_converter('convert_to_extras')]},
-                     {'id':'related_documents', 'validators': [v.String(max=1000)], 'converters': [p.toolkit.get_converter('convert_to_extras')]},
-                     {'id':'size', 'validators': [v.String(max=50)], 'converters': [p.toolkit.get_converter('convert_to_extras')]},
-                     {'id':'homepage_url', 'validators': [v.URL(max=350)], 'converters': [p.toolkit.get_converter('convert_to_extras')]},
-                     {'id':'rss_feed', 'validators': [v.URL(max=350)], 'converters': [p.toolkit.get_converter('convert_to_extras')]},
-                     {'id':'system_of_records', 'validators': [v.URL(max=350)], 'converters': [p.toolkit.get_converter('convert_to_extras')]},
-                     {'id':'system_of_records_none_related_to_this_dataset', 'validators': [v.URL(max=350)], 'converters': [p.toolkit.get_converter('convert_to_extras')]})
+expanded_metadata = ({'id': 'release_date', 'validators': [v.String(max=500)]},
+                      {'id':'accrual_periodicity', 'validators': [v.Regex(r'^([Dd]aily)|([Hh]ourly)|([Ww]eekly)|([yY]early)|([oO]ther)$')]},
+                      {'id':'language', 'validators': [v.String(max=500)]},
+                      {'id':'granularity', 'validators': [v.String(max=500)]},
+                      {'id':'data_quality', 'validators': [v.String(max=1000)]},
+                      {'id':'category', 'validators': [v.String(max=1000)]},
+                      {'id':'related_documents', 'validators': [v.String(max=1000)]},
+                      {'id':'size', 'validators': [v.String(max=50)]},
+                     {'id':'homepage_url', 'validators': [v.URL(max=350)]},
+                     {'id':'rss_feed', 'validators': [v.URL(max=350)]},
+                     {'id':'system_of_records', 'validators': [v.URL(max=350)]},
+                     {'id':'system_of_records_none_related_to_this_dataset', 'validators': [v.URL(max=350)]}
+)
+
+for meta in expanded_metadata:
+    meta['validators'].append(p.toolkit.get_validator('ignore_missing'))
+
+schema_updates = [{meta['id'] : meta['validators']+[p.toolkit.get_converter('convert_to_extras')]} for meta in (required_metadata+required_if_applicable_metadata + expanded_metadata)]
 
 class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
     '''This plugin adds fields for the metadata (known as the Common Core) defined at
@@ -174,10 +187,14 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         #         metadata: [p.toolkit.get_validator('not_empty'), validators.MaxLength(3),
         #                    p.toolkit.get_converter('convert_to_extras')]
         #     })
-        schema_updates = [{meta['id'] : meta['validators']+meta['converters']} for meta in (required_metadata+required_if_applicable_metadata + expanded_metadata)]
+        for update in schema_updates:
+            schema.update(update)
 
-        for meta in (required_metadata+required_if_applicable_metadata + expanded_metadata):
-            schema.update({meta['id'] : meta['validators']+meta['converters']})
+        log.debug("schema_updates: {0}".format(schema_updates))
+
+
+        # for meta in (required_metadata+required_if_applicable_metadata + expanded_metadata):
+        #     schema.update({meta['id'] : meta['validators']+meta['converters']})
 
         return schema
 
@@ -194,9 +211,6 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         log.debug('update_package_schema')
         schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
         schema = self._modify_package_schema(schema)
-
-        #TODO remove this debug statement
-        log.debug("schema: {0}".format(schema.keys()))
 
         return schema
 
