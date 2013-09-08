@@ -19,7 +19,7 @@ import ckan.lib.navl.dictization_functions as df
 class MetadataPluginTest(unittest.TestCase):
     '''These tests should run fine using a standard testrunner with no database or server backend'''
 
-    def testLoadDataIntoDict_moves_required_metadata(self):
+    def testLoadDataIntoDictMovesRequiredMetadata(self):
         '''Verify that load_data_into_dict() moves all entries matching required metadata from value of extras key to
         be (key:value) pairs of the dict.'''
         original = {'aardvark':'foo', 'extras':[{'key':'foo', 'value': 'bar'}, {'key':'publisher','value':'usda'}] }
@@ -27,7 +27,7 @@ class MetadataPluginTest(unittest.TestCase):
         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
         MetadataPluginTest.__check_dicts_match__(expected, actual)
 
-    def testLoadDataIntoDict_moves_single_valued_extras_entry(self):
+    def testLoadDataIntoDictMovesSingleValuedExtrasEntry(self):
         '''Verify that load_data_into_dict() moves all entries matching required metadata from value of extras key to
         be (key:value) pairs of the dict.'''
         original = {'hi':'there', 'extras':[{'key': 'publisher', 'value':'USGS'}]}
@@ -35,7 +35,7 @@ class MetadataPluginTest(unittest.TestCase):
         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
         MetadataPluginTest.__check_dicts_match__(expected, actual)
 
-    def testLoadDataIntoDict_moves_required_if_applicable_metadata(self):
+    def testLoadDataIntoDictMovesRequiredIfApplicableMetadata(self):
         '''Verify that load_data_into_dict() moves all entries matching required metadata from value of extras key to
         be (key:value) pairs of the dict.'''
         original = {'aardvark':'foo', 'extras':[{'key':'spatial','value':'wayoutthere'}, {'key':'foo', 'value': 'bar'}, {'key':'publisher','value':'usda'}] }
@@ -43,14 +43,14 @@ class MetadataPluginTest(unittest.TestCase):
         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
         MetadataPluginTest.__check_dicts_match__(expected, actual)
 
-    def testLoadDataIntoDict_fails_gracefully(self):
+    def testLoadDataIntoDictFailsGracefully(self):
         '''Verify that load_data_into_dict() doesn't generate an error if extras not found'''
         original = {'aardvark':'foo', '__extras':[{'key':'foo', 'value': 'bar'}, {'key':'publisher','value':'usda'}] }
         expected = {'aardvark':'foo', 'common_core':{}, '__extras':[{'key':'foo', 'value': 'bar'}, {'key':'publisher','value':'usda'}] }
         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
         MetadataPluginTest.__check_dicts_match__(expected, actual)
 
-    def testLoadDataIntoDict_large(self):
+    def testLoadDataIntoDictLarge(self):
         original = {'aardvark':'foo', 'extras': [{u'value': u'daily', u'key': u'accrual_periodicity', '__extras': {u'package_id': u'154dc150-bba6-4201-b4ff-1a684121e27e', u'revision_id': u'0fe96ac4-bac5-4ee5-a7e6-224f58897575'}}, {u'value': u'asdfa', u'key': u'category', '__extras': {u'revision_id': u'0fe96ac4-bac5-4ee5-a7e6-224f58897575', u'package_id': u'154dc150-bba6-4201-b4ff-1a684121e27e'}}, {u'value': u'contactmyemailaddr', u'key': u'contact_email', '__extras': {u'package_id': u'154dc150-bba6-4201-b4ff-1a684121e27e', u'revision_id': u'43774ce1-7b28-45d3-95cb-b98bc3860f6f'}} ]}
         expected = {'aardvark':'foo', 'common_core':{u'accrual_periodicity':u'value', u'category':'asdfa', u'contact_email':'contactmyemailaddr'}, 'extras':[]}
         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
@@ -58,7 +58,7 @@ class MetadataPluginTest(unittest.TestCase):
 
     ###### Field: public_access_level #####
 
-    def testFieldValidation_public_access_level_public(self):
+    def testFieldValidationPublicAccessLevelPublic(self):
 
         data = {'public_access_level':'public'
         }
@@ -71,7 +71,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {})
 
-    def testFieldValidation_public_access_level_restricted(self):
+    def testFieldValidationPublicAccessLevelRestricted(self):
 
         data = {'public_access_level':'restricted'
         }
@@ -84,7 +84,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {})
 
-    def testFieldValidation_public_access_level_bad_value(self):
+    def testFieldValidationPublicAccessLevelBadValue(self):
 
         data = {'public_access_level':'BadValue'
         }
@@ -93,7 +93,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {'public_access_level':[u'The input is not valid']})
 
-    def testFieldValidation_public_access_level_rejects_empty(self):
+    def testFieldValidationPublicAccessLevelRejectsEmpty(self):
 
         data = {'public_access_level':''
         }
@@ -102,7 +102,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {'public_access_level':[u'Missing value']})
 
-    def testFieldValidation_public_access_level_rejects_missing(self):
+    def testFieldValidationPublicAccessLevelRejectsMissing(self):
 
         data = {}
         schema = self.__getSchemaFromMetadataDict__('public_access_level')
@@ -112,7 +112,7 @@ class MetadataPluginTest(unittest.TestCase):
 
     ###### Field: publisher #####
 
-    def testFieldValidation_publisher_basic(self):
+    def testFieldValidationPublisherBasic(self):
 
         data = {'publisher':'an agency'
         }
@@ -121,7 +121,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {})
 
-    def testFieldValidation_publisher_name_too_long(self):
+    def testFieldValidationPublisherNameTooLong(self):
 
         data = {'publisher':'a'*101
         }
@@ -130,7 +130,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {'publisher':[u'Enter a value not more than 100 characters long']})
 
-    def testFieldValidation_publisher_rejects_missing(self):
+    def testFieldValidationPublisherRejectsMissing(self):
 
         data = {}
         schema = self.__getSchemaFromMetadataDict__('publisher')
@@ -138,7 +138,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {'publisher':[u'Missing value']})
 
-    def testFieldValidation_publisher_rejects_empty(self):
+    def testFieldValidationPublisherRejectsEmpty(self):
 
         data = {'publisher':''}
         schema = self.__getSchemaFromMetadataDict__('publisher')
@@ -148,7 +148,7 @@ class MetadataPluginTest(unittest.TestCase):
 
     ###### Field: contact_name #####
 
-    def testFieldValidation_contact_basic(self):
+    def testFieldValidationContactBasic(self):
 
         data = {'contact_name':'jim'
         }
@@ -157,7 +157,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {})
 
-    def testFieldValidation_contact_name_too_long(self):
+    def testFieldValidationContactNameTooLong(self):
 
         data = {'contact_name':'a'*101
         }
@@ -166,7 +166,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {'contact_name':[u'Enter a value not more than 100 characters long']})
 
-    def testFieldValidation_contact_rejects_missing(self):
+    def testFieldValidationContactRejectsMissing(self):
 
         data = {}
         schema = self.__getSchemaFromMetadataDict__('contact_name')
@@ -174,7 +174,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {'contact_name':[u'Missing value']})
 
-    def testFieldValidation_contact_rejects_empty(self):
+    def testFieldValidationContactRejectsEmpty(self):
 
         data = {'contact_name':''}
         schema = self.__getSchemaFromMetadataDict__('contact_name')
@@ -184,7 +184,7 @@ class MetadataPluginTest(unittest.TestCase):
 
     ###### Field: contact_email #####
 
-    def testFieldValidation_contact_email_basic(self):
+    def testFieldValidationContactEmailBasic(self):
 
         data = {'contact_email':'a@foo.me'
         }
@@ -193,7 +193,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {})
 
-    def testFieldValidation_contact_email_too_long(self):
+    def testFieldValidationContactEmailTooLong(self):
 
         data = {'contact_email':'a'*50+'@foo.com'
         }
@@ -202,7 +202,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {'contact_email':[u'Enter a value not more than 50 characters long']})
 
-    def testFieldValidation_contact_email_rejects_missing(self):
+    def testFieldValidationContactEmailRejectsMissing(self):
 
         data = {}
         schema = self.__getSchemaFromMetadataDict__('contact_email')
@@ -210,7 +210,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {'contact_email':[u'Missing value']})
 
-    def testFieldValidation_contact_email_rejects_empty(self):
+    def testFieldValidationContactEmailRejectsEmpty(self):
 
         data = {'contact_email':''}
         schema = self.__getSchemaFromMetadataDict__('contact_email')
@@ -221,7 +221,7 @@ class MetadataPluginTest(unittest.TestCase):
     ###### Field: unique_id #####
     #TODO need test unique_id entered is verified to be unique for an organization
 
-    def testFieldValidation_uid_basic(self):
+    def testFieldValidationUIDBasic(self):
 
         data = {'unique_id':'jim'
         }
@@ -230,7 +230,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {})
 
-    def testFieldValidation_uid_too_long(self):
+    def testFieldValidationUIDTooLong(self):
 
         data = {'unique_id':'a'*101
         }
@@ -239,7 +239,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {'unique_id':[u'Enter a value not more than 100 characters long']})
 
-    def testFieldValidation_uid_rejects_missing(self):
+    def testFieldValidationUIDRejectsMissing(self):
 
         data = {}
         schema = self.__getSchemaFromMetadataDict__('unique_id')
@@ -247,7 +247,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {'unique_id':[u'Missing value']})
 
-    def testFieldValidation_uid_rejects_empty(self):
+    def testFieldValidationUIDRejectsEmpty(self):
 
         data = {'unique_id':''}
         schema = self.__getSchemaFromMetadataDict__('unique_id')
@@ -257,7 +257,7 @@ class MetadataPluginTest(unittest.TestCase):
 
     ###### Field: data_dictionary #####
 
-    def testFieldValidation_data_dictionary_basic(self):
+    def testFieldValidationDataDictionaryBasic(self):
 
         data = {'data_dictionary':'http://www.foo.com/my_data'
         }
@@ -266,7 +266,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {})
 
-    def testFieldValidation_data_dictionary_bad_url(self):
+    def testFieldValidationDataDictionaryBadURL(self):
 
         data = {'data_dictionary':'wow this isnt a valid url'
         }
@@ -275,7 +275,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {'data_dictionary':[u'That is not a valid URL']})
 
-    def testFieldValidation_data_dictionary_too_long(self):
+    def testFieldValidationDataDictionaryTooLong(self):
 
         data = {'data_dictionary': 'http://www.foo.com/'+('a'*350)
         }
@@ -284,7 +284,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {'data_dictionary':[u'Enter a value not more than 350 characters long']})
 
-    def testFieldValidation_data_dictionary_ignores_missing(self):
+    def testFieldValidationDataDictionaryIgnoresMissing(self):
 
         data = {}
         schema = self.__getSchemaFromMetadataDict__('data_dictionary')
@@ -292,7 +292,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {})
 
-    def testFieldValidation_data_dictionary_ignores_empty(self):
+    def testFieldValidationDataDictionaryIgnoresEmpty(self):
 
         data = {'data_dictionary':''}
         schema = self.__getSchemaFromMetadataDict__('data_dictionary')
@@ -302,7 +302,7 @@ class MetadataPluginTest(unittest.TestCase):
 
     ###### Field: endpoint #####
 
-    def testFieldValidation_endpoint_basic(self):
+    def testFieldValidationEndpointBasic(self):
 
         data = {'endpoint':'http://www.foo.com/my_data'
         }
@@ -311,7 +311,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {})
 
-    def testFieldValidation_endpoint_bad_url1(self):
+    def testFieldValidationEndpointBadURL1(self):
 
         data = {'endpoint':'wow this isnt a valid url'
         }
@@ -320,7 +320,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {'endpoint':[u'That is not a valid URL']})
 
-    def testFieldValidation_endpoint_bad_url2(self):
+    def testFieldValidationEndpointBadURL2(self):
 
         data = {'endpoint':'wowthisisntavalidurl'
         }
@@ -329,7 +329,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {'endpoint':[u'You must provide a full domain name (like wowthisisntavalidurl.com)']})
 
-    def testFieldValidation_endpoint_too_long(self):
+    def testFieldValidationEndpointTooLong(self):
 
         data = {'endpoint': 'http://www.foo.com/'+('a'*350)
         }
@@ -338,7 +338,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {'endpoint':[u'Enter a value not more than 350 characters long']})
 
-    def testFieldValidation_endpoint_ignores_missing(self):
+    def testFieldValidationEndpointIgnoresMissing(self):
 
         data = {}
         schema = self.__getSchemaFromMetadataDict__('endpoint')
@@ -346,7 +346,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {})
 
-    def testFieldValidation_endpoint_ignores_empty(self):
+    def testFieldValidationEndpointIgnoresEmpty(self):
 
         data = {'endpoint':''}
         schema = self.__getSchemaFromMetadataDict__('endpoint')
@@ -356,7 +356,7 @@ class MetadataPluginTest(unittest.TestCase):
 
     ###### Field: spatial #####
 
-    def testFieldValidation_spatial_too_long(self):
+    def testFieldValidationSpatialTooLong(self):
 
         data = {'spatial': 'a'*501
         }
@@ -365,7 +365,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {'spatial':[u'Enter a value not more than 500 characters long']})
 
-    def testFieldValidation_spatial_ignores_missing(self):
+    def testFieldValidationSpatialIgnoresMissing(self):
 
         data = {}
         schema = self.__getSchemaFromMetadataDict__('spatial')
@@ -373,7 +373,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {})
 
-    def testFieldValidation_spatial_ignores_empty(self):
+    def testFieldValidationSpatialIgnoresEmpty(self):
 
         data = {'spatial':''}
         schema = self.__getSchemaFromMetadataDict__('spatial')
@@ -383,7 +383,7 @@ class MetadataPluginTest(unittest.TestCase):
 
     ###### Field: temporal #####
 
-    def testFieldValidation_temporal_too_long(self):
+    def testFieldValidationTemporalTooLong(self):
 
         data = {'temporal': 'a'*301
         }
@@ -392,7 +392,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {'temporal':[u'Enter a value not more than 300 characters long']})
 
-    def testFieldValidation_temporal_ignores_missing(self):
+    def testFieldValidationTemporalIgnoresMissing(self):
 
         data = {}
         schema = self.__getSchemaFromMetadataDict__('temporal')
@@ -400,7 +400,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {})
 
-    def testFieldValidation_temporal_ignores_empty(self):
+    def testFieldValidationTemporalIgnoresEmpty(self):
 
         data = {'temporal':''}
         schema = self.__getSchemaFromMetadataDict__('temporal')
