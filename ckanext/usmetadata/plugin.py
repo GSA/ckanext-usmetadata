@@ -8,9 +8,9 @@ log = getLogger(__name__)
 
 #excluded title, description, tags and last update as they're part of the default ckan dataset metadata
 required_metadata = ({'id':'public_access_level', 'validators': [v.Regex(r'^([Pp]ublic)|([Rr]estricted)$')]},
-                     {'id':'publisher', 'validators': [v.String(min=1, max=100)]},
-                     {'id':'contact_name', 'validators': [v.String(min=1, max=100)]},
-                     {'id':'contact_email', 'validators': [v.Email(min=3, max=50)]},
+                     {'id':'publisher', 'validators': [v.String(max=100)]},
+                     {'id':'contact_name', 'validators': [v.String(max=100)]},
+                     {'id':'contact_email', 'validators': [v.Email(),v.String(max=50)]},
 
                      #TODO should this unique_id be validated against any other unique IDs for this agency?
                      {'id':'unique_id', 'validators': [v.String(max=100)]}
@@ -22,13 +22,13 @@ for meta in required_metadata:
 
 #excluded download_url, endpoint, format and license as they may be discoverable
 required_if_applicable_metadata = (
-     {'id':'data_dictionary', 'validators': [v.URL(max=350)]},
-     {'id':'endpoint', 'validators': [v.URL(max=350)]},
+     {'id':'data_dictionary', 'validators': [v.URL(),v.String(max=350)]},
+     {'id':'endpoint', 'validators': [v.URL(),v.String(max=350)]},
      {'id':'spatial', 'validators': [v.String(max=500)]},
      {'id':'temporal', 'validators': [v.String(max=300)]})
 
 for meta in required_if_applicable_metadata:
-    meta['validators'].append(p.toolkit.get_validator('ignore_missing'))
+    meta['validators'].append(p.toolkit.get_validator('ignore_empty'))
 
 #some of these could be excluded (e.g. related_documents) which can be captured from other ckan default data
 expanded_metadata = ({'id': 'release_date', 'validators': [v.String(max=500)]},
@@ -46,7 +46,7 @@ expanded_metadata = ({'id': 'release_date', 'validators': [v.String(max=500)]},
 )
 
 for meta in expanded_metadata:
-    meta['validators'].append(p.toolkit.get_validator('ignore_missing'))
+    meta['validators'].append(p.toolkit.get_validator('ignore_empty'))
 
 schema_updates = [{meta['id'] : meta['validators']+[p.toolkit.get_converter('convert_to_extras')]} for meta in (required_metadata+required_if_applicable_metadata + expanded_metadata)]
 
