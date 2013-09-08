@@ -39,10 +39,10 @@ expanded_metadata = ({'id': 'release_date', 'validators': [v.String(max=500)]},
                       {'id':'category', 'validators': [v.String(max=1000)]},
                       {'id':'related_documents', 'validators': [v.String(max=1000)]},
                       {'id':'size', 'validators': [v.String(max=50)]},
-                     {'id':'homepage_url', 'validators': [v.URL(max=350)]},
-                     {'id':'rss_feed', 'validators': [v.URL(max=350)]},
-                     {'id':'system_of_records', 'validators': [v.URL(max=350)]},
-                     {'id':'system_of_records_none_related_to_this_dataset', 'validators': [v.URL(max=350)]}
+                     {'id':'homepage_url', 'validators': [v.URL(), v.String(max=350)]},
+                     {'id':'rss_feed', 'validators': [v.URL(), v.String(max=350)]},
+                     {'id':'system_of_records', 'validators': [v.URL(), v.String(max=350)]},
+                     {'id':'system_of_records_none_related_to_this_dataset', 'validators': [v.URL(), v.String(max=350)]}
 )
 
 for meta in expanded_metadata:

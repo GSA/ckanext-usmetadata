@@ -435,34 +435,7 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {})
 
-        ###### Field: temporal #####
-
-    def testFieldValidation_temporal_too_long(self):
-
-        data = {'temporal': 'a'*301
-        }
-        schema = self.__getSchemaFromMetadataDict__('temporal')
-
-        converted_data, errors = df.validate(data, schema)
-        self.assertEqual(errors, {'temporal':[u'Enter a value not more than 300 characters long']})
-
-    def testFieldValidation_temporal_ignores_missing(self):
-
-        data = {}
-        schema = self.__getSchemaFromMetadataDict__('temporal')
-
-        converted_data, errors = df.validate(data, schema)
-        self.assertEqual(errors, {})
-
-    def testFieldValidation_temporal_ignores_empty(self):
-
-        data = {'temporal':''}
-        schema = self.__getSchemaFromMetadataDict__('temporal')
-
-        converted_data, errors = df.validate(data, schema)
-        self.assertEqual(errors, {})
-
-        ###### Field: accrual_periodicity #####
+    ###### Field: accrual_periodicity #####
 
     def testFieldValidationAccrualPeriodicityAcceptedValues(self):
 
@@ -513,6 +486,35 @@ class MetadataPluginTest(unittest.TestCase):
 
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {})
+
+    ###### Field: language #####
+
+    def testFieldValidationLanguageTooLong(self):
+
+        data = {'language': 'a'*501
+        }
+        schema = self.__getSchemaFromMetadataDict__('language')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {'language':[u'Enter a value not more than 500 characters long']})
+
+    def testFieldValidationLanguageIgnoresMissing(self):
+
+        data = {}
+        schema = self.__getSchemaFromMetadataDict__('language')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
+    def testFieldValidationLanguageIgnoresEmpty(self):
+
+        data = {'language':''}
+        schema = self.__getSchemaFromMetadataDict__('language')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
+
 
     ###### Utility methods #####
     @classmethod
