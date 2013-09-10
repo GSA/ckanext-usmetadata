@@ -3,6 +3,9 @@ import ckanext.usmetadata.plugin as plugin
 import ckan.lib.navl.dictization_functions as df
 
 
+import logging
+
+log = logging.getLogger(__name__)
 
 # This is a stub block to allow me to run unit tests from my IDE without using 'nosetests --with-pylons=/path/to/file
 # from pylons import config
@@ -55,6 +58,15 @@ class MetadataPluginTest(unittest.TestCase):
         expected = {'aardvark':'foo', 'common_core':{u'accrual_periodicity':u'value', u'category':'asdfa', u'contact_email':'contactmyemailaddr'}, 'extras':[]}
         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
         MetadataPluginTest.__check_dicts_match__(expected, actual)
+
+    def testLoadDataIntoDictNoExtra(self):
+        original = { 'foo':'bar','publisher':'somename'}
+        expected = {'foo':'bar', 'common_core':{'publisher':'somename'}}
+        actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
+
+        log.debug('actual: {0}'.format(actual))
+        MetadataPluginTest.__check_dicts_match__(expected, actual)
+
 
     ###### Field: public_access_level #####
 
@@ -513,8 +525,6 @@ class MetadataPluginTest(unittest.TestCase):
 
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {})
-
-
 
     ###### Utility methods #####
     @classmethod

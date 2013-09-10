@@ -72,11 +72,11 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         {'hi':'there', 'common_core':{'publisher':'USGS'}, 'extras':[]}
 
         '''
-
+        log.debug('load_data_into_dict called')
         common_metadata = (x['id'] for x in required_metadata+required_if_applicable_metadata+expanded_metadata)
 
         try:
-            dict['common_core']#TODO remove this debug statement
+            dict['common_core']
         except KeyError:
             dict['common_core'] = {}
 
@@ -91,8 +91,24 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
                     reduced_extras.append(extra)
 
             dict['extras'] = reduced_extras
-        except KeyError as ex:#TODO remove this debug statement
-            log.warn('''Assumption violation: expected key ['%s'] not found, returning original dict''', ex.message)
+        except KeyError as ex:
+            log.debug('''Assumption violation: expected key ['%s'] not found''', ex.message)
+            #this can happen when a form fails validation, as all the data will now be as key,value pairs, not under extras,
+            #so we'll move them to the expected point again to fill in the values
+            # e.g.
+            # { 'foo':'bar','publisher':'somename'} becomes {'foo':'bar', 'common_core':{'publisher':'somename'}}
+
+            keys_to_remove = []
+
+            for key,value in dict.iteritems():
+
+                if key in common_metadata:
+                    log.debug('adding key: {0}'.format(key))
+                    dict['common_core'][key]=value
+                    keys_to_remove.append(key)
+
+            for key in keys_to_remove:
+                del dict[key]
 
         return dict
 
@@ -181,20 +197,9 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     #See ckan.plugins.interfaces.IDatasetForm
     def _modify_package_schema(self, schema):
         log.debug("_modify_package_schema called")
-        #TODO change ignore_missing to something requiring the fields to be populated
-        # for metadata in required_metadata:
-        #     schema.update({
-        #         metadata: [p.toolkit.get_validator('not_empty'), validators.MaxLength(3),
-        #                    p.toolkit.get_converter('convert_to_extras')]
-        #     })
+
         for update in schema_updates:
             schema.update(update)
-
-        log.debug("schema_updates: {0}".format(schema_updates))
-
-
-        # for meta in (required_metadata+required_if_applicable_metadata + expanded_metadata):
-        #     schema.update({meta['id'] : meta['validators']+meta['converters']})
 
         return schema
 
@@ -218,16 +223,14 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     def show_package_schema(self):
         log.debug('show_package_schema')
         schema = super(CommonCoreMetadataFormPlugin, self).show_package_schema()
-
+        schema = self._modify_package_schema(schema)
         #TODO remove this debug statement
         log.debug("schema: {0}".format(schema.keys()))
 
         # Don't show vocab tags mixed in with normal 'free' tags
         # (e.g. on dataset pages, or on the search page)
-        #schema['tags']['__extras'].append(p.toolkit.get_converter('free_tags_only'))
+        schema['tags']['__extras'].append(p.toolkit.get_converter('free_tags_only'))
 
-        #TODO does the schema NEED to be modified every time it is shown?
-        #schema = self._modify_package_schema(schema)
         return schema
 
     #Method below allows functions and other methods to be called from the Jinja template using the h variable

@@ -17,6 +17,11 @@
  {{ super() }}
      {% set data = h.load_data_into_dict(data) %}
 
+    {# TODO remove #}
+    <h1>Data:</h1>
+        {{data}}
+    {# end remove #}
+
     <h1>Required Common Core Metadata</h1>
     {% snippet 'package/snippets/required_common_core_fields.html', data=data, errors=errors%}
 
