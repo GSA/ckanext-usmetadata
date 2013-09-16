@@ -1,6 +1,7 @@
 from logging import getLogger
 import ckan.plugins as p
 import formencode.validators as v
+import copy
 #from ckan.plugins import implements, SingletonPlugin, toolkit, IConfigurer, ITemplateHelpers, IDatasetForm, IPackageController
 from formencode.validators import validators
 
@@ -16,9 +17,21 @@ required_metadata = ({'id':'public_access_level', 'validators': [v.Regex(r'^([Pp
                      {'id':'unique_id', 'validators': [v.String(max=100)]}
 )
 
+
 #all required_metadata should be required
-for meta in required_metadata:
-    meta['validators'].append(p.toolkit.get_validator('not_empty'))
+def get_req_metadata_for_create():
+    new_req_meta = copy.copy(required_metadata)
+    validator = p.toolkit.get_validator('not_empty')
+    for meta in new_req_meta:
+        meta['validators'].append(validator)
+    return new_req_meta
+
+def get_req_metadata_for_show_update():
+    new_req_meta = copy.copy(required_metadata)
+    validator = p.toolkit.get_validator('ignore_empty')
+    for meta in new_req_meta:
+        meta['validators'].append(validator)
+    return new_req_meta
 
 #excluded download_url, endpoint, format and license as they may be discoverable
 required_if_applicable_metadata = (
@@ -48,7 +61,10 @@ expanded_metadata = ({'id': 'release_date', 'validators': [v.String(max=500)]},
 for meta in expanded_metadata:
     meta['validators'].append(p.toolkit.get_validator('ignore_empty'))
 
-schema_updates = [{meta['id'] : meta['validators']+[p.toolkit.get_converter('convert_to_extras')]} for meta in (required_metadata+required_if_applicable_metadata + expanded_metadata)]
+
+
+schema_updates_for_create = [{meta['id'] : meta['validators']+[p.toolkit.get_converter('convert_to_extras')]} for meta in (get_req_metadata_for_create()+required_if_applicable_metadata + expanded_metadata)]
+schema_updates_for_update_show = [{meta['id'] : meta['validators']+[p.toolkit.get_converter('convert_to_extras')]} for meta in (get_req_metadata_for_show_update()+required_if_applicable_metadata + expanded_metadata)]
 
 class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
     '''This plugin adds fields for the metadata (known as the Common Core) defined at
@@ -202,7 +218,15 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     def _modify_package_schema(self, schema):
         log.debug("_modify_package_schema called")
 
-        for update in schema_updates:
+        for update in schema_updates_for_create:
+            schema.update(update)
+
+        return schema
+
+    def _modify_package_schema_update_show(self, schema):
+        log.debug("_modify_package_schema_update_show called")
+
+        for update in schema_updates_for_update_show:
             schema.update(update)
 
         return schema
@@ -212,14 +236,14 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         log.debug('create_package_schema')
         schema = super(CommonCoreMetadataFormPlugin, self).create_package_schema()
         schema = self._modify_package_schema(schema)
-    #TODO is this method ever called????
         return schema
 
     #See ckan.plugins.interfaces.IDatasetForm
     def update_package_schema(self):
         log.debug('update_package_schema')
         schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
-        schema = self._modify_package_schema(schema)
+#TODO uncomment, should be using schema for updates, but it's causing problems during resource creation
+#        schema = self._modify_package_schema_update_show(schema)
 
         return schema
 
@@ -227,9 +251,6 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     def show_package_schema(self):
         log.debug('show_package_schema')
         schema = super(CommonCoreMetadataFormPlugin, self).show_package_schema()
-        schema = self._modify_package_schema(schema)
-        #TODO remove this debug statement
-        log.debug("schema: {0}".format(schema.keys()))
 
         # Don't show vocab tags mixed in with normal 'free' tags
         # (e.g. on dataset pages, or on the search page)

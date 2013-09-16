@@ -63,7 +63,7 @@ class MetadataPluginTest(unittest.TestCase):
         """Verify that when no '__extras' key exist, load_data_into_dict() will move any common core metadata in key value pairs into a dict under
         the key 'common_core'"""
         original = { 'foo':'bar','publisher':'somename', 'foo2':'bar2', 'data_dictionary':'something', 'system_of_records':'somesystem'}
-        expected = {'foo':'bar', 'common_core':{'publisher':'somename', 'data_dictionary':'something', 'system_of_records':'somesystem'}}
+        expected = {'foo':'bar', 'common_core':{'data_dictionary':'something', 'publisher':'somename', 'system_of_records':'somesystem'}, 'foo2':'bar2'}
         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
 
         log.debug('actual: {0}'.format(actual))
