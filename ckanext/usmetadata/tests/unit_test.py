@@ -20,34 +20,34 @@ log = logging.getLogger(__name__)
 # set_lang('es', pylons_config=conf)
 
 class MetadataPluginTest(unittest.TestCase):
-    '''These tests should run fine using a standard testrunner with no database or server backend'''
+    """These tests should run fine using a standard testrunner with no database or server backend"""
 
     def testLoadDataIntoDictMovesRequiredMetadata(self):
-        '''Verify that load_data_into_dict() moves all entries matching required metadata from value of extras key to
-        be (key:value) pairs of the dict.'''
+        """Verify that load_data_into_dict() moves all entries matching required metadata from value of extras key to
+        be (key:value) pairs of the dict."""
         original = {'aardvark':'foo', 'extras':[{'key':'foo', 'value': 'bar'}, {'key':'publisher','value':'usda'}] }
         expected = {'aardvark':'foo', 'common_core': {'publisher':'usda'}, 'extras':[{'key':'foo', 'value': 'bar'}]}
         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
         MetadataPluginTest.__check_dicts_match__(expected, actual)
 
     def testLoadDataIntoDictMovesSingleValuedExtrasEntry(self):
-        '''Verify that load_data_into_dict() moves all entries matching required metadata from value of extras key to
-        be (key:value) pairs of the dict.'''
+        """Verify that load_data_into_dict() moves all entries matching required metadata from value of extras key to
+        be (key:value) pairs of the dict."""
         original = {'hi':'there', 'extras':[{'key': 'publisher', 'value':'USGS'}]}
         expected = {'hi':'there', 'common_core': {'publisher':'USGS'}, 'extras':[]}
         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
         MetadataPluginTest.__check_dicts_match__(expected, actual)
 
     def testLoadDataIntoDictMovesRequiredIfApplicableMetadata(self):
-        '''Verify that load_data_into_dict() moves all entries matching required metadata from value of extras key to
-        be (key:value) pairs of the dict.'''
+        """Verify that load_data_into_dict() moves all entries matching required metadata from value of extras key to
+        be (key:value) pairs of the dict."""
         original = {'aardvark':'foo', 'extras':[{'key':'spatial','value':'wayoutthere'}, {'key':'foo', 'value': 'bar'}, {'key':'publisher','value':'usda'}] }
         expected = {'aardvark':'foo', 'common_core': {'publisher':'usda', 'spatial':'wayoutthere'}, 'extras':[{'key':'foo', 'value': 'bar'}]}
         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
         MetadataPluginTest.__check_dicts_match__(expected, actual)
 
     def testLoadDataIntoDictFailsGracefully(self):
-        '''Verify that load_data_into_dict() doesn't generate an error if extras not found'''
+        """Verify that load_data_into_dict() doesn't generate an error if extras not found"""
         original = {'aardvark':'foo', '__extras':[{'key':'foo', 'value': 'bar'}, {'key':'publisher','value':'usda'}] }
         expected = {'aardvark':'foo', 'common_core':{}, '__extras':[{'key':'foo', 'value': 'bar'}, {'key':'publisher','value':'usda'}] }
         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
@@ -60,8 +60,10 @@ class MetadataPluginTest(unittest.TestCase):
         MetadataPluginTest.__check_dicts_match__(expected, actual)
 
     def testLoadDataIntoDictNoExtra(self):
-        original = { 'foo':'bar','publisher':'somename'}
-        expected = {'foo':'bar', 'common_core':{'publisher':'somename'}}
+        """Verify that when no '__extras' key exist, load_data_into_dict() will move any common core metadata in key value pairs into a dict under
+        the key 'common_core'"""
+        original = { 'foo':'bar','publisher':'somename', 'foo2':'bar2', 'data_dictionary':'something', 'system_of_records':'somesystem'}
+        expected = {'foo':'bar', 'common_core':{'publisher':'somename', 'data_dictionary':'something', 'system_of_records':'somesystem'}}
         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
 
         log.debug('actual: {0}'.format(actual))
@@ -537,6 +539,6 @@ class MetadataPluginTest(unittest.TestCase):
 
     @classmethod
     def __check_dicts_match__(cls, dict1, dict2):
-        '''helper function to compare two dicts to ensure that they match'''
+        """helper function to compare two dicts to ensure that they match"""
         assert set(dict1) - set(dict2) == set([])
         assert set(dict2) - set(dict1) == set([])

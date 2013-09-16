@@ -73,7 +73,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
         '''
         log.debug('load_data_into_dict called')
-        common_metadata = (x['id'] for x in required_metadata+required_if_applicable_metadata+expanded_metadata)
+        common_metadata = [x['id'] for x in required_metadata+required_if_applicable_metadata+expanded_metadata]
 
         try:
             dict['common_core']
@@ -92,7 +92,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
             dict['extras'] = reduced_extras
         except KeyError as ex:
-            log.debug('''Assumption violation: expected key ['%s'] not found''', ex.message)
+            log.debug('''Expected key ['%s'] not found, attempting to move common core keys to subdictionary''', ex.message)
             #this can happen when a form fails validation, as all the data will now be as key,value pairs, not under extras,
             #so we'll move them to the expected point again to fill in the values
             # e.g.
@@ -100,9 +100,13 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
             keys_to_remove = []
 
+            #TODO remove debug
+            log.debug('common core metadata: {0}'.format(common_metadata))
             for key,value in dict.iteritems():
-
+                #TODO remove debug
+                log.debug('checking key: {0}'.format(key))
                 if key in common_metadata:
+                    #TODO remove debug
                     log.debug('adding key: {0}'.format(key))
                     dict['common_core'][key]=value
                     keys_to_remove.append(key)
