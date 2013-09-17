@@ -16,15 +16,18 @@
 {% block package_metadata_fields_visibility %}
  {{ super() }}
      {% set data = h.load_data_into_dict(data) %}
+     {% set active = data.state == 'active' %}
 
-    <h1>Required Common Core Metadata</h1>
-    {% snippet 'package/snippets/required_common_core_fields.html', data=data, errors=errors%}
+    {% if not active %}
+        <h1>Required Common Core Metadata</h1>
+        {% snippet 'package/snippets/required_common_core_fields.html', data=data, errors=errors%}
 
-    <h1>Required-If-Applicable Common Core Metadata</h1>
-    {% snippet 'package/snippets/required_if_applicable_common_core_fields.html', data=data, errors=errors%}
+        <h1>Required-If-Applicable Common Core Metadata</h1>
+        {% snippet 'package/snippets/required_if_applicable_common_core_fields.html', data=data, errors=errors%}
 
-    <h1>Expanded Common Core Metadata</h1>
-    {% snippet 'package/snippets/expanded_common_core_fields.html', data=data, errors=errors%}
+        <h1>Expanded Common Core Metadata</h1>
+        {% snippet 'package/snippets/expanded_common_core_fields.html', data=data, errors=errors%}
+    {% endif %}
 
 {% endblock package_metadata_fields_visibility %}
 

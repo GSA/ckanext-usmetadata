@@ -76,7 +76,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     p.implements(p.IDatasetForm)
 
     @classmethod
-    def load_data_into_dict(cls, dict):
+    def load_data_into_dict(cls, data_dict):
         '''
         a jinja2 template helper function.
         'extras' contains a list of dicts corresponding to the extras used to store arbitrary key value pairs in CKAN.
@@ -88,25 +88,26 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         {'hi':'there', 'common_core':{'publisher':'USGS'}, 'extras':[]}
 
         '''
-        log.debug('load_data_into_dict called')
+
+        new_dict = data_dict.copy()
         common_metadata = [x['id'] for x in required_metadata+required_if_applicable_metadata+expanded_metadata]
 
         try:
-            dict['common_core']
+            new_dict['common_core']
         except KeyError:
-            dict['common_core'] = {}
+            new_dict['common_core'] = {}
 
         reduced_extras = []
 
         try:
-            for extra in dict['extras']:
+            for extra in new_dict['extras']:
 
                 if extra['key'] in common_metadata:
-                    dict['common_core'][extra['key']]=extra['value']
+                    new_dict['common_core'][extra['key']]=extra['value']
                 else:
                     reduced_extras.append(extra)
 
-            dict['extras'] = reduced_extras
+            new_dict['extras'] = reduced_extras
         except KeyError as ex:
             log.debug('''Expected key ['%s'] not found, attempting to move common core keys to subdictionary''', ex.message)
             #this can happen when a form fails validation, as all the data will now be as key,value pairs, not under extras,
@@ -118,19 +119,19 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
             #TODO remove debug
             log.debug('common core metadata: {0}'.format(common_metadata))
-            for key,value in dict.iteritems():
+            for key,value in new_dict.iteritems():
                 #TODO remove debug
                 log.debug('checking key: {0}'.format(key))
                 if key in common_metadata:
                     #TODO remove debug
                     log.debug('adding key: {0}'.format(key))
-                    dict['common_core'][key]=value
+                    new_dict['common_core'][key]=value
                     keys_to_remove.append(key)
 
             for key in keys_to_remove:
-                del dict[key]
+                del new_dict[key]
 
-        return dict
+        return new_dict
 
     @classmethod
     def __create_vocabulary(cls, name, *values):
