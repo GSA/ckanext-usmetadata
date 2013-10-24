@@ -37,7 +37,7 @@
 
 {{ form.input('homepage_url', label=_('Homepage URL'), id='field-homepage_url', placeholder=_('http://www.agency.gov/vegetables'), value=data.common_core.homepage_url, error=errors.homepage_url, classes=['control-medium'], attrs={'title': 'Alternative landing page used to redirect user to a contextual, Agency-hosted homepage for the Dataset or API when selecting this resource from the Data.gov user interface.his field is not intended for an agency homepage (e.g. www.agency.gov), but rather if a dataset has a human-friendly hub or landing page that users should be directed to for all resources tied to the dataset. This allows agencies to better specify what a visitor receives after selecting one of the agency datasets on Data.gov or in third-party mashups.'} )}}
 
-{{ form.input('language', label=_('Language'), id='field-language', placeholder=_('English'), value=data.common_core.language, error=errors.language, classes=['control-medium'], attrs={'title': 'The language of the dataset.'} )}}
+{{ form.input('language', label=_('Language'), id='field-language', placeholder=_('us-EN'), value=data.common_core.language, error=errors.language, classes=['control-medium'], attrs={'title': 'The language of the dataset.'} )}}
 
 {{ form.input('primary_it_investment_uii', label=_('Primary IT Investment UII'), id='field-primary-it-investment-uii', placeholder=_('123456'), value=data.common_core.primary_it_investment_uii, error=errors.primary_it_investment_uii, classes=['control-medium'], attrs={'title': 'For linking a dataset with an IT Unique Investment Identifier (UII)'} )}}
 

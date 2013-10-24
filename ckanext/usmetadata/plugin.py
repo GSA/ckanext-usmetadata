@@ -45,7 +45,9 @@ required_if_applicable_metadata = (
      {'id':'data_dictionary', 'validators': [v.URL(),v.String(max=350)]},
      {'id':'endpoint', 'validators': [v.URL(),v.String(max=350)]},
      {'id':'spatial', 'validators': [v.String(max=500)]},
-     {'id':'temporal', 'validators': [v.String(max=300)]},
+     {'id':'temporal', 'validators': [v.Regex(r"^([0-9]{4})(-([0-9]{1,2})(-([0-9]{1,2})"
+    r"((.)([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?"
+    r"(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?$")]},
      {'id':'bureau_code', 'validators': [v.Regex(r'^\d{3}:\d{2}$')]},
      {'id':'program_code', 'validators': [v.Regex(r'^\d{3}:\d{3}$')]},
      {'id':'access_level_comment', 'validators': [v.String(max=255)]},
@@ -57,7 +59,7 @@ for meta in required_if_applicable_metadata:
 #some of these could be excluded (e.g. related_documents) which can be captured from other ckan default data
 expanded_metadata = ({'id': 'release_date', 'validators': [v.String(max=500)]},
                       {'id':'accrual_periodicity', 'validators': [v.Regex(r'^([Aa]nnual)|([Bb]imonthly)|([Ss]emiweekly)|([Dd]aily)|([Bb]iweekly)|([Ss]emiannual)|([Bb]iennial)|([Tt]riennial)|(Three times a week)|(Three times a month)|(Continuously updated)|([Mm]onthly)|([Qq]uarterly)|([Ss]emimonthly)|(Three times a year)|(Weekly)|(Completely irregular)$')]},
-                      {'id':'language', 'validators': [v.String(max=255)]},
+                      {'id':'language', 'validators': [v.Regex(r'[A-Za-z]{2}([A-Za-z]{2})?')]},
                       {'id':'data_quality', 'validators': [v.String(max=1000)]},
                       {'id':'category', 'validators': [v.String(max=1000)]},
                       {'id':'related_documents', 'validators': [v.String(max=1000)]},

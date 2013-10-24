@@ -393,15 +393,6 @@ class MetadataPluginTest(unittest.TestCase):
 
     ###### Field: temporal #####
 
-    def testFieldValidationTemporalTooLong(self):
-
-        data = {'temporal': 'a'*301
-        }
-        schema = self.__getSchemaFromMetadataDict__('temporal')
-
-        converted_data, errors = df.validate(data, schema)
-        self.assertEqual(errors, {'temporal':[u'Enter a value not more than 300 characters long']})
-
     def testFieldValidationTemporalIgnoresMissing(self):
 
         data = {}
@@ -486,15 +477,6 @@ class MetadataPluginTest(unittest.TestCase):
         self.assertEqual(errors, {})
 
     ###### Field: language #####
-
-    def testFieldValidationLanguageTooLong(self):
-
-        data = {'language': 'a'*256
-        }
-        schema = self.__getSchemaFromMetadataDict__('language')
-
-        converted_data, errors = df.validate(data, schema)
-        self.assertEqual(errors, {'language':[u'Enter a value not more than 255 characters long']})
 
     def testFieldValidationLanguageIgnoresMissing(self):
 
