@@ -87,14 +87,10 @@ class MetadataPluginTest(unittest.TestCase):
 
     def testFieldValidationPublicAccessLevelRestricted(self):
 
-        data = {'public_access_level':'restricted'
+        data = {'public_access_level':'public restricted'
         }
         schema = self.__getSchemaFromMetadataDict__('public_access_level')
 
-        converted_data, errors = df.validate(data, schema)
-        self.assertEqual(errors, {})
-
-        data['public_access_level']='Restricted'
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {})
 
@@ -453,28 +449,16 @@ class MetadataPluginTest(unittest.TestCase):
 
     def testFieldValidationAccrualPeriodicityAcceptedValues(self):
 
-        data = {'accrual_periodicity': 'Daily'
-        }
         schema = self.__getSchemaFromMetadataDict__('accrual_periodicity')
 
-        converted_data, errors = df.validate(data, schema)
-        self.assertEqual(errors, {})
+        periods =  ["Annual", "Bimonthly", "Semiweekly", "Daily", "Biweekly", "Semiannual", "Biennial", "Triennial",
+                "Three times a week", "Three times a month", "Continuously updated", "Monthly", "Quarterly", "Semimonthly",
+                "Three times a year", "Weekly", "Completely irregular"]
 
-        data['accrual_periodicity'] = 'Hourly'
-        converted_data, errors = df.validate(data, schema)
-        self.assertEqual(errors, {})
-
-        data['accrual_periodicity'] = 'Weekly'
-        converted_data, errors = df.validate(data, schema)
-        self.assertEqual(errors, {})
-
-        data['accrual_periodicity'] = 'Yearly'
-        converted_data, errors = df.validate(data, schema)
-        self.assertEqual(errors, {})
-
-        data['accrual_periodicity'] = 'Other'
-        converted_data, errors = df.validate(data, schema)
-        self.assertEqual(errors, {})
+        for period in periods:
+            data = {'accrual_periodicity': period}
+            converted_data, errors = df.validate(data, schema)
+            self.assertEqual(errors, {})
 
     def testFieldValidationAccrualPeriodicityInvalidValue(self):
 
@@ -505,12 +489,12 @@ class MetadataPluginTest(unittest.TestCase):
 
     def testFieldValidationLanguageTooLong(self):
 
-        data = {'language': 'a'*501
+        data = {'language': 'a'*256
         }
         schema = self.__getSchemaFromMetadataDict__('language')
 
         converted_data, errors = df.validate(data, schema)
-        self.assertEqual(errors, {'language':[u'Enter a value not more than 500 characters long']})
+        self.assertEqual(errors, {'language':[u'Enter a value not more than 255 characters long']})
 
     def testFieldValidationLanguageIgnoresMissing(self):
 
@@ -524,6 +508,144 @@ class MetadataPluginTest(unittest.TestCase):
 
         data = {'language':''}
         schema = self.__getSchemaFromMetadataDict__('language')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
+    ###### Field: bureau code #####
+    def testFieldValidationBureauCodeInvalid1(self):
+
+        data = {'bureau_code': '000:1111'
+        }
+        schema = self.__getSchemaFromMetadataDict__('bureau_code')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {'bureau_code':[u'The input is not valid']})
+
+    def testFieldValidationBureauCodeInvalid2(self):
+
+        data = {'bureau_code': '000:1'
+        }
+        schema = self.__getSchemaFromMetadataDict__('bureau_code')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {'bureau_code':[u'The input is not valid']})
+
+    def testFieldValidationBureauCodeValid(self):
+
+        data = {'bureau_code': '000:11'
+        }
+        schema = self.__getSchemaFromMetadataDict__('bureau_code')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
+    def testFieldValidationBureauCodeIgnoresMissing(self):
+
+        data = {}
+        schema = self.__getSchemaFromMetadataDict__('bureau_code')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
+    def testFieldValidationBureauCodeIgnoresEmpty(self):
+
+        data = {'bureau_code':''}
+        schema = self.__getSchemaFromMetadataDict__('bureau_code')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
+    ###### Field: program code #####
+    def testFieldValidationProgramCodeInvalid1(self):
+
+        data = {'program_code': '000:1111'
+        }
+        schema = self.__getSchemaFromMetadataDict__('program_code')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {'program_code':[u'The input is not valid']})
+
+    def testFieldValidationProgramCodeInvalid2(self):
+
+        data = {'program_code': '000:11'
+        }
+        schema = self.__getSchemaFromMetadataDict__('program_code')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {'program_code':[u'The input is not valid']})
+
+    def testFieldValidationProgramCodeValid(self):
+
+        data = {'program_code': '000:111'
+        }
+        schema = self.__getSchemaFromMetadataDict__('program_code')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
+    def testFieldValidationProgramCodeIgnoresMissing(self):
+
+        data = {}
+        schema = self.__getSchemaFromMetadataDict__('program_code')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
+    def testFieldValidationProgramCodeIgnoresEmpty(self):
+
+        data = {'program_code':''}
+        schema = self.__getSchemaFromMetadataDict__('program_code')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
+    ###### Field: access level comment #####
+    def testFieldValidationAccessLevelCommentTooLong(self):
+
+        data = {'access_level_comment': 'a'*256 }
+        schema = self.__getSchemaFromMetadataDict__('access_level_comment')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {'access_level_comment':[u'Enter a value not more than 255 characters long']})
+
+    def testFieldValidationAccessLevelCommentIgnoresMissing(self):
+
+        data = {}
+        schema = self.__getSchemaFromMetadataDict__('access_level_comment')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
+    def testFieldValidationAccessLevelCommentIgnoresEmpty(self):
+
+        data = {'access_level_comment':''}
+        schema = self.__getSchemaFromMetadataDict__('access_level_comment')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
+    ###### Field: primary it investment uii #####
+    def testFieldValidationInvestmentUIITooLong(self):
+
+        data = {'primary_it_investment_uii': 'a'*256 }
+        schema = self.__getSchemaFromMetadataDict__('primary_it_investment_uii')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {'primary_it_investment_uii':[u'Enter a value not more than 75 characters long']})
+
+    def testFieldValidationInvestmentUIIIgnoresMissing(self):
+
+        data = {}
+        schema = self.__getSchemaFromMetadataDict__('primary_it_investment_uii')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
+    def testFieldValidationInvestmentUIIIgnoresEmpty(self):
+
+        data = {'primary_it_investment_uii':''}
+        schema = self.__getSchemaFromMetadataDict__('primary_it_investment_uii')
 
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {})

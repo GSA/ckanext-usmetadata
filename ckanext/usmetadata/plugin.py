@@ -8,7 +8,7 @@ from formencode.validators import validators
 log = getLogger(__name__)
 
 #excluded title, description, tags and last update as they're part of the default ckan dataset metadata
-required_metadata = ({'id':'public_access_level', 'validators': [v.Regex(r'^([Pp]ublic)|([Rr]estricted)$')]},
+required_metadata = ({'id':'public_access_level', 'validators': [v.Regex(r'^([Pp]ublic)|([Pp]ublic [Rr]estricted)|([Pp]rivate)$')]},
                      {'id':'publisher', 'validators': [v.String(max=100)]},
                      {'id':'contact_name', 'validators': [v.String(max=100)]},
                      {'id':'contact_email', 'validators': [v.Email(),v.String(max=50)]},
@@ -16,6 +16,13 @@ required_metadata = ({'id':'public_access_level', 'validators': [v.Regex(r'^([Pp
                      #TODO should this unique_id be validated against any other unique IDs for this agency?
                      {'id':'unique_id', 'validators': [v.String(max=100)]}
 )
+
+accrual_periodicity = [u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biweekly", u"Semiannual", u"Biennial", u"Triennial",
+                u"Three times a week", u"Three times a month", u"Continuously updated", u"Monthly", u"Quarterly", u"Semimonthly",
+                u"Three times a year", u"Weekly", u"Completely irregular"]
+
+access_levels = ['public', 'public restricted', 'private']
+
 
 
 #all required_metadata should be required
@@ -38,24 +45,27 @@ required_if_applicable_metadata = (
      {'id':'data_dictionary', 'validators': [v.URL(),v.String(max=350)]},
      {'id':'endpoint', 'validators': [v.URL(),v.String(max=350)]},
      {'id':'spatial', 'validators': [v.String(max=500)]},
-     {'id':'temporal', 'validators': [v.String(max=300)]})
+     {'id':'temporal', 'validators': [v.String(max=300)]},
+     {'id':'bureau_code', 'validators': [v.Regex(r'^\d{3}:\d{2}$')]},
+     {'id':'program_code', 'validators': [v.Regex(r'^\d{3}:\d{3}$')]},
+     {'id':'access_level_comment', 'validators': [v.String(max=255)]},
+)
 
 for meta in required_if_applicable_metadata:
     meta['validators'].append(p.toolkit.get_validator('ignore_empty'))
 
 #some of these could be excluded (e.g. related_documents) which can be captured from other ckan default data
 expanded_metadata = ({'id': 'release_date', 'validators': [v.String(max=500)]},
-                      {'id':'accrual_periodicity', 'validators': [v.Regex(r'^([Dd]aily)|([Hh]ourly)|([Ww]eekly)|([yY]early)|([oO]ther)$')]},
-                      {'id':'language', 'validators': [v.String(max=500)]},
-                      {'id':'granularity', 'validators': [v.String(max=500)]},
+                      {'id':'accrual_periodicity', 'validators': [v.Regex(r'^([Aa]nnual)|([Bb]imonthly)|([Ss]emiweekly)|([Dd]aily)|([Bb]iweekly)|([Ss]emiannual)|([Bb]iennial)|([Tt]riennial)|(Three times a week)|(Three times a month)|(Continuously updated)|([Mm]onthly)|([Qq]uarterly)|([Ss]emimonthly)|(Three times a year)|(Weekly)|(Completely irregular)$')]},
+                      {'id':'language', 'validators': [v.String(max=255)]},
                       {'id':'data_quality', 'validators': [v.String(max=1000)]},
                       {'id':'category', 'validators': [v.String(max=1000)]},
                       {'id':'related_documents', 'validators': [v.String(max=1000)]},
-                      {'id':'size', 'validators': [v.String(max=50)]},
                      {'id':'homepage_url', 'validators': [v.URL(), v.String(max=350)]},
                      {'id':'rss_feed', 'validators': [v.URL(), v.String(max=350)]},
                      {'id':'system_of_records', 'validators': [v.URL(), v.String(max=350)]},
-                     {'id':'system_of_records_none_related_to_this_dataset', 'validators': [v.URL(), v.String(max=350)]}
+                     {'id':'system_of_records_none_related_to_this_dataset', 'validators': [v.URL(), v.String(max=350)]},
+                     {'id':'primary_it_investment_uii', 'validators': [v.String(max=75)]}
 )
 
 for meta in expanded_metadata:
@@ -65,6 +75,7 @@ for meta in expanded_metadata:
 
 schema_updates_for_create = [{meta['id'] : meta['validators']+[p.toolkit.get_converter('convert_to_extras')]} for meta in (get_req_metadata_for_create()+required_if_applicable_metadata + expanded_metadata)]
 schema_updates_for_update_show = [{meta['id'] : meta['validators']+[p.toolkit.get_converter('convert_to_extras')]} for meta in (get_req_metadata_for_show_update()+required_if_applicable_metadata + expanded_metadata)]
+
 
 class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
     '''This plugin adds fields for the metadata (known as the Common Core) defined at
@@ -133,70 +144,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
         return new_dict
 
-    @classmethod
-    def __create_vocabulary(cls, name, *values):
-        '''Create vocab and tags, if they don't exist already.
-            name: the name or unique id of the vocabulary  e.g. 'flower_colors'
-            values: the values that the vocabulary can take on e.g. ('blue', 'orange', 'purple', 'white', 'yellow)
-        '''
-        user = p.toolkit.get_action('get_site_user')({'ignore_auth': True}, {})
-        context = {'user': user['name']}
-
-        log.debug("Creating vocab '{0}'".format(name))
-        data = {'name': name}
-        vocab = p.toolkit.get_action('vocabulary_create')(context, data)
-        log.debug('Vocab created: {0}'.format(vocab))
-        for tag in values:
-            log.debug(
-                "Adding tag {0} to vocab {1}'".format(tag, name))
-            data = {'name': tag, 'vocabulary_id': vocab['id']}
-            p.toolkit.get_action('tag_create')(context, data)
-        return vocab
-
-    @classmethod
-    def get_access_levels(cls):
-        '''        log.debug('get_accrual_periodicity() called')
-            Jinja2 template helper function, gets the vocabulary for access levels
-        '''
-        user = p.toolkit.get_action('get_site_user')({'ignore_auth': True}, {})
-        context = {'user': user['name']}
-
-        vocab = None
-        try:
-            data = {'id': 'public_access_level'} #we can use the id or name for id param
-            vocab = p.toolkit.get_action('vocabulary_show')(context, data)
-        except:
-            log.debug("vocabulary_show failed, meaning the vocabulary for access level doesn't exist")
-            vocab = cls.__create_vocabulary(u'public_access_level', u'public', u'restricted')
-
-        access_levels = [x['display_name'] for x in vocab['tags']]
-        log.debug("vocab tags: %s" % access_levels)
-
-        return access_levels
-
-    @classmethod
-    def get_accrual_periodicity(cls):
-        '''
-            Jinja2 template helper function, gets the vocabulary for accrual periodicity
-        '''
-        user = p.toolkit.get_action('get_site_user')({'ignore_auth': True}, {})
-        context = {'user': user['name']}
-
-        vocab = None
-        try:
-            data = {'id': 'accrual_periodicity'} #we can use the id or name for id param
-            vocab = p.toolkit.get_action('vocabulary_show')(context, data)
-        except:
-            log.debug("vocabulary_show failed, meaning the vocabulary for accrual periodicity doesn't exist")
-            vocab = cls.__create_vocabulary('accrual_periodicity', u'hourly', u'daily', u'weekly', u'yearly', u'other')
-
-        accrual_periodicity = [x['display_name'] for x in vocab['tags']]
-        log.debug("vocab tags: %s" % accrual_periodicity)
-
-        return accrual_periodicity
-        log.debug('get_accrual_periodicity() called')
-
-    #See ckan.plugins.interfaces.IDatasetForm
+     #See ckan.plugins.interfaces.IDatasetForm
     def is_fallback(self):
         # Return True so that we use the extension's dataset form instead of CKAN's default for
         # /dataset/new and /dataset/edit
@@ -260,8 +208,10 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         return schema
 
     #Method below allows functions and other methods to be called from the Jinja template using the h variable
+    # always_private hides Visibility selector, essentially meaning that all datasets are private to an organization
     def get_helpers(self):
         log.debug('get_helpers() called')
-        return {'public_access_levels': self.get_access_levels, 'required_metadata': required_metadata,
+        return {'public_access_levels': access_levels, 'required_metadata': required_metadata,
                 'load_data_into_dict':  self.load_data_into_dict,
-                'accrual_periodicity': self.get_accrual_periodicity}
+                'accrual_periodicity': accrual_periodicity,
+                'always_private': True}

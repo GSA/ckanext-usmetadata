@@ -21,7 +21,7 @@
       {{ _("Public Access Level") }}</label>
   <div class="controls">
     <select id="field-public_access_level" name="public_access_level" data-module="autocomplete" title="The degree to which this dataset could be made publicly-available, regardless of whether it has been made available. Choices: Public (is or could be made publicly available), Restricted (available under certain conditions), or Private (never able to be made publicly available)">
-        {% for level in h.public_access_levels() %}
+        {% for level in h.public_access_levels %}
       <option value="{{ level }}" {% if level == data.common_core.public_access_level %}selected{% endif %} >
         {{ level }}
       </option>
