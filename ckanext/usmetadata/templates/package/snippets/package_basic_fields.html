@@ -1,16 +1,40 @@
 {% ckan_extends %}
+{% set always_private = h.always_private %}
 
-{% block package_basic_fields_custom %}
+{% block package_basic_fields_title %}
+{{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. A descriptive title'), value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target', 'title': 'Human-readable name of the asset. Should be in plain English and include sufficient detail to facilitate search and discovery.'}, is_required=true) }}
+{% endblock package_basic_fields_title%}
 
-<div class="control-group">
-  <label class="control-label" for="field-accessLevel">{{ _("Access Level") }}</label>
-  <div class="controls">
-    <select id="field-accessLevel" name="accessLevel" data-module="autocomplete">
-      <option value="public" >Public</option>
-      <option value="restricted" >Restricted</option>
-      <option value="private" >Private</option>
-    </select>
-  </div>
-</div>
+{% block package_basic_fields_description %}
+{{ form.markdown('notes', id='field-notes', label=_('Description'), placeholder=_('eg. Some useful notes about the data'), value=data.notes, error=errors.notes, attrs={'title' : 'Human-readable description (e.g., an abstract) with sufficient detail to enable a user to quickly understand whether the asset is of interest.'}, is_required=true) }}
+{% endblock package_basic_fields_description%}
 
-{% endblock %}
+{% block package_basic_fields_tags %}
+{% set tag_attrs = {'data-module': 'autocomplete', 'data-module-tags': '', 'data-module-source': '/api/2/util/tag/autocomplete?incomplete=?', 'title':'Tags (or keywords) help users discover your dataset, please include terms that would be used by technical and non-technical users.'} %}
+{{ form.input('tag_string', id='field-tags', label=_('Tags'), placeholder=_('eg. economy, mental health, government'), value=data.tag_string, error=errors.tags, classes=['control-full'], attrs=tag_attrs, is_required=true) }}
+{% endblock package_basic_fields_tags %}
+
+{% block package_metadata_fields_visibility %}
+
+        {% if always_private %}
+     <input type="hidden" id="field-private" name="private" value="true">
+        {% else %}
+            {{ super() }}
+        {% endif %}
+
+     {% set data = h.load_data_into_dict(data) %}
+     {% set active = data.state == 'active' %}
+
+    {% if not active %}
+        <h1>Required Common Core Metadata</h1>
+        {% snippet 'package/snippets/required_common_core_fields.html', data=data, errors=errors%}
+
+        <h1>Required-If-Applicable Common Core Metadata</h1>
+        {% snippet 'package/snippets/required_if_applicable_common_core_fields.html', data=data, errors=errors%}
+
+        <h1>Expanded Common Core Metadata</h1>
+        {% snippet 'package/snippets/expanded_common_core_fields.html', data=data, errors=errors%}
+    {% endif %}
+
+{% endblock package_metadata_fields_visibility %}
+

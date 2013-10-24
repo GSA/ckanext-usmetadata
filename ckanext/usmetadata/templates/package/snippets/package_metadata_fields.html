@@ -1,23 +1,11 @@
 {% ckan_extends %}
 
-{# Remove 'free extras' from the package form. If you're using
-convert_to/from_extras() as we are with our 'custom_text' field below then
-you need to remove free extras from the form, or editing your custom field
-won't work. #}
-{% block custom_fields %}
-{% endblock %}
+{% block package_metadata_fields_custom %}
+    {# call helper function that moves any common core fields from 'extras' to the 'common_core' key #}
+{# TODO uncomment below, need to filter out the custom form fields, but right now, if we don't include them in the form, then they get
+        deleted from the database!!
+    {% set data = h.load_data_into_dict(data) %}
+ #}
 
-{% block package_metadata_fields %}
-
-  {{ form.input('dataDictionary', label=_('Data Dictionary'), id='field-dataDictionary', placeholder=_('URL of Data Dictionary'), value=data.dataDictionary, error=errors.dataDictionary, classes=['contro
-l-medium']) }}
-
-  {{ form.input('systemOfRecords', label=_('System of Records'), id='field-systemOfRecords', placeholder=_('URL to systemOfRecords'), value=data.systemOfRecords, error=errors.systemOfRecords, classes=['
-control-medium']) }}
-
-  {{ form.input('granularity', label=_('Granularity'), id='field-granularity', placeholder=_('level of granularity'), value=data.granularity, error=errors.granularity, classes=['control-medium']) }}
-
-  {{ super() }}
-
-{% endblock %}
-
+    {% snippet 'snippets/custom_form_fields.html', extras=data.extras, errors=errors, limit=3 %}
+{% endblock package_metadata_fields_custom %}

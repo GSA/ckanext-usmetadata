@@ -1,0 +1,20 @@
+{# See https://github.com/project-open-data/project-open-data.github.io/blob/master/schema.md#common-core-required-if-applicable-fields #}
+
+{% import "macros/form.html" as form %}
+
+{% set data = data or {} %}
+{% set errors = errors or {} %}
+
+{% block package_required_if_applicable_metadata %}
+
+{{ form.input('bureau_code', label=_('Bureau Code'), id='field-bureau-code', placeholder=_('001:40'), value=data.common_core.bureau_code, error=errors.bureau_code, classes=['control-medium'], attrs={'title': 'Federal agencies, combined agency and bureau code from OMB Circular A-11, Appendix C in the format of 015:10.'}) }}
+
+{{ form.input('program_code', label=_('Program Code'), id='field-program-code', placeholder=_('015:010'), value=data.common_core.program_code, error=errors.program_code, classes=['control-medium'], attrs={'title': 'Federal agencies, list the primary program related to this data asset, from the Federal Program Inventory. Use the format of 015:001'}) }}
+
+{{ form.input('access_level_comment', label=_('Access Level Comment'), id='field-access-level-comment', placeholder=_('An explanation for the access level field.'), value=data.common_core.access_level_comment, error=errors.access_level_comment, classes=['control-medium'], attrs={'title': 'An explanation for the selected “accessLevel” including instructions for how to access a restricted file, if applicable, or explanation for why a “non-public” or “restricted public” data assetis not “public,” if applicable. Text, 255 characters.'}) }}
+
+{{ form.input('spatial', label=_('Spatial'), id='field-spatial', placeholder=_('Lincoln, Nebraska'), value=data.common_core.spatial, error=errors.spatial, classes=['control-medium'], attrs={'title': 'The range of spatial applicability of a dataset. Could include a spatial region like a bounding box or a named place.'}) }}
+
+{{ form.input('temporal', label=_('Temporal'), id='field-temporal', placeholder=_('2000-01-15 00:45:00,2010-01-15 00:06:00'), value=data.common_core.temporal, error=errors.temporal, classes=['control-medium'], attrs={'title': 'The range of temporal applicability of a dataset (i.e., a start and end date of applicability for the data).'}) }}
+
+{% endblock package_required_if_applicable_metadata %}
