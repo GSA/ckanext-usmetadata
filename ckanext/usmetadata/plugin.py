@@ -21,7 +21,7 @@ accrual_periodicity = [u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biwee
                 u"Three times a week", u"Three times a month", u"Continuously updated", u"Monthly", u"Quarterly", u"Semimonthly",
                 u"Three times a year", u"Weekly", u"Completely irregular"]
 
-access_levels = ['public', 'public restricted', 'non-public']
+access_levels = ['public', 'restricted public', 'non-public']
 
 
 
