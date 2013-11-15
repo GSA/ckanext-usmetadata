@@ -9,9 +9,9 @@ log = getLogger(__name__)
 
 #excluded title, description, tags and last update as they're part of the default ckan dataset metadata
 required_metadata = ({'id':'public_access_level', 'validators': [v.Regex(r'^([Pp]ublic)|([Pp]ublic [Rr]estricted)|([Pp]rivate)$')]},
-                     {'id':'publisher', 'validators': [v.String(max=100)]},
-                     {'id':'contact_name', 'validators': [v.String(max=100)]},
-                     {'id':'contact_email', 'validators': [v.Email(),v.String(max=50)]},
+                     {'id':'publisher', 'validators': [v.String(max=300)]},
+                     {'id':'contact_name', 'validators': [v.String(max=300)]},
+                     {'id':'contact_email', 'validators': [v.Email(),v.String(max=100)]},
 
                      #TODO should this unique_id be validated against any other unique IDs for this agency?
                      {'id':'unique_id', 'validators': [v.String(max=100)]}
@@ -45,9 +45,7 @@ required_if_applicable_metadata = (
      {'id':'data_dictionary', 'validators': [v.URL(),v.String(max=350)]},
      {'id':'endpoint', 'validators': [v.URL(),v.String(max=350)]},
      {'id':'spatial', 'validators': [v.String(max=500)]},
-     {'id':'temporal', 'validators': [v.Regex(r"^([0-9]{4})(-([0-9]{1,2})(-([0-9]{1,2})"
-    r"((.)([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?"
-    r"(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?$")]},
+     {'id':'temporal', 'validators': [v.Regex(r"^([0-9]{4})(-([0-9]{1,2})(-([0-9]{1,2})((.)([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?(/([0-9]{4})(-([0-9]{1,2})(-([0-9]{1,2})((.)([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?){0,1}$")]},
      {'id':'bureau_code', 'validators': [v.Regex(r'^\d{3}:\d{2}$')]},
      {'id':'program_code', 'validators': [v.Regex(r'^\d{3}:\d{3}$')]},
      {'id':'access_level_comment', 'validators': [v.String(max=255)]},
