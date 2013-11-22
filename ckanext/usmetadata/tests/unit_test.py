@@ -87,7 +87,7 @@ class MetadataPluginTest(unittest.TestCase):
 
     def testFieldValidationPublicAccessLevelRestricted(self):
 
-        data = {'public_access_level':'public restricted'
+        data = {'public_access_level':'restricted public'
         }
         schema = self.__getSchemaFromMetadataDict__('public_access_level')
 

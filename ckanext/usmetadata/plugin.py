@@ -8,7 +8,7 @@ from formencode.validators import validators
 log = getLogger(__name__)
 
 #excluded title, description, tags and last update as they're part of the default ckan dataset metadata
-required_metadata = ({'id':'public_access_level', 'validators': [v.Regex(r'^([Pp]ublic)|([Pp]ublic [Rr]estricted)|([Pp]rivate)$')]},
+required_metadata = ({'id':'public_access_level', 'validators': [v.Regex(r'^([Pp]ublic)|([Rr]estricted [Pp]ublic)|([Pp]rivate)$')]},
                      {'id':'publisher', 'validators': [v.String(max=300)]},
                      {'id':'contact_name', 'validators': [v.String(max=300)]},
                      {'id':'contact_email', 'validators': [v.Email(),v.String(max=100)]},
