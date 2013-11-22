@@ -26,6 +26,7 @@
       {{ _("Frequency") }}</label>
   <div class="controls">
     <select id="field-accrual_periodicity" name="accrual_periodicity" data-module="autocomplete" title="Frequency with which dataset is published.">
+      <option value=""></option>
         {% for level in h.accrual_periodicity %}
       <option value="{{ level }}" {% if level == data.common_core.accrual_periodicity %}selected{% endif %} >
         {{ level }}
