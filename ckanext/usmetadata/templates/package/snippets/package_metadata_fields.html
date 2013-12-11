@@ -1,5 +1,9 @@
 {% ckan_extends %}
 
+{% block package_metadata_author %}{# Hiding the inputs #}{% endblock package_metadata_author%}
+
+{% block package_metadata_fields_maintainer %}{# Hiding the inputs #}{% endblock package_metadata_fields_maintainer %}
+
 {% block package_metadata_fields_custom %}
     {# call helper function that moves any common core fields from 'extras' to the 'common_core' key #}
 {# TODO uncomment below, need to filter out the custom form fields, but right now, if we don't include them in the form, then they get
@@ -9,3 +13,5 @@
 
     {% snippet 'snippets/custom_form_fields.html', extras=data.extras, errors=errors, limit=3 %}
 {% endblock package_metadata_fields_custom %}
+
+{% block dataset_fields %}{# Hiding the inputs #}{% endblock dataset_fields%}
