@@ -182,9 +182,11 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
     #See ckan.plugins.interfaces.IDatasetForm
     def create_package_schema(self):
-        log.debug('create_package_schema')
         schema = super(CommonCoreMetadataFormPlugin, self).create_package_schema()
         schema = self._modify_package_schema(schema)
+
+        log.debug('create_package_schema: %s', schema)
+
         return schema
 
     #See ckan.plugins.interfaces.IDatasetForm
@@ -193,6 +195,8 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
 #TODO uncomment, should be using schema for updates, but it's causing problems during resource creation
 #        schema = self._modify_package_schema_update_show(schema)
+
+        log.debug('update_package_schema: %s', schema)
 
         return schema
 
