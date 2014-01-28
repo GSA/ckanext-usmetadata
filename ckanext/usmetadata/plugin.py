@@ -1,7 +1,11 @@
 from logging import getLogger
 import ckan.plugins as p
 import formencode.validators as v
+from pylons import request, response
 import copy
+import json
+import os
+from ckan.lib.base import BaseController
 #from ckan.plugins import implements, SingletonPlugin, toolkit, IConfigurer, ITemplateHelpers, IDatasetForm, IPackageController
 from formencode.validators import validators
 
@@ -23,7 +27,8 @@ accrual_periodicity = [u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biwee
 
 access_levels = ['public', 'restricted public', 'non-public']
 
-
+# Dictionary of all media types
+media_types = json.loads(open(os.path.join(os.path.dirname(__file__), 'media_types.json'), 'r').read())
 
 #all required_metadata should be required
 def get_req_metadata_for_create():
@@ -85,6 +90,11 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     p.implements(p.ITemplateHelpers)
     p.implements(p.IConfigurer)
     p.implements(p.IDatasetForm)
+    p.implements(p.interfaces.IRoutes, inherit=True)
+
+    def after_map(selfself, m):
+        m.connect('media_type', '/api/2/util/resource/media_autocomplete', controller='ckanext.usmetadata.plugin:MediaController', action='get_media_types')
+        return m
 
     @classmethod
     def load_data_into_dict(cls, data_dict):
@@ -219,3 +229,22 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
                 'load_data_into_dict':  self.load_data_into_dict,
                 'accrual_periodicity': accrual_periodicity,
                 'always_private': True}
+
+class MediaController(BaseController):
+    """Controller to return the acceptable media types as JSON, powering the front end"""
+
+    def get_media_types(self):
+                # set content type (charset required or pylons throws an error)
+        q = request.params.get('incomplete', '')
+
+        response.content_type = 'application/json; charset=UTF-8'
+
+        retval = []
+
+        for dict in media_types:
+            if q in dict['media_type'] or q in dict['name'] or q in dict['ext']:
+                retval.append(dict['media_type'])
+            if len(retval) >= 50:
+                break
+
+        return json.dumps({'ResultSet':{'Result':retval}})

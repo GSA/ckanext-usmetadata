@@ -1,0 +1,7 @@
+{% ckan_extends %}
+
+    {% block basic_fields_format %}
+    {% set format_attrs = {'data-module': 'autocomplete', 'data-module-source': '/api/2/util/resource/media_autocomplete?incomplete=?'} %}
+    {% call form.input('format', id='field-format', label=_('Format'), placeholder=_('eg. text/csv, text/xml or application/json'), value=data.format, error=errors.format, classes=['control-medium'], attrs=format_attrs) %}
+    {% endcall %}
+    {% endblock %}
