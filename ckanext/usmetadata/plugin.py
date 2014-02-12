@@ -51,8 +51,8 @@ required_if_applicable_metadata = (
      {'id':'endpoint', 'validators': [v.URL(),v.String(max=350)]},
      {'id':'spatial', 'validators': [v.String(max=500)]},
      {'id':'temporal', 'validators': [v.Regex(r"^([0-9]{4})(-([0-9]{1,2})(-([0-9]{1,2})((.)([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?(/([0-9]{4})(-([0-9]{1,2})(-([0-9]{1,2})((.)([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?){0,1}$")]},
-     {'id':'bureau_code', 'validators': [v.Regex(r'^\d{3}:\d{2}$')]},
-     {'id':'program_code', 'validators': [v.Regex(r'^\d{3}:\d{3}$')]},
+     {'id':'bureau_code', 'validators': [v.Regex(r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$')]},
+     {'id':'program_code', 'validators': [v.Regex(r'^\d{3}:\d{3}(\s*,\s*\d{3}:\d{3}\s*)*$')]},
      {'id':'access_level_comment', 'validators': [v.String(max=255)]},
 )
 
@@ -62,7 +62,7 @@ for meta in required_if_applicable_metadata:
 #some of these could be excluded (e.g. related_documents) which can be captured from other ckan default data
 expanded_metadata = ({'id': 'release_date', 'validators': [v.String(max=500)]},
                       {'id':'accrual_periodicity', 'validators': [v.Regex(r'^([Aa]nnual)|([Bb]imonthly)|([Ss]emiweekly)|([Dd]aily)|([Bb]iweekly)|([Ss]emiannual)|([Bb]iennial)|([Tt]riennial)|(Three times a week)|(Three times a month)|(Continuously updated)|([Mm]onthly)|([Qq]uarterly)|([Ss]emimonthly)|(Three times a year)|(Weekly)|(Completely irregular)$')]},
-                      {'id':'language', 'validators': [v.Regex(r'[A-Za-z]{2}([A-Za-z]{2})?')]},
+                      {'id':'language', 'validators': [v.Regex(r"^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))(\s*,\s*(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))\s*)*$")]},
                       {'id':'data_quality', 'validators': [v.String(max=1000)]},
                       {'id':'category', 'validators': [v.String(max=1000)]},
                       {'id':'related_documents', 'validators': [v.String(max=1000)]},

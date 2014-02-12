@@ -133,12 +133,12 @@ class MetadataPluginTest(unittest.TestCase):
 
     def testFieldValidationPublisherNameTooLong(self):
 
-        data = {'publisher':'a'*101
+        data = {'publisher':'a'*301
         }
         schema = self.__getSchemaFromMetadataDict__('publisher')
 
         converted_data, errors = df.validate(data, schema)
-        self.assertEqual(errors, {'publisher':[u'Enter a value not more than 100 characters long']})
+        self.assertEqual(errors, {'publisher':[u'Enter a value not more than 300 characters long']})
 
     def testFieldValidationPublisherRejectsMissing(self):
 
@@ -169,12 +169,12 @@ class MetadataPluginTest(unittest.TestCase):
 
     def testFieldValidationContactNameTooLong(self):
 
-        data = {'contact_name':'a'*101
+        data = {'contact_name':'a'*301
         }
         schema = self.__getSchemaFromMetadataDict__('contact_name')
 
         converted_data, errors = df.validate(data, schema)
-        self.assertEqual(errors, {'contact_name':[u'Enter a value not more than 100 characters long']})
+        self.assertEqual(errors, {'contact_name':[u'Enter a value not more than 300 characters long']})
 
     def testFieldValidationContactRejectsMissing(self):
 
@@ -205,12 +205,12 @@ class MetadataPluginTest(unittest.TestCase):
 
     def testFieldValidationContactEmailTooLong(self):
 
-        data = {'contact_email':'a'*50+'@foo.com'
+        data = {'contact_email':'a'*100+'@foo.com'
         }
         schema = self.__getSchemaFromMetadataDict__('contact_email')
 
         converted_data, errors = df.validate(data, schema)
-        self.assertEqual(errors, {'contact_email':[u'Enter a value not more than 50 characters long']})
+        self.assertEqual(errors, {'contact_email':[u'Enter a value not more than 100 characters long']})
 
     def testFieldValidationContactEmailRejectsMissing(self):
 
@@ -494,6 +494,14 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {})
 
+    def testFieldValidationLanguageAllowsCommaSeparated(self):
+
+        data = {'language':'es-MX, wo, nv,   en-US'}
+        schema = self.__getSchemaFromMetadataDict__('language')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
     ###### Field: bureau code #####
     def testFieldValidationBureauCodeInvalid1(self):
 
@@ -525,6 +533,26 @@ class MetadataPluginTest(unittest.TestCase):
     def testFieldValidationBureauCodeIgnoresMissing(self):
 
         data = {}
+        schema = self.__getSchemaFromMetadataDict__('bureau_code')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
+    def testFieldValidationBureauCodeAllowsCommaSeparated(self):
+
+        data = {
+            'bureau_code': '000:11,111:00,333:23'
+        }
+        schema = self.__getSchemaFromMetadataDict__('bureau_code')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
+    def testFieldValidationBureauCodeAllowsCommaSeparatedSpaces(self):
+
+        data = {
+            'bureau_code': '000:11, 111:00 , 333:23'
+        }
         schema = self.__getSchemaFromMetadataDict__('bureau_code')
 
         converted_data, errors = df.validate(data, schema)
@@ -577,6 +605,26 @@ class MetadataPluginTest(unittest.TestCase):
     def testFieldValidationProgramCodeIgnoresEmpty(self):
 
         data = {'program_code':''}
+        schema = self.__getSchemaFromMetadataDict__('program_code')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
+    def testFieldValidationProgramCodeAllowsCommaSeparated(self):
+
+        data = {
+            'program_code': '000:110,111:001,333:233'
+        }
+        schema = self.__getSchemaFromMetadataDict__('program_code')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
+    def testFieldValidationProgramCodeAllowsCommaSeparatedSpaces(self):
+
+        data = {
+            'program_code': '000:111, 111:003 , 333:232'
+        }
         schema = self.__getSchemaFromMetadataDict__('program_code')
 
         converted_data, errors = df.validate(data, schema)
