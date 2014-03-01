@@ -21,6 +21,15 @@ required_metadata = ({'id':'public_access_level', 'validators': [v.Regex(r'^([Pp
                      {'id':'unique_id', 'validators': [v.String(max=100)]}
 )
 
+required_metadata_update = ({'id':'public_access_level','validators': [v.String(max=300)]},
+                            {'id':'publisher', 'validators': [v.String(max=300)]},
+                            {'id':'contact_name', 'validators': [v.String(max=300)]},
+                            {'id':'contact_email', 'validators': [v.Email(),v.String(max=100)]},
+
+                            #TODO should this unique_id be validated against any other unique IDs for this agency?
+                            {'id':'unique_id', 'validators': [v.String(max=100)]}
+)
+
 accrual_periodicity = [u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biweekly", u"Semiannual", u"Biennial", u"Triennial",
                 u"Three times a week", u"Three times a month", u"Continuously updated", u"Monthly", u"Quarterly", u"Semimonthly",
                 u"Three times a year", u"Weekly", u"Completely irregular"]
@@ -32,15 +41,24 @@ media_types = json.loads(open(os.path.join(os.path.dirname(__file__), 'media_typ
 
 #all required_metadata should be required
 def get_req_metadata_for_create():
+    log.debug('get_req_metadata_for_create')
     new_req_meta = copy.copy(required_metadata)
     validator = p.toolkit.get_validator('not_empty')
     for meta in new_req_meta:
         meta['validators'].append(validator)
     return new_req_meta
 
+def get_req_metadata_for_update():
+    log.debug('get_req_metadata_for_update')
+    new_req_meta = copy.copy(required_metadata_update)
+    validator = p.toolkit.get_validator('ignore_missing')
+    for meta in new_req_meta:
+        meta['validators'].append(validator)
+    return new_req_meta
+
 def get_req_metadata_for_show_update():
     new_req_meta = copy.copy(required_metadata)
-    validator = p.toolkit.get_validator('ignore_empty')
+    validator = p.toolkit.get_validator('ignore_missing')
     for meta in new_req_meta:
         meta['validators'].append(validator)
     return new_req_meta
@@ -79,7 +97,8 @@ for meta in expanded_metadata:
 
 
 schema_updates_for_create = [{meta['id'] : meta['validators']+[p.toolkit.get_converter('convert_to_extras')]} for meta in (get_req_metadata_for_create()+required_if_applicable_metadata + expanded_metadata)]
-schema_updates_for_update_show = [{meta['id'] : meta['validators']+[p.toolkit.get_converter('convert_to_extras')]} for meta in (get_req_metadata_for_show_update()+required_if_applicable_metadata + expanded_metadata)]
+schema_updates_for_update = [{meta['id'] : meta['validators']+[p.toolkit.get_converter('convert_to_extras')]} for meta in (get_req_metadata_for_update()+required_if_applicable_metadata + expanded_metadata)]
+schema_updates_for_show = [{meta['id'] : meta['validators']+[p.toolkit.get_converter('convert_from_extras')]} for meta in (get_req_metadata_for_show_update()+required_if_applicable_metadata + expanded_metadata)]
 
 
 class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
@@ -87,9 +106,9 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     https://github.com/project-open-data/project-open-data.github.io/blob/master/schema.md
     '''
 
-    p.implements(p.ITemplateHelpers)
-    p.implements(p.IConfigurer)
-    p.implements(p.IDatasetForm)
+    p.implements(p.ITemplateHelpers, inherit=False)
+    p.implements(p.IConfigurer, inherit=False)
+    p.implements(p.IDatasetForm, inherit=False)
     p.implements(p.interfaces.IRoutes, inherit=True)
 
     def after_map(selfself, m):
@@ -174,18 +193,26 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         p.toolkit.add_template_directory(config, 'templates')
 
     #See ckan.plugins.interfaces.IDatasetForm
-    def _modify_package_schema(self, schema):
-        log.debug("_modify_package_schema called")
+    def _create_package_schema(self, schema):
+        log.debug("_create_package_schema called")
 
         for update in schema_updates_for_create:
             schema.update(update)
 
         return schema
 
-    def _modify_package_schema_update_show(self, schema):
+    def _modify_package_schema_update(self, schema):
+        log.debug("_modify_package_schema_update called")
+
+        for update in schema_updates_for_update:
+            schema.update(update)
+
+        return schema
+
+    def _modify_package_schema_show(self, schema):
         log.debug("_modify_package_schema_update_show called")
 
-        for update in schema_updates_for_update_show:
+        for update in schema_updates_for_show:
             schema.update(update)
 
         return schema
@@ -193,21 +220,15 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     #See ckan.plugins.interfaces.IDatasetForm
     def create_package_schema(self):
         schema = super(CommonCoreMetadataFormPlugin, self).create_package_schema()
-        schema = self._modify_package_schema(schema)
-
-        log.debug('create_package_schema: %s', schema)
-
+        schema = self._create_package_schema(schema)
         return schema
 
     #See ckan.plugins.interfaces.IDatasetForm
     def update_package_schema(self):
         log.debug('update_package_schema')
         schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
-#TODO uncomment, should be using schema for updates, but it's causing problems during resource creation
-#        schema = self._modify_package_schema_update_show(schema)
-
-        log.debug('update_package_schema: %s', schema)
-
+        #TODO uncomment, should be using schema for updates, but it's causing problems during resource creation
+        schema = self._modify_package_schema_update(schema)
         return schema
 
     #See ckan.plugins.interfaces.IDatasetForm
@@ -217,8 +238,9 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
         # Don't show vocab tags mixed in with normal 'free' tags
         # (e.g. on dataset pages, or on the search page)
-        schema['tags']['__extras'].append(p.toolkit.get_converter('free_tags_only'))
+        #schema['tags']['__extras'].append(p.toolkit.get_converter('free_tags_only'))
 
+        schema = self._modify_package_schema_show(schema)
         return schema
 
     #Method below allows functions and other methods to be called from the Jinja template using the h variable
