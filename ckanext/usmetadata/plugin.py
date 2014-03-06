@@ -21,7 +21,7 @@ required_metadata = ({'id':'public_access_level', 'validators': [v.Regex(r'^([Pp
                      {'id':'unique_id', 'validators': [v.String(max=100)]}
 )
 
-required_metadata_update = ({'id':'public_access_level','validators': [v.String(max=300)]},
+required_metadata_update = ({'id':'public_access_level','validators': [v.Regex(r'^([Pp]ublic)|([Rr]estricted [Pp]ublic)|([Pp]rivate)|([nN]on-public)$')]},
                             {'id':'publisher', 'validators': [v.String(max=300)]},
                             {'id':'contact_name', 'validators': [v.String(max=300)]},
                             {'id':'contact_email', 'validators': [v.Email(),v.String(max=100)]},
@@ -228,7 +228,13 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         log.debug('update_package_schema')
         schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
         #TODO uncomment, should be using schema for updates, but it's causing problems during resource creation
-        schema = self._modify_package_schema_update(schema)
+
+        #TODO: Remove this is HACK - For new dataset creation disable validation.
+        if request.path.startswith('/dataset/new_resource') or request.path.startswith('/dataset/new_metadata'):
+            schema = self._modify_package_schema_update(schema)
+        else:
+            schema = self._create_package_schema(schema)
+
         return schema
 
     #See ckan.plugins.interfaces.IDatasetForm
@@ -238,7 +244,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
         # Don't show vocab tags mixed in with normal 'free' tags
         # (e.g. on dataset pages, or on the search page)
-        #schema['tags']['__extras'].append(p.toolkit.get_converter('free_tags_only'))
+        schema['tags']['__extras'].append(p.toolkit.get_converter('free_tags_only'))
 
         schema = self._modify_package_schema_show(schema)
         return schema
