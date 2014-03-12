@@ -192,6 +192,13 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         # Instruct CKAN to look in the ```templates``` directory for customized templates and snippets
         p.toolkit.add_template_directory(config, 'templates')
 
+        # Register this plugin's fanstatic directory with CKAN.
+        # Here, 'fanstatic' is the path to the fanstatic directory
+        # (relative to this plugin.py file), and 'example_theme' is the name
+        # that we'll use to refer to this fanstatic directory from CKAN
+        # templates.
+        p.toolkit.add_resource('fanstatic', 'dataset_url')
+
     #See ckan.plugins.interfaces.IDatasetForm
     def _create_package_schema(self, schema):
         log.debug("_create_package_schema called")
@@ -228,12 +235,12 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         log.debug('update_package_schema')
         schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
         #TODO uncomment, should be using schema for updates, but it's causing problems during resource creation
-
-        #TODO: Remove this is HACK - For new dataset creation disable validation.
-        if request.path.startswith('/dataset/new_resource') or request.path.startswith('/dataset/new_metadata'):
-            schema = self._modify_package_schema_update(schema)
-        else:
+        log.debug(request.path);
+        #TODO: Remove this is HACK - Add validation for update only.
+        if request.path.startswith('/dataset/edit'):
             schema = self._create_package_schema(schema)
+        else:
+            schema = self._modify_package_schema_update(schema)
 
         return schema
 

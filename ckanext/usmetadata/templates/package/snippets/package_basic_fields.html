@@ -6,6 +6,15 @@
 {{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. A descriptive title'), value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target', 'title': 'Human-readable name of the asset. Should be in plain English and include sufficient detail to facilitate search and discovery.'}, is_required=true) }}
 {% endblock package_basic_fields_title%}
 
+{% block package_basic_fields_url %}
+{% set prefix = h.url_for(controller='package', action='read', id='') %}
+{% set domain = h.url_for(controller='package', action='read', id='', qualified=true) %}
+{% set domain = domain|replace("http://", "")|replace("https://", "") %}
+{% set attrs = {'data-module': 'usmetadata-slug-preview-slug', 'data-module-prefix': domain, 'data-module-placeholder': '<dataset>'} %}
+
+{{ form.prepend('name', id='field-name', label=_('URLL'), prepend=prefix, placeholder=_('eg. my-dataset'), value=data.name, error=errors.name, attrs=attrs, is_required=true) }}
+{% endblock %}
+
 {% block package_basic_fields_license %}
     {# Hiding the license block, it's moved down below #}
 {% endblock package_basic_fields_license %}
