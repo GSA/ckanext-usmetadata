@@ -1,3 +1,4 @@
+This is Clone of US Metadata
 This CKAN Extension expands CKAN to offer a number of custom fields related to the [US Common Core Schema](http://project-open-data.github.io/schema/)
 
 Installation
