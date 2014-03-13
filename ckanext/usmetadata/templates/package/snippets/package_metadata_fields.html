@@ -8,48 +8,7 @@
 {% endblock %}
 
 {% block package_metadata_fields_custom %}
-    {# call helper function that moves any common core fields from 'extras' to the 'common_core' key #}
-    {# TODO uncomment below, need to filter out the custom form fields, but right now, if we don't include them in the form, then they get
-        deleted from the database!!#}
-    {% if always_private %}
-        <input type="hidden" id="field-private" name="private" value="true">
-    {% else %}
-        {{ super() }}
-    {% endif %}
-
-    {% set data = h.load_data_into_dict(data) %}
-    {% set active = data.state == 'active' %}
-
-    {% if active %}
-        {% snippet 'package/snippets/required_common_core_fields.html', data=data, errors=errors%}
-
-        <h1>Required-If-Applicable Common Core Metadata</h1>
-        {% snippet 'package/snippets/required_if_applicable_common_core_fields.html', data=data, errors=errors%}
-        {% block license %}
-            <div class="control-group">
-            {% set error = errors.license_id %}
-            <label class="control-label" for="field-license">{{ _("License") }}</label>
-                <div class="controls">
-                <select id="field-license" name="license_id" data-module="autocomplete">
-                  {% for license_desc, license_id in licenses|sort if license_desc  %}
-                    <option value="{{ license_id }}" {% if data.get('license_id', 'notspecified') == license_id %}selected="selected"{% endif %}>{{ license_desc }}</option>
-                  {% endfor %}
-                </select>
-                {% if error %}<span class="error-block">{{ error }}</span>{% endif %}
-                <span class="info-block info-inline">
-                  <i class="icon-info-sign"></i>
-                  {% trans %}
-                    License definitions and additional information can be found
-                    at <a href="http://opendefinition.org/licenses/">opendefinition.org</a>
-                  {% endtrans %}
-                </span>
-                </div>
-            </div>
-        {% endblock license %}
-
-        <h1>Expanded Common Core Metadata</h1>
-        {% snippet 'package/snippets/expanded_common_core_fields.html', data=data, errors=errors%}
-    {% endif %}
+    {{ super() }}
 {% endblock package_metadata_fields_custom %}
 
 {% block dataset_fields %}{# Hiding the inputs #}{% endblock dataset_fields%}
