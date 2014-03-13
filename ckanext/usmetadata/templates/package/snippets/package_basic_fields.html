@@ -25,7 +25,7 @@
 
 {% block package_basic_fields_tags %}
 {% set tag_attrs = {'data-module': 'autocomplete', 'data-module-tags': '', 'data-module-source': '/api/2/util/tag/autocomplete?incomplete=?', 'title':'Tags (or keywords) help users discover your dataset, please include terms that would be used by technical and non-technical users.'} %}
-{{ form.input('tag_string', id='field-tags', label=_('Tags'), placeholder=_('eg. economy, mental health, government'), value=data.tag_string, error=errors.tags, classes=['control-full'], attrs=tag_attrs, is_required=true) }}
+{{ form.input('tag_string', id='field-tags', label=_('Tags'), placeholder=_('eg. economy, mental health, government'), value=data.tag_string, error=errors.tag_string, classes=['control-full'], attrs=tag_attrs, is_required=true) }}
 {% endblock package_basic_fields_tags %}
 
 {% block package_metadata_fields_visibility %}
@@ -36,8 +36,8 @@
             {{ super() }}
         {% endif %}
 
-     {% set data = h.load_data_into_dict(data) %}
-     {% set active = data.state == 'active' %}
+    {% set data = h.load_data_into_dict(data) %}
+    {% set active = data.state == 'active' %}
 
     {% if not active %}
         {% snippet 'package/snippets/required_common_core_fields.html', data=data, errors=errors%}
