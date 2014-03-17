@@ -19,7 +19,7 @@ required_metadata = ({'id':'title', 'validators': [v.String(max=300)]},
                      {'id':'publisher', 'validators': [v.String(max=300)]},
                      {'id':'contact_name', 'validators': [v.String(max=300)]},
                      {'id':'contact_email', 'validators': [v.Email(),v.String(max=100)]},
-
+                     {'id':'modified', 'validators': [v.DateValidator(),v.String(max=10)]},
                      #TODO should this unique_id be validated against any other unique IDs for this agency?
                      {'id':'unique_id', 'validators': [v.String(max=100)]}
 )
