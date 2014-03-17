@@ -19,7 +19,7 @@ required_metadata = ({'id':'title', 'validators': [v.String(max=300)]},
                      {'id':'publisher', 'validators': [v.String(max=300)]},
                      {'id':'contact_name', 'validators': [v.String(max=300)]},
                      {'id':'contact_email', 'validators': [v.Email(),v.String(max=100)]},
-                     {'id':'modified', 'validators': [v.DateValidator(),v.String(max=10)]},
+
                      #TODO should this unique_id be validated against any other unique IDs for this agency?
                      {'id':'unique_id', 'validators': [v.String(max=100)]}
 )
@@ -91,7 +91,8 @@ expanded_metadata = ({'id': 'release_date', 'validators': [v.String(max=500)]},
                      {'id':'rss_feed', 'validators': [v.URL(), v.String(max=350)]},
                      {'id':'system_of_records', 'validators': [v.URL(), v.String(max=350)]},
                      {'id':'system_of_records_none_related_to_this_dataset', 'validators': [v.URL(), v.String(max=350)]},
-                     {'id':'primary_it_investment_uii', 'validators': [v.String(max=75)]}
+                     {'id':'primary_it_investment_uii', 'validators': [v.String(max=75)]},
+                     {'id':'modified', 'validators': [v.DateValidator(),v.String(max=10)]}
 )
 
 for meta in expanded_metadata:
