@@ -15,7 +15,11 @@
       {% for meta in pkg_dict.common_core %}
 
         <tr rel="dc:relation" resource="_:extra{{ i }}">
-          <th scope="row" class="dataset-label" property="rdfs:label">{{ _(meta) }}</th>
+            {% if pkg_dict.labels[meta] %}
+            <th scope="row" class="dataset-label" property="rdfs:label">{{ pkg_dict.labels[meta] }}</th>
+            {% else %}
+            <th scope="row" class="dataset-label" property="rdfs:label">{{ _(meta) }}</th>
+            {% endif %}
           <td class="dataset-details" property="rdf:value">{{ pkg_dict.common_core[meta] }}</td>
         </tr>
         {% endfor %}

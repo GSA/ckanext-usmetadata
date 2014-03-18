@@ -39,6 +39,35 @@ accrual_periodicity = [u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biwee
 
 access_levels = ['public', 'restricted public', 'non-public']
 
+#Used to display user-friendly labels on dataset page
+labels = {'public_access_level': 'Public Access Level',
+ 'tag_string': 'Tags',
+ 'access_level_comment': 'Access Level Comment',
+ 'contact_name': 'Contact Name',
+ 'category': 'Category',
+ 'title': 'Title',
+ 'temporal': 'Temporal',
+ 'program_code': 'Program Code',
+ 'spatial': 'Spatial',
+ 'license_id': 'License',
+ 'bureau_code': 'Bureau Code',
+ 'tags': 'Tags',
+ 'contact_email': 'Contact Email',
+ 'publisher': 'Publisher',
+ 'name': 'Name',
+ 'language': 'Language',
+ 'accrual_periodicity': 'Frequency',
+ 'notes': 'Description',
+ 'modified': 'Last Update',
+ 'related_documents': 'Related Documents',
+ 'data_dictionary': 'Data Dictionary',
+ 'homepage_url': 'Homepage Url',
+ 'unique_id': 'Unique Id',
+ 'system_of_records': 'System of Records',
+ 'release_date': 'Release Date',
+ 'data_quality': 'Data Quality'
+}
+
 # Dictionary of all media types
 media_types = json.loads(open(os.path.join(os.path.dirname(__file__), 'media_types.json'), 'r').read())
 
@@ -142,7 +171,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             new_dict['common_core'] = {}
 
         reduced_extras = []
-
+        new_dict['labels'] = labels
         try:
             for extra in new_dict['extras']:
 
@@ -238,8 +267,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     def update_package_schema(self):
         log.debug('update_package_schema')
         schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
-        #TODO uncomment, should be using schema for updates, but it's causing problems during resource creation
-        log.debug(request.path);
+
         #TODO: Remove this is HACK - Add validation for update only.
         if request.path.startswith('/dataset/edit'):
             schema = self._create_package_schema(schema)
