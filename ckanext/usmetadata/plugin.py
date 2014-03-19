@@ -12,35 +12,64 @@ from formencode.validators import validators
 log = getLogger(__name__)
 
 #excluded title, description, tags and last update as they're part of the default ckan dataset metadata
-required_metadata = ({'id':'title', 'validators': [v.String(max=300)]},
-                     {'id':'notes', 'validators': [v.NotEmpty]},
-                     {'id':'tag_string', 'validators': [v.NotEmpty]},
-                     {'id':'public_access_level', 'validators': [v.Regex(r'^([Pp]ublic)|([Rr]estricted [Pp]ublic)|([Pp]rivate)|([nN]on-public)$')]},
-                     {'id':'publisher', 'validators': [v.String(max=300)]},
-                     {'id':'contact_name', 'validators': [v.String(max=300)]},
-                     {'id':'contact_email', 'validators': [v.Email(),v.String(max=100)]},
-
-                     #TODO should this unique_id be validated against any other unique IDs for this agency?
-                     {'id':'unique_id', 'validators': [v.String(max=100)]}
+required_metadata = (
+    {'id':'title', 'validators': [v.String(max=300)]},
+    {'id':'notes', 'validators': [v.NotEmpty]},
+    {'id':'tag_string', 'validators': [v.NotEmpty]},
+    {'id':'public_access_level', 'validators': [v.Regex(r'^([Pp]ublic)|([Rr]estricted [Pp]ublic)|([Pp]rivate)|([nN]on-public)$')]},
+    {'id':'publisher', 'validators': [v.String(max=300)]},
+    {'id':'contact_name', 'validators': [v.String(max=300)]},
+    {'id':'contact_email', 'validators': [v.Email(),v.String(max=100)]},
+    #TODO should this unique_id be validated against any other unique IDs for this agency?
+    {'id':'unique_id', 'validators': [v.String(max=100)]}
 )
 
-required_metadata_update = ({'id':'public_access_level','validators': [v.Regex(r'^([Pp]ublic)|([Rr]estricted [Pp]ublic)|([Pp]rivate)|([nN]on-public)$')]},
-                            {'id':'publisher', 'validators': [v.String(max=300)]},
-                            {'id':'contact_name', 'validators': [v.String(max=300)]},
-                            {'id':'contact_email', 'validators': [v.Email(),v.String(max=100)]},
+#used to bypass validation on create
+required_metadata_update = (
+    {'id':'public_access_level','validators': [v.Regex(r'^([Pp]ublic)|([Rr]estricted [Pp]ublic)|([Pp]rivate)|([nN]on-public)$')]},
+    {'id':'publisher', 'validators': [v.String(max=300)]},
+    {'id':'contact_name', 'validators': [v.String(max=300)]},
+    {'id':'contact_email', 'validators': [v.Email(),v.String(max=100)]},
+    #TODO should this unique_id be validated against any other unique IDs for this agency?
+    {'id':'unique_id', 'validators': [v.String(max=100)]}
+)
 
-                            #TODO should this unique_id be validated against any other unique IDs for this agency?
-                            {'id':'unique_id', 'validators': [v.String(max=100)]}
+#some of these could be excluded (e.g. related_documents) which can be captured from other ckan default data
+expanded_metadata = (
+    {'id': 'release_date', 'validators': [v.String(max=500)]},
+    {'id':'accrual_periodicity', 'validators': [v.Regex(r'^([Aa]nnual)|([Bb]imonthly)|([Ss]emiweekly)|([Dd]aily)|([Bb]iweekly)|([Ss]emiannual)|([Bb]iennial)|([Tt]riennial)|(Three times a week)|(Three times a month)|(Continuously updated)|([Mm]onthly)|([Qq]uarterly)|([Ss]emimonthly)|(Three times a year)|(Weekly)|(Completely irregular)$')]},
+    {'id':'language', 'validators': [v.Regex(r"^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))(\s*,\s*(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))\s*)*$")]},
+    {'id':'data_quality', 'validators': [v.String(max=1000)]},
+    {'id':'category', 'validators': [v.String(max=1000)]},
+    {'id':'related_documents', 'validators': [v.String(max=1000)]},
+    {'id':'homepage_url', 'validators': [v.URL(), v.String(max=350)]},
+    {'id':'rss_feed', 'validators': [v.URL(), v.String(max=350)]},
+    {'id':'system_of_records', 'validators': [v.URL(), v.String(max=350)]},
+    {'id':'system_of_records_none_related_to_this_dataset', 'validators': [v.URL(), v.String(max=350)]},
+    {'id':'primary_it_investment_uii', 'validators': [v.String(max=75)]},
+)
+
+#excluded download_url, endpoint, format and license as they may be discoverable
+required_if_applicable_metadata = (
+     {'id':'data_dictionary', 'validators': [v.URL(),v.String(max=350)]},
+     {'id':'endpoint', 'validators': [v.URL(),v.String(max=350)]},
+     {'id':'spatial', 'validators': [v.String(max=500)]},
+     {'id':'temporal', 'validators': [v.Regex(r"^([0-9]{4})(-([0-9]{1,2})(-([0-9]{1,2})((.)([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?(/([0-9]{4})(-([0-9]{1,2})(-([0-9]{1,2})((.)([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?){0,1}$")]},
+     {'id':'bureau_code', 'validators': [v.Regex(r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$')]},
+     {'id':'program_code', 'validators': [v.Regex(r'^\d{3}:\d{3}(\s*,\s*\d{3}:\d{3}\s*)*$')]},
+     {'id':'access_level_comment', 'validators': [v.String(max=255)]},
+     {'id':'modified', 'validators': [v.DateValidator(),v.String(max=10)]},
 )
 
 accrual_periodicity = [u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biweekly", u"Semiannual", u"Biennial", u"Triennial",
                 u"Three times a week", u"Three times a month", u"Continuously updated", u"Monthly", u"Quarterly", u"Semimonthly",
                 u"Three times a year", u"Weekly", u"Completely irregular"]
 
+
 access_levels = ['public', 'restricted public', 'non-public']
 
 #Used to display user-friendly labels on dataset page
-labels = {
+dataset_labels = {
     'public_access_level': 'Public Access Level',
     'tag_string': 'Tags',
     'access_level_comment': 'Access Level Comment',
@@ -85,6 +114,7 @@ def get_req_metadata_for_create():
         meta['validators'].append(validator)
     return new_req_meta
 
+#used to bypass validation on create
 def get_req_metadata_for_update():
     log.debug('get_req_metadata_for_update')
     new_req_meta = copy.copy(required_metadata_update)
@@ -100,39 +130,11 @@ def get_req_metadata_for_show_update():
         meta['validators'].append(validator)
     return new_req_meta
 
-#excluded download_url, endpoint, format and license as they may be discoverable
-required_if_applicable_metadata = (
-     {'id':'data_dictionary', 'validators': [v.URL(),v.String(max=350)]},
-     {'id':'endpoint', 'validators': [v.URL(),v.String(max=350)]},
-     {'id':'spatial', 'validators': [v.String(max=500)]},
-     {'id':'temporal', 'validators': [v.Regex(r"^([0-9]{4})(-([0-9]{1,2})(-([0-9]{1,2})((.)([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?(/([0-9]{4})(-([0-9]{1,2})(-([0-9]{1,2})((.)([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?){0,1}$")]},
-     {'id':'bureau_code', 'validators': [v.Regex(r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$')]},
-     {'id':'program_code', 'validators': [v.Regex(r'^\d{3}:\d{3}(\s*,\s*\d{3}:\d{3}\s*)*$')]},
-     {'id':'access_level_comment', 'validators': [v.String(max=255)]},
-)
-
 for meta in required_if_applicable_metadata:
     meta['validators'].append(p.toolkit.get_validator('ignore_empty'))
 
-#some of these could be excluded (e.g. related_documents) which can be captured from other ckan default data
-expanded_metadata = ({'id': 'release_date', 'validators': [v.String(max=500)]},
-                      {'id':'accrual_periodicity', 'validators': [v.Regex(r'^([Aa]nnual)|([Bb]imonthly)|([Ss]emiweekly)|([Dd]aily)|([Bb]iweekly)|([Ss]emiannual)|([Bb]iennial)|([Tt]riennial)|(Three times a week)|(Three times a month)|(Continuously updated)|([Mm]onthly)|([Qq]uarterly)|([Ss]emimonthly)|(Three times a year)|(Weekly)|(Completely irregular)$')]},
-                      {'id':'language', 'validators': [v.Regex(r"^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))(\s*,\s*(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))\s*)*$")]},
-                      {'id':'data_quality', 'validators': [v.String(max=1000)]},
-                      {'id':'category', 'validators': [v.String(max=1000)]},
-                      {'id':'related_documents', 'validators': [v.String(max=1000)]},
-                     {'id':'homepage_url', 'validators': [v.URL(), v.String(max=350)]},
-                     {'id':'rss_feed', 'validators': [v.URL(), v.String(max=350)]},
-                     {'id':'system_of_records', 'validators': [v.URL(), v.String(max=350)]},
-                     {'id':'system_of_records_none_related_to_this_dataset', 'validators': [v.URL(), v.String(max=350)]},
-                     {'id':'primary_it_investment_uii', 'validators': [v.String(max=75)]},
-                     {'id':'modified', 'validators': [v.DateValidator(),v.String(max=10)]}
-)
-
 for meta in expanded_metadata:
     meta['validators'].append(p.toolkit.get_validator('ignore_empty'))
-
-
 
 schema_updates_for_create = [{meta['id'] : meta['validators']+[p.toolkit.get_converter('convert_to_extras')]} for meta in (get_req_metadata_for_create()+required_if_applicable_metadata + expanded_metadata)]
 schema_updates_for_update = [{meta['id'] : meta['validators']+[p.toolkit.get_converter('convert_to_extras')]} for meta in (get_req_metadata_for_update()+required_if_applicable_metadata + expanded_metadata)]
@@ -176,7 +178,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             new_dict['common_core'] = {}
 
         reduced_extras = []
-        new_dict['labels'] = labels
+        new_dict['labels'] = dataset_labels
         try:
             for extra in new_dict['extras']:
 
@@ -306,7 +308,7 @@ class MediaController(BaseController):
     """Controller to return the acceptable media types as JSON, powering the front end"""
 
     def get_media_types(self):
-                # set content type (charset required or pylons throws an error)
+        # set content type (charset required or pylons throws an error)
         q = request.params.get('incomplete', '')
 
         response.content_type = 'application/json; charset=UTF-8'
