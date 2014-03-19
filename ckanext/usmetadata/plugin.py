@@ -13,9 +13,9 @@ log = getLogger(__name__)
 
 #excluded title, description, tags and last update as they're part of the default ckan dataset metadata
 required_metadata = (
-    {'id':'title', 'validators': [v.String(max=300)]},
-    {'id':'notes', 'validators': [v.NotEmpty]},
-    {'id':'tag_string', 'validators': [v.NotEmpty]},
+    # {'id':'title', 'validators': [v.String(max=300)]},
+    # {'id':'notes', 'validators': [v.NotEmpty]},
+    # {'id':'tag_string', 'validators': [v.NotEmpty]},
     {'id':'public_access_level', 'validators': [v.Regex(r'^([Pp]ublic)|([Rr]estricted [Pp]ublic)|([Pp]rivate)|([nN]on-public)$')]},
     {'id':'publisher', 'validators': [v.String(max=300)]},
     {'id':'contact_name', 'validators': [v.String(max=300)]},

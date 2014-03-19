@@ -10,7 +10,7 @@
 
 {{ form.input('publisher', id='field-publisher', label=_('Publishing Agency'), placeholder=_('Federal Bureau of Investigation'), value=data.common_core.publisher, error=errors.publisher, classes=['control-full', 'control-medium'], attrs={'title': 'The publishing agency.'}, is_required=true) }}
 
-{{ form.input('contact_name', id='field-contact_name', label=_('Contact Name'), placeholder=_('John Smith'), value=data.common_core.contact_name, error=errors.contact_name, classes=['control-full', 'control-medium'], attrs={'title': 'Contact person\'s name for the asset.'}, is_required=true) }}
+{{ form.input('contact_name', id='field-contact_name', label=_('Contact Name'), placeholder=_('John Smith'), value=data.common_core.contact_name, error=errors.contact_name, classes=['control-full', 'control-medium'], attrs={'title': "Contact person's name for the asset."}, is_required=true) }}
 
 {{ form.input('contact_email', id='field-contact_email', label=_('Contact Email'), placeholder=_('john.smith@fbi.gov'), value=data.common_core.contact_email, error=errors.contact_email, classes=['control-full', 'control-medium'], attrs={'title': " Contact person's email address. "}, is_required=true) }}
 
