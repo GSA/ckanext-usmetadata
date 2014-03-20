@@ -58,7 +58,7 @@ required_if_applicable_metadata = (
      {'id':'bureau_code', 'validators': [v.Regex(r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$')]},
      {'id':'program_code', 'validators': [v.Regex(r'^\d{3}:\d{3}(\s*,\s*\d{3}:\d{3}\s*)*$')]},
      {'id':'access_level_comment', 'validators': [v.String(max=255)]},
-     {'id':'modified', 'validators': [v.DateValidator(),v.String(max=10)]},
+     {'id':'modified', 'validators': [v.DateValidator(),v.String(max=50)]},
 )
 
 accrual_periodicity = [u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biweekly", u"Semiannual", u"Biennial", u"Triennial",
