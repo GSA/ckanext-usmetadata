@@ -44,7 +44,7 @@
 
 {{ form.input('related_documents', label=_('Related Documents'), id='field-related_documents', placeholder=_('http://www.agency.gov/fruits/fruits.csv,http://www.agency.gov/legumes/legumes.csv'), value=data.common_core.related_documents, error=errors.related, classes=['control-medium'], attrs={'title': 'Related documents such as technical information about a dataset, developer documentation, etc. References not in the data dictionary go here. Separate multiple URLs with commas.'} )}}
 
-{{ form.input('release_date', label=_('Release Date'), id='field-system_of_records', placeholder=_('2012-01-15'), value=data.common_core.system_of_records, error=errors.system_of_records, classes=['control-medium'], attrs={'title': 'Date of formal issuance.Dates should be formatted as YYYY-MM-DD. Specify "01" as the day if unknown. If this file is brand-new, enter the issued date here as well'} )}}
+{{ form.input('release_date', label=_('Release Date'), id='field-release_date', placeholder=_('2012-01-15'), value=data.common_core.release_date, error=errors.release_date, classes=['control-medium'], attrs={'title': 'Date of formal issuance.Dates should be formatted as YYYY-MM-DD. Specify "01" as the day if unknown. If this file is brand-new, enter the issued date here as well'} )}}
 
 {{ form.input('system_of_records', label=_('System of Records'), id='field-system_of_records', placeholder=_('http://www.my.gov/systemofrecords'), value=data.common_core.system_of_records, error=errors.system_of_records, classes=['control-medium'], attrs={'title': 'If the systems is designated as a system of records under the Privacy Act of 1974, provide the URL to the System of Records Notice related to this dataset.'} )}}
 
