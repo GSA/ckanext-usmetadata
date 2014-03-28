@@ -68,6 +68,8 @@ accrual_periodicity = [u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biwee
 
 access_levels = ['public', 'restricted public', 'non-public']
 
+data_quality_options = {'': '', 'true': 'Yes', 'false': 'No'}
+
 #Used to display user-friendly labels on dataset page
 dataset_labels = {
     'public_access_level': 'Public Access Level',
@@ -95,7 +97,7 @@ dataset_labels = {
     'unique_id': 'Unique Identifier',
     'system_of_records': 'System of Records',
     'release_date': 'Release Date',
-    'data_quality': 'Data Quality',
+    'data_quality': 'Meets the agency Information Quality Guidelines',
     'primary_it_investment_uii': 'Primary IT Investment UII',
     'accessURL' : 'Download URL',
     'webService' : 'Endpoint',
@@ -181,6 +183,9 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         new_dict['labels'] = dataset_labels
         try:
             for extra in new_dict['extras']:
+                #to take care of legacy On values for data_quality
+                if extra['key'] == 'data_quality' and extra['value'] == 'on':
+                    extra['value'] = "true"
 
                 if extra['key'] in common_metadata:
                     new_dict['common_core'][extra['key']]=extra['value']
@@ -298,7 +303,9 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     # always_private hides Visibility selector, essentially meaning that all datasets are private to an organization
     def get_helpers(self):
         log.debug('get_helpers() called')
-        return {'public_access_levels': access_levels, 'required_metadata': required_metadata,
+        return {'public_access_levels': access_levels,
+                'required_metadata': required_metadata,
+                'data_quality_options' : data_quality_options,
                 'load_data_into_dict':  self.load_data_into_dict,
                 'accrual_periodicity': accrual_periodicity,
                 'always_private': True}
