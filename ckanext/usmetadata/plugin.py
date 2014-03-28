@@ -13,9 +13,9 @@ log = getLogger(__name__)
 
 #excluded title, description, tags and last update as they're part of the default ckan dataset metadata
 required_metadata = (
-    # {'id':'title', 'validators': [v.String(max=300)]},
-    # {'id':'notes', 'validators': [v.NotEmpty]},
-    # {'id':'tag_string', 'validators': [v.NotEmpty]},
+    {'id':'title', 'validators': [v.String(max=300)]},
+    {'id':'notes', 'validators': [v.NotEmpty]},
+    {'id':'tag_string', 'validators': [v.NotEmpty]},
     {'id':'public_access_level', 'validators': [v.Regex(r'^([Pp]ublic)|([Rr]estricted [Pp]ublic)|([Pp]rivate)|([nN]on-public)$')]},
     {'id':'publisher', 'validators': [v.String(max=300)]},
     {'id':'contact_name', 'validators': [v.String(max=300)]},
@@ -51,14 +51,14 @@ expanded_metadata = (
 
 #excluded download_url, endpoint, format and license as they may be discoverable
 required_if_applicable_metadata = (
-     {'id':'data_dictionary', 'validators': [v.URL(),v.String(max=350)]},
-     {'id':'endpoint', 'validators': [v.URL(),v.String(max=350)]},
-     {'id':'spatial', 'validators': [v.String(max=500)]},
-     {'id':'temporal', 'validators': [v.Regex(r"^([0-9]{4})(-([0-9]{1,2})(-([0-9]{1,2})((.)([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?(/([0-9]{4})(-([0-9]{1,2})(-([0-9]{1,2})((.)([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?){0,1}$")]},
-     {'id':'bureau_code', 'validators': [v.Regex(r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$')]},
-     {'id':'program_code', 'validators': [v.Regex(r'^\d{3}:\d{3}(\s*,\s*\d{3}:\d{3}\s*)*$')]},
-     {'id':'access_level_comment', 'validators': [v.String(max=255)]},
-     {'id':'modified', 'validators': [v.DateValidator(),v.String(max=50)]},
+    {'id':'data_dictionary', 'validators': [v.URL(),v.String(max=350)]},
+    {'id':'endpoint', 'validators': [v.URL(),v.String(max=350)]},
+    {'id':'spatial', 'validators': [v.String(max=500)]},
+    {'id':'temporal', 'validators': [v.Regex(r"^([0-9]{4})(-([0-9]{1,2})(-([0-9]{1,2})((.)([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?(/([0-9]{4})(-([0-9]{1,2})(-([0-9]{1,2})((.)([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?){0,1}$")]},
+    {'id':'bureau_code', 'validators': [v.Regex(r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$')]},
+    {'id':'program_code', 'validators': [v.Regex(r'^\d{3}:\d{3}(\s*,\s*\d{3}:\d{3}\s*)*$')]},
+    {'id':'access_level_comment', 'validators': [v.String(max=255)]},
+    {'id':'modified', 'validators': [v.DateValidator(),v.String(max=50)]},
 )
 
 accrual_periodicity = [u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biweekly", u"Semiannual", u"Biennial", u"Triennial",
@@ -291,7 +291,6 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         # Don't show vocab tags mixed in with normal 'free' tags
         # (e.g. on dataset pages, or on the search page)
         schema['tags']['__extras'].append(p.toolkit.get_converter('free_tags_only'))
-
         schema = self._modify_package_schema_show(schema)
         return schema
 
