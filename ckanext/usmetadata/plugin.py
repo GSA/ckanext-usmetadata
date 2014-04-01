@@ -186,6 +186,8 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
                 #to take care of legacy On values for data_quality
                 if extra['key'] == 'data_quality' and extra['value'] == 'on':
                     extra['value'] = "true"
+                elif extra['key'] == 'data_quality' and extra['value'] == 'False':
+                    extra['value'] == "false"
 
                 if extra['key'] in common_metadata:
                     new_dict['common_core'][extra['key']]=extra['value']
