@@ -269,6 +269,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         for update in schema_updates_for_create:
             schema.update(update)
 
+        #use convert_to_tags functions for taxonomy
         schema.update({
             'tag_string': [p.toolkit.get_validator('not_empty'),
                            p.toolkit.get_converter('convert_to_tags')]
@@ -281,6 +282,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         for update in schema_updates_for_update:
             schema.update(update)
 
+        #use convert_to_tags functions for taxonomy
         schema.update({
             'tag_string': [p.toolkit.get_validator('ignore_empty'),
                            p.toolkit.get_converter('convert_to_tags')]
