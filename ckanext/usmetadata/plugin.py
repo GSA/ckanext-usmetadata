@@ -13,58 +13,64 @@ log = getLogger(__name__)
 
 #excluded title, description, tags and last update as they're part of the default ckan dataset metadata
 required_metadata = (
-    {'id':'title', 'validators': [v.String(max=300)]},
-    {'id':'notes', 'validators': [v.NotEmpty]},
-    {'id':'tag_string', 'validators': [v.NotEmpty]},
-    {'id':'public_access_level', 'validators': [v.Regex(r'^([Pp]ublic)|([Rr]estricted [Pp]ublic)|([Pp]rivate)|([nN]on-public)$')]},
-    {'id':'publisher', 'validators': [v.String(max=300)]},
-    {'id':'contact_name', 'validators': [v.String(max=300)]},
-    {'id':'contact_email', 'validators': [v.Email(),v.String(max=100)]},
+    {'id': 'title', 'validators': [v.String(max=300)]},
+    {'id': 'notes', 'validators': [v.NotEmpty]},
+    #{'id':'tag_string', 'validators': [v.NotEmpty]},
+    {'id': 'public_access_level',
+     'validators': [v.Regex(r'^([Pp]ublic)|([Rr]estricted [Pp]ublic)|([Pp]rivate)|([nN]on-public)$')]},
+    {'id': 'publisher', 'validators': [v.String(max=300)]},
+    {'id': 'contact_name', 'validators': [v.String(max=300)]},
+    {'id': 'contact_email', 'validators': [v.Email(), v.String(max=100)]},
     #TODO should this unique_id be validated against any other unique IDs for this agency?
-    {'id':'unique_id', 'validators': [v.String(max=100)]}
+    {'id': 'unique_id', 'validators': [v.String(max=100)]}
 )
 
 #used to bypass validation on create
 required_metadata_update = (
-    {'id':'public_access_level','validators': [v.Regex(r'^([Pp]ublic)|([Rr]estricted [Pp]ublic)|([Pp]rivate)|([nN]on-public)$')]},
-    {'id':'publisher', 'validators': [v.String(max=300)]},
-    {'id':'contact_name', 'validators': [v.String(max=300)]},
-    {'id':'contact_email', 'validators': [v.Email(),v.String(max=100)]},
+    {'id': 'public_access_level',
+     'validators': [v.Regex(r'^([Pp]ublic)|([Rr]estricted [Pp]ublic)|([Pp]rivate)|([nN]on-public)$')]},
+    {'id': 'publisher', 'validators': [v.String(max=300)]},
+    {'id': 'contact_name', 'validators': [v.String(max=300)]},
+    {'id': 'contact_email', 'validators': [v.Email(), v.String(max=100)]},
     #TODO should this unique_id be validated against any other unique IDs for this agency?
-    {'id':'unique_id', 'validators': [v.String(max=100)]}
+    {'id': 'unique_id', 'validators': [v.String(max=100)]}
 )
 
 #some of these could be excluded (e.g. related_documents) which can be captured from other ckan default data
 expanded_metadata = (
     {'id': 'release_date', 'validators': [v.String(max=500)]},
-    {'id':'accrual_periodicity', 'validators': [v.Regex(r'^([Aa]nnual)|([Bb]imonthly)|([Ss]emiweekly)|([Dd]aily)|([Bb]iweekly)|([Ss]emiannual)|([Bb]iennial)|([Tt]riennial)|(Three times a week)|(Three times a month)|(Continuously updated)|([Mm]onthly)|([Qq]uarterly)|([Ss]emimonthly)|(Three times a year)|(Weekly)|(Completely irregular)$')]},
-    {'id':'language', 'validators': [v.Regex(r"^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))(\s*,\s*(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))\s*)*$")]},
-    {'id':'data_quality', 'validators': [v.String(max=1000)]},
-    {'id':'category', 'validators': [v.String(max=1000)]},
-    {'id':'related_documents', 'validators': [v.String(max=1000)]},
-    {'id':'homepage_url', 'validators': [v.URL(), v.String(max=350)]},
-    {'id':'rss_feed', 'validators': [v.URL(), v.String(max=350)]},
-    {'id':'system_of_records', 'validators': [v.URL(), v.String(max=350)]},
-    {'id':'system_of_records_none_related_to_this_dataset', 'validators': [v.URL(), v.String(max=350)]},
-    {'id':'primary_it_investment_uii', 'validators': [v.String(max=75)]},
+    {'id': 'accrual_periodicity', 'validators': [v.Regex(
+        r'^([Aa]nnual)|([Bb]imonthly)|([Ss]emiweekly)|([Dd]aily)|([Bb]iweekly)|([Ss]emiannual)|([Bb]iennial)|([Tt]riennial)|(Three times a week)|(Three times a month)|(Continuously updated)|([Mm]onthly)|([Qq]uarterly)|([Ss]emimonthly)|(Three times a year)|(Weekly)|(Completely irregular)$')]},
+    {'id': 'language', 'validators': [v.Regex(
+        r"^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))(\s*,\s*(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))\s*)*$")]},
+    {'id': 'data_quality', 'validators': [v.String(max=1000)]},
+    {'id': 'category', 'validators': [v.String(max=1000)]},
+    {'id': 'related_documents', 'validators': [v.String(max=1000)]},
+    {'id': 'homepage_url', 'validators': [v.URL(), v.String(max=350)]},
+    {'id': 'rss_feed', 'validators': [v.URL(), v.String(max=350)]},
+    {'id': 'system_of_records', 'validators': [v.URL(), v.String(max=350)]},
+    {'id': 'system_of_records_none_related_to_this_dataset', 'validators': [v.URL(), v.String(max=350)]},
+    {'id': 'primary_it_investment_uii', 'validators': [v.String(max=75)]},
 )
 
 #excluded download_url, endpoint, format and license as they may be discoverable
 required_if_applicable_metadata = (
-    {'id':'data_dictionary', 'validators': [v.URL(),v.String(max=350)]},
-    {'id':'endpoint', 'validators': [v.URL(),v.String(max=350)]},
-    {'id':'spatial', 'validators': [v.String(max=500)]},
-    {'id':'temporal', 'validators': [v.Regex(r"^([0-9]{4})(-([0-9]{1,2})(-([0-9]{1,2})((.)([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?(/([0-9]{4})(-([0-9]{1,2})(-([0-9]{1,2})((.)([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?){0,1}$")]},
-    {'id':'bureau_code', 'validators': [v.Regex(r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$')]},
-    {'id':'program_code', 'validators': [v.Regex(r'^\d{3}:\d{3}(\s*,\s*\d{3}:\d{3}\s*)*$')]},
-    {'id':'access_level_comment', 'validators': [v.String(max=255)]},
-    {'id':'modified', 'validators': [v.DateValidator(),v.String(max=50)]},
+    {'id': 'data_dictionary', 'validators': [v.URL(), v.String(max=350)]},
+    {'id': 'endpoint', 'validators': [v.URL(), v.String(max=350)]},
+    {'id': 'spatial', 'validators': [v.String(max=500)]},
+    {'id': 'temporal', 'validators': [v.Regex(
+        r"^([0-9]{4})(-([0-9]{1,2})(-([0-9]{1,2})((.)([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?(/([0-9]{4})(-([0-9]{1,2})(-([0-9]{1,2})((.)([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?){0,1}$")]},
+    {'id': 'bureau_code', 'validators': [v.Regex(r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$')]},
+    {'id': 'program_code', 'validators': [v.Regex(r'^\d{3}:\d{3}(\s*,\s*\d{3}:\d{3}\s*)*$')]},
+    {'id': 'access_level_comment', 'validators': [v.String(max=255)]},
+    {'id': 'modified', 'validators': [v.DateValidator(), v.String(max=50)]},
 )
 
-accrual_periodicity = [u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biweekly", u"Semiannual", u"Biennial", u"Triennial",
-                u"Three times a week", u"Three times a month", u"Continuously updated", u"Monthly", u"Quarterly", u"Semimonthly",
-                u"Three times a year", u"Weekly", u"Completely irregular"]
-
+accrual_periodicity = [u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biweekly", u"Semiannual", u"Biennial",
+                       u"Triennial",
+                       u"Three times a week", u"Three times a month", u"Continuously updated", u"Monthly", u"Quarterly",
+                       u"Semimonthly",
+                       u"Three times a year", u"Weekly", u"Completely irregular"]
 
 access_levels = ['public', 'restricted public', 'non-public']
 
@@ -99,9 +105,9 @@ dataset_labels = {
     'release_date': 'Release Date',
     'data_quality': 'Meets the agency Information Quality Guidelines',
     'primary_it_investment_uii': 'Primary IT Investment UII',
-    'accessURL' : 'Download URL',
-    'webService' : 'Endpoint',
-    'format' : 'Format'
+    'accessURL': 'Download URL',
+    'webService': 'Endpoint',
+    'format': 'Format'
 }
 
 # Dictionary of all media types
@@ -116,6 +122,7 @@ def get_req_metadata_for_create():
         meta['validators'].append(validator)
     return new_req_meta
 
+
 #used to bypass validation on create
 def get_req_metadata_for_update():
     log.debug('get_req_metadata_for_update')
@@ -125,6 +132,7 @@ def get_req_metadata_for_update():
         meta['validators'].append(validator)
     return new_req_meta
 
+
 def get_req_metadata_for_show_update():
     new_req_meta = copy.copy(required_metadata)
     validator = p.toolkit.get_validator('ignore_missing')
@@ -132,15 +140,20 @@ def get_req_metadata_for_show_update():
         meta['validators'].append(validator)
     return new_req_meta
 
+
 for meta in required_if_applicable_metadata:
     meta['validators'].append(p.toolkit.get_validator('ignore_empty'))
 
 for meta in expanded_metadata:
     meta['validators'].append(p.toolkit.get_validator('ignore_empty'))
 
-schema_updates_for_create = [{meta['id'] : meta['validators']+[p.toolkit.get_converter('convert_to_extras')]} for meta in (get_req_metadata_for_create()+required_if_applicable_metadata + expanded_metadata)]
-schema_updates_for_update = [{meta['id'] : meta['validators']+[p.toolkit.get_converter('convert_to_extras')]} for meta in (get_req_metadata_for_update()+required_if_applicable_metadata + expanded_metadata)]
-schema_updates_for_show = [{meta['id'] : meta['validators']+[p.toolkit.get_converter('convert_from_extras')]} for meta in (get_req_metadata_for_show_update()+required_if_applicable_metadata + expanded_metadata)]
+schema_updates_for_create = [{meta['id']: meta['validators'] + [p.toolkit.get_converter('convert_to_extras')]} for meta
+                             in (get_req_metadata_for_create() + required_if_applicable_metadata + expanded_metadata)]
+schema_updates_for_update = [{meta['id']: meta['validators'] + [p.toolkit.get_converter('convert_to_extras')]} for meta
+                             in (get_req_metadata_for_update() + required_if_applicable_metadata + expanded_metadata)]
+schema_updates_for_show = [{meta['id']: meta['validators'] + [p.toolkit.get_converter('convert_from_extras')]} for meta
+                           in
+                           (get_req_metadata_for_show_update() + required_if_applicable_metadata + expanded_metadata)]
 
 
 class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
@@ -154,7 +167,8 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     p.implements(p.interfaces.IRoutes, inherit=True)
 
     def after_map(selfself, m):
-        m.connect('media_type', '/api/2/util/resource/media_autocomplete', controller='ckanext.usmetadata.plugin:MediaController', action='get_media_types')
+        m.connect('media_type', '/api/2/util/resource/media_autocomplete',
+                  controller='ckanext.usmetadata.plugin:MediaController', action='get_media_types')
         return m
 
     @classmethod
@@ -172,7 +186,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         '''
 
         new_dict = data_dict.copy()
-        common_metadata = [x['id'] for x in required_metadata+required_if_applicable_metadata+expanded_metadata]
+        common_metadata = [x['id'] for x in required_metadata + required_if_applicable_metadata + expanded_metadata]
 
         try:
             new_dict['common_core']
@@ -190,13 +204,14 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
                     extra['value'] == "false"
 
                 if extra['key'] in common_metadata:
-                    new_dict['common_core'][extra['key']]=extra['value']
+                    new_dict['common_core'][extra['key']] = extra['value']
                 else:
                     reduced_extras.append(extra)
 
             new_dict['extras'] = reduced_extras
         except KeyError as ex:
-            log.debug('''Expected key ['%s'] not found, attempting to move common core keys to subdictionary''', ex.message)
+            log.debug('''Expected key ['%s'] not found, attempting to move common core keys to subdictionary''',
+                      ex.message)
             #this can happen when a form fails validation, as all the data will now be as key,value pairs, not under extras,
             #so we'll move them to the expected point again to fill in the values
             # e.g.
@@ -206,13 +221,13 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
             #TODO remove debug
             log.debug('common core metadata: {0}'.format(common_metadata))
-            for key,value in new_dict.iteritems():
+            for key, value in new_dict.iteritems():
                 #TODO remove debug
                 log.debug('checking key: {0}'.format(key))
                 if key in common_metadata:
                     #TODO remove debug
                     log.debug('adding key: {0}'.format(key))
-                    new_dict['common_core'][key]=value
+                    new_dict['common_core'][key] = value
                     keys_to_remove.append(key)
 
             for key in keys_to_remove:
@@ -220,7 +235,8 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
         return new_dict
 
-     #See ckan.plugins.interfaces.IDatasetForm
+        #See ckan.plugins.interfaces.IDatasetForm
+
     def is_fallback(self):
         # Return True so that we use the extension's dataset form instead of CKAN's default for
         # /dataset/new and /dataset/edit
@@ -253,6 +269,10 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         for update in schema_updates_for_create:
             schema.update(update)
 
+        schema.update({
+            'tag_string': [p.toolkit.get_validator('not_empty'),
+                           p.toolkit.get_converter('convert_to_tags')]
+        })
         return schema
 
     def _modify_package_schema_update(self, schema):
@@ -261,6 +281,10 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         for update in schema_updates_for_update:
             schema.update(update)
 
+        schema.update({
+            'tag_string': [p.toolkit.get_validator('ignore_empty'),
+                           p.toolkit.get_converter('convert_to_tags')]
+        })
         return schema
 
     def _modify_package_schema_show(self, schema):
@@ -273,6 +297,8 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
     #See ckan.plugins.interfaces.IDatasetForm
     def create_package_schema(self):
+        #action, api, package_create
+
         schema = super(CommonCoreMetadataFormPlugin, self).create_package_schema()
         schema = self._create_package_schema(schema)
         return schema
@@ -280,12 +306,20 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     #See ckan.plugins.interfaces.IDatasetForm
     def update_package_schema(self):
         log.debug('update_package_schema')
-        schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
 
-        #TODO: Remove this is HACK - Add validation for update only.
-        if request.path.startswith('/dataset/edit'):
+        #find out action
+        action = request.environ['pylons.routes_dict']['action']
+        controller = request.environ['pylons.routes_dict']['controller']
+
+        #new_resource and package
+        #action, api, resource_create
+        #action, api, package_update
+
+        if action == 'edit' and controller == 'package' :
+            schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
             schema = self._create_package_schema(schema)
         else:
+            schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
             schema = self._modify_package_schema_update(schema)
 
         return schema
@@ -307,10 +341,11 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         log.debug('get_helpers() called')
         return {'public_access_levels': access_levels,
                 'required_metadata': required_metadata,
-                'data_quality_options' : data_quality_options,
-                'load_data_into_dict':  self.load_data_into_dict,
+                'data_quality_options': data_quality_options,
+                'load_data_into_dict': self.load_data_into_dict,
                 'accrual_periodicity': accrual_periodicity,
                 'always_private': True}
+
 
 class MediaController(BaseController):
     """Controller to return the acceptable media types as JSON, powering the front end"""
@@ -329,4 +364,4 @@ class MediaController(BaseController):
             if len(retval) >= 50:
                 break
 
-        return json.dumps({'ResultSet':{'Result':retval}})
+        return json.dumps({'ResultSet': {'Result': retval}})
