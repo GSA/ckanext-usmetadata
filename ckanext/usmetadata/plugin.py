@@ -10,6 +10,15 @@ from ckan.lib.base import BaseController
 from formencode.validators import validators
 
 log = getLogger(__name__)
+#updated resource schema
+default_resource_schema = (
+    {
+        'url': [p.toolkit.get_validator('not_empty'), unicode],#, URL(add_http=False)],
+        'description': [p.toolkit.get_validator('not_empty'), unicode],
+        'format': [p.toolkit.get_validator('not_empty'), unicode],
+        'name': [p.toolkit.get_validator('not_empty'), unicode],
+    }
+)
 
 #excluded title, description, tags and last update as they're part of the default ckan dataset metadata
 required_metadata = (
@@ -160,7 +169,6 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     '''This plugin adds fields for the metadata (known as the Common Core) defined at
     https://github.com/project-open-data/project-open-data.github.io/blob/master/schema.md
     '''
-
     p.implements(p.ITemplateHelpers, inherit=False)
     p.implements(p.IConfigurer, inherit=False)
     p.implements(p.IDatasetForm, inherit=False)
@@ -272,26 +280,34 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         #use convert_to_tags functions for taxonomy
         schema.update({
             'tag_string': [p.toolkit.get_validator('not_empty'),
-                           p.toolkit.get_converter('convert_to_tags')]
+                           p.toolkit.get_converter('convert_to_tags')],
+            # 'resources': {
+            #     'name': [p.toolkit.get_validator('not_empty')],
+            #     'format': [p.toolkit.get_validator('not_empty')],
+            # }
         })
         return schema
 
     def _modify_package_schema_update(self, schema):
         log.debug("_modify_package_schema_update called")
-
         for update in schema_updates_for_update:
             schema.update(update)
 
         #use convert_to_tags functions for taxonomy
         schema.update({
             'tag_string': [p.toolkit.get_validator('ignore_empty'),
-                           p.toolkit.get_converter('convert_to_tags')]
+                           p.toolkit.get_converter('convert_to_tags')],
+            # 'resources': {
+            #      'name': [p.toolkit.get_validator('not_empty'),
+            #                p.toolkit.get_converter('convert_to_extras')],
+            #      'format': [p.toolkit.get_validator('not_empty'),
+            #                p.toolkit.get_converter('convert_to_extras')],
+            # }
         })
         return schema
 
     def _modify_package_schema_show(self, schema):
         log.debug("_modify_package_schema_update_show called")
-
         for update in schema_updates_for_show:
             schema.update(update)
 
@@ -300,7 +316,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     #See ckan.plugins.interfaces.IDatasetForm
     def create_package_schema(self):
         #action, api, package_create
-
+        #action=new and controller=package
         schema = super(CommonCoreMetadataFormPlugin, self).create_package_schema()
         schema = self._create_package_schema(schema)
         return schema
@@ -317,7 +333,10 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         #action, api, resource_create
         #action, api, package_update
 
-        if action == 'edit' and controller == 'package' :
+        # if action == 'new_resource' and controller == 'package':
+        #     schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
+        #     schema = self._create_resource_schema(schema)
+        if action == 'edit' and controller == 'package':
             schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
             schema = self._create_package_schema(schema)
         else:
@@ -328,13 +347,16 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
     #See ckan.plugins.interfaces.IDatasetForm
     def show_package_schema(self):
-        log.debug('show_package_schema')
+        log.debug('show_package_schema called')
         schema = super(CommonCoreMetadataFormPlugin, self).show_package_schema()
 
         # Don't show vocab tags mixed in with normal 'free' tags
         # (e.g. on dataset pages, or on the search page)
         schema['tags']['__extras'].append(p.toolkit.get_converter('free_tags_only'))
-        schema = self._modify_package_schema_show(schema)
+
+        #BELOW LINE MAY BE CAUSING SOLR INDEXING ISSUES.
+        #schema = self._modify_package_schema_show(schema)
+
         return schema
 
     #Method below allows functions and other methods to be called from the Jinja template using the h variable
