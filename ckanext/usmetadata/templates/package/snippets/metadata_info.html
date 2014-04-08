@@ -20,7 +20,14 @@
             {% else %}
             <th scope="row" class="dataset-label" property="rdfs:label">{{ _(meta) }}</th>
             {% endif %}
-          <td class="dataset-details" property="rdf:value">{{ pkg_dict.common_core[meta] }}</td>
+
+            {% if meta == "data_quality" and  pkg_dict.common_core[meta] == "true" %}
+                <td class="dataset-details" property="rdf:value">Yes</td>
+            {% elif meta == "data_quality" and  pkg_dict.common_core[meta] == "false" %}
+                <td class="dataset-details" property="rdf:value">No</td>
+            {% else %}
+                <td class="dataset-details" property="rdf:value">{{ pkg_dict.common_core[meta] }}</td>
+            {% endif %}
         </tr>
         {% endfor %}
 
