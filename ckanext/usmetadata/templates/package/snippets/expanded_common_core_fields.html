@@ -11,13 +11,33 @@
 
 {{ form.input('data_dictionary', label=_('Data Dictionary'), id='field-data_dictionary', placeholder=_('http://www.my.gov/datadictionary'), value=data.common_core.data_dictionary, error=errors.data_dictionary, classes=['control-medium'], attrs={'title': 'URL to the data dictionary for the dataset or API. Note that documentation other than a Data Dictionary can be referenced using Related Documents as shown in the expanded fields.'}) }}
 
+{#<div class="control-group">#}
+{#  <label class="control-label" for="field-data_quality">#}
+{#      {{ _("Meets Organizational Data Quality") }}</label>#}
+{#  <div class="controls">#}
+{#    <input type="checkbox" id="field-data_quality" name="data_quality" class="checkbox"#}
+{#           title="Whether the dataset meets the agency Information Quality Guidelines (true/false)."#}
+{#            {% if data.common_core.data_quality %}checked{% endif %}>#}
+{#  </div>#}
+{#</div>#}
+
 <div class="control-group">
-  <label class="control-label" for="field-data_quality">
-      {{ _("Meets Organizational Data Quality") }}</label>
-  <div class="controls">
-    <input type="checkbox" id="field-data_quality" name="data_quality" class="checkbox"
-           title="Whether the dataset meets the agency Information Quality Guidelines (true/false)."
-            {% if data.common_core.data_quality %}checked{% endif %}>
+    <label class="control-label" for="field-data_quality">
+      {{ _("Meets Agency Data Quality") }}
+    </label>
+    <div class="controls">
+        <select id="field-data_quality"
+                name="data_quality"
+                data-module="autocomplete"
+                title="Whether the dataset meets the agency Information Quality Guidelines">
+
+            {% for data_quality_id, data_quality_desc in h.data_quality_options.items() %}
+                <option value="{{ data_quality_id }}" {% if data_quality_id == data.common_core.data_quality %} selected {% endif %} >
+                    {{ data_quality_desc }}
+                </option>
+            {% endfor %}
+
+        </select>
   </div>
 </div>
 
