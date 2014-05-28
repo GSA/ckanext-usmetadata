@@ -22,16 +22,16 @@ default_resource_schema = (
 
 #excluded title, description, tags and last update as they're part of the default ckan dataset metadata
 required_metadata = (
-    {'id': 'title', 'validators': [v.String(max=300)]},
-    {'id': 'notes', 'validators': [v.NotEmpty]},
+    {'id': 'title', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
+    {'id': 'notes', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
     #{'id':'tag_string', 'validators': [v.NotEmpty]},
     {'id': 'public_access_level',
      'validators': [v.Regex(r'^([Pp]ublic)|([Rr]estricted [Pp]ublic)|([Pp]rivate)|([nN]on-public)$')]},
-    {'id': 'publisher', 'validators': [v.String(max=300)]},
-    {'id': 'contact_name', 'validators': [v.String(max=300)]},
+    {'id': 'publisher', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
+    {'id': 'contact_name', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
     {'id': 'contact_email', 'validators': [v.Email(), v.String(max=100)]},
     #TODO should this unique_id be validated against any other unique IDs for this agency?
-    {'id': 'unique_id', 'validators': [v.String(max=100)]}
+    {'id': 'unique_id', 'validators': [p.toolkit.get_validator('not_empty'), unicode]}
 )
 
 #used to bypass validation on create
@@ -54,18 +54,18 @@ expanded_metadata = (
         r"^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))(\s*,\s*(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))\s*)*$")]},
     {'id': 'data_quality', 'validators': [v.String(max=1000)]},
     {'id': 'category', 'validators': [v.String(max=1000)]},
-    {'id': 'related_documents', 'validators': [v.String(max=1000)]},
-    {'id': 'homepage_url', 'validators': [v.URL(), v.String(max=350)]},
-    {'id': 'rss_feed', 'validators': [v.URL(), v.String(max=350)]},
-    {'id': 'system_of_records', 'validators': [v.URL(), v.String(max=350)]},
-    {'id': 'system_of_records_none_related_to_this_dataset', 'validators': [v.URL(), v.String(max=350)]},
+    {'id': 'related_documents', 'validators': [v.String(max=2100)]},
+    {'id': 'homepage_url', 'validators': [v.String(max=2100)]},
+    {'id': 'rss_feed', 'validators': [v.String(max=2100)]},
+    {'id': 'system_of_records', 'validators': [v.String(max=2100)]},
+    {'id': 'system_of_records_none_related_to_this_dataset', 'validators': [v.String(max=2100)]},
     {'id': 'primary_it_investment_uii', 'validators': [v.String(max=75)]},
 )
 
 #excluded download_url, endpoint, format and license as they may be discoverable
 required_if_applicable_metadata = (
-    {'id': 'data_dictionary', 'validators': [v.URL(), v.String(max=350)]},
-    {'id': 'endpoint', 'validators': [v.URL(), v.String(max=350)]},
+    {'id': 'data_dictionary', 'validators': [v.String(max=2100)]},
+    {'id': 'endpoint', 'validators': [v.String(max=2100)]},
     {'id': 'spatial', 'validators': [v.String(max=500)]},
     {'id': 'temporal', 'validators': [v.Regex(
         r"^([0-9]{4})(-([0-9]{1,2})(-([0-9]{1,2})((.)([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?(/([0-9]{4})(-([0-9]{1,2})(-([0-9]{1,2})((.)([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?){0,1}$")]},
