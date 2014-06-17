@@ -7,7 +7,7 @@
 
 {% block package_expanded_metadata %}
 
-{{ form.input('category', label=_('Category'), id='field-category', placeholder=_('vegetables,non_starchy,green'), value=data.common_core.category, error=errors.category, classes=['control-medium'], attrs={'title': 'Main thematic category of the dataset. '} )}}
+{{ form.input('category', label=_('Category'), id='field-category', placeholder=_('vegetables, non_starchy, green'), value=data.common_core.category, error=errors.category, classes=['control-medium'], attrs={'title': 'Main thematic category of the dataset. '} )}}
 
 {{ form.input('data_dictionary', label=_('Data Dictionary'), id='field-data_dictionary', placeholder=_('http://www.my.gov/datadictionary'), value=data.common_core.data_dictionary, error=errors.data_dictionary, classes=['control-medium'], attrs={'title': 'URL to the data dictionary for the dataset or API. Note that documentation other than a Data Dictionary can be referenced using Related Documents as shown in the expanded fields.'}) }}
 
@@ -62,7 +62,7 @@
 
 {{ form.input('primary_it_investment_uii', label=_('Primary IT Investment UII'), id='field-primary-it-investment-uii', placeholder=_('021-352204052'), value=data.common_core.primary_it_investment_uii, error=errors.primary_it_investment_uii, classes=['control-medium'], attrs={'title': 'For linking a dataset with an IT Unique Investment Identifier (UII)'} )}}
 
-{{ form.input('related_documents', label=_('Related Documents'), id='field-related_documents', placeholder=_('http://www.agency.gov/fruits/fruits.csv,http://www.agency.gov/legumes/legumes.csv'), value=data.common_core.related_documents, error=errors.related, classes=['control-medium'], attrs={'title': 'Related documents such as technical information about a dataset, developer documentation, etc. References not in the data dictionary go here. Separate multiple URLs with commas.'} )}}
+{{ form.input('related_documents', label=_('Related Documents'), id='field-related_documents', placeholder=_('http://www.agency.gov/fruits/fruits.csv, http://www.agency.gov/legumes/legumes.csv'), value=data.common_core.related_documents, error=errors.related, classes=['control-medium'], attrs={'title': 'Related documents such as technical information about a dataset, developer documentation, etc. References not in the data dictionary go here. Separate multiple URLs with commas.'} )}}
 
 {{ form.input('release_date', label=_('Release Date'), id='field-release_date', placeholder=_('2012-01-15'), value=data.common_core.release_date, error=errors.release_date, classes=['control-medium'], attrs={'title': 'Date of formal issuance.Dates should be formatted as YYYY-MM-DD. Specify "01" as the day if unknown. If this file is brand-new, enter the issued date here as well'} )}}
 
