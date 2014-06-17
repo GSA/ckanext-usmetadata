@@ -15,6 +15,6 @@
 
 {{ form.input('spatial', label=_('Spatial'), id='field-spatial', placeholder=_('Lincoln, Nebraska'), value=data.common_core.spatial, error=errors.spatial, classes=['control-medium'], attrs={'title': 'The range of spatial applicability of a dataset. Could include a spatial region like a bounding box or a named place.'}) }}
 
-{{ form.input('temporal', label=_('Temporal'), id='field-temporal', placeholder=_('2000-01-15 00:45:00/2010-01-15 00:06:00'), value=data.common_core.temporal, error=errors.temporal, classes=['control-medium'], attrs={'title': 'The range of temporal applicability of a dataset (i.e., a start and end date of applicability for the data).'}) }}
+{{ form.input('temporal', label=_('Temporal'), id='field-temporal', placeholder=_('2000-01-15/2010-01-15'), value=data.common_core.temporal, error=errors.temporal, classes=['control-medium'], attrs={'title': 'The range of temporal applicability of a dataset (i.e., a start and end date of applicability for the data).'}) }}
 
 {% endblock package_required_if_applicable_metadata %}
