@@ -3,7 +3,7 @@
 
 {% block package_basic_fields_title %}
 <h1>Required Common Core Metadata</h1>
-{{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. A descriptive title'), value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target', 'title': 'Human-readable name of the asset. Should be in plain English and include sufficient detail to facilitate search and discovery.'}, is_required=true) }}
+{{ form.input('title', id='field-title', label=_('Title'), placeholder=_('e.g. A descriptive title'), value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target', 'title': 'Human-readable name of the asset. Should be in plain English and include sufficient detail to facilitate search and discovery.'}, is_required=true) }}
 {% endblock package_basic_fields_title%}
 
 {% block package_basic_fields_url %}
@@ -12,7 +12,7 @@
 {% set domain = domain|replace("http://", "")|replace("https://", "") %}
 {% set attrs = {'data-module': 'usmetadata-slug-preview-slug', 'data-module-prefix': domain, 'data-module-placeholder': '<dataset>'} %}
 
-{{ form.prepend('name', id='field-name', label=_('URL'), prepend=prefix, placeholder=_('eg. my-dataset'), value=data.name, error=errors.name, attrs=attrs, is_required=true) }}
+{{ form.prepend('name', id='field-name', label=_('URL'), prepend=prefix, placeholder=_('e.g. my-dataset'), value=data.name, error=errors.name, attrs=attrs, is_required=true) }}
 {% endblock %}
 
 {% block package_basic_fields_license %}
@@ -20,12 +20,12 @@
 {% endblock package_basic_fields_license %}
 
 {% block package_basic_fields_description %}
-{{ form.markdown('notes', id='field-notes', label=_('Description'), placeholder=_('eg. Some useful notes about the data'), value=data.notes, error=errors.notes, attrs={'title' : 'Human-readable description (e.g., an abstract) with sufficient detail to enable a user to quickly understand whether the asset is of interest.'}, is_required=true) }}
+{{ form.markdown('notes', id='field-notes', label=_('Description'), placeholder=_('e.g. Some useful notes about the data'), value=data.notes, error=errors.notes, attrs={'title' : 'Human-readable description (e.g., an abstract) with sufficient detail to enable a user to quickly understand whether the asset is of interest.'}, is_required=true) }}
 {% endblock package_basic_fields_description%}
 
 {% block package_basic_fields_tags %}
 {% set tag_attrs = {'data-module': 'autocomplete', 'data-module-tags': '', 'data-module-source': '/api/2/util/tag/autocomplete?incomplete=?', 'title':'Tags (or keywords) help users discover your dataset, please include terms that would be used by technical and non-technical users.'} %}
-{{ form.input('tag_string', id='field-tags', label=_('Tags'), placeholder=_('eg. economy, mental health, government'), value=data.tag_string, error=errors.tag_string, classes=['control-full'], attrs=tag_attrs, is_required=true) }}
+{{ form.input('tag_string', id='field-tags', label=_('Tags'), placeholder=_('e.g. economy, mental health, government'), value=data.tag_string, error=errors.tag_string, classes=['control-full'], attrs=tag_attrs, is_required=true) }}
 {% endblock package_basic_fields_tags %}
 
 {% block package_metadata_fields_visibility %}
