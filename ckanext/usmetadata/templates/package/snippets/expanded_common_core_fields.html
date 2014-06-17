@@ -60,7 +60,7 @@
 
 {{ form.input('language', label=_('Language'), id='field-language', placeholder=_('us-EN'), value=data.common_core.language, error=errors.language, classes=['control-medium'], attrs={'title': 'The language of the dataset.'} )}}
 
-{{ form.input('primary_it_investment_uii', label=_('Primary IT Investment UII'), id='field-primary-it-investment-uii', placeholder=_('123456'), value=data.common_core.primary_it_investment_uii, error=errors.primary_it_investment_uii, classes=['control-medium'], attrs={'title': 'For linking a dataset with an IT Unique Investment Identifier (UII)'} )}}
+{{ form.input('primary_it_investment_uii', label=_('Primary IT Investment UII'), id='field-primary-it-investment-uii', placeholder=_('021-352204052'), value=data.common_core.primary_it_investment_uii, error=errors.primary_it_investment_uii, classes=['control-medium'], attrs={'title': 'For linking a dataset with an IT Unique Investment Identifier (UII)'} )}}
 
 {{ form.input('related_documents', label=_('Related Documents'), id='field-related_documents', placeholder=_('http://www.agency.gov/fruits/fruits.csv,http://www.agency.gov/legumes/legumes.csv'), value=data.common_core.related_documents, error=errors.related, classes=['control-medium'], attrs={'title': 'Related documents such as technical information about a dataset, developer documentation, etc. References not in the data dictionary go here. Separate multiple URLs with commas.'} )}}
 
