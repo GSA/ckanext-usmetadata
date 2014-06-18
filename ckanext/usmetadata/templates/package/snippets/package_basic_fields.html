@@ -25,7 +25,7 @@
 
 {% block package_basic_fields_tags %}
 {% set tag_attrs = {'data-module': 'autocomplete', 'data-module-tags': '', 'data-module-source': '/api/2/util/tag/autocomplete?incomplete=?', 'title':'Tags (or keywords) help users discover your dataset, please include terms that would be used by technical and non-technical users.'} %}
-<div title="test">
+<div title="Tags (or keywords) help users discover your dataset; please include terms that would be used by technical and non-technical users.">
 {{ form.input('tag_string', id='field-tags', label=_('Tags'), placeholder=_('e.g. economy, mental health, government'), value=data.tag_string, error=errors.tag_string, classes=['control-full'], attrs=tag_attrs, is_required=true) }}
 </div>
 
