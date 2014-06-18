@@ -14,7 +14,7 @@
 
 {{ form.input('contact_email', id='field-contact_email', label=_('Contact Email'), placeholder=_('john.smith@fbi.gov'), value=data.common_core.contact_email, error=errors.contact_email, classes=['control-full', 'control-medium'], attrs={'title': " Contact person's email address. "}, is_required=true) }}
 
-{{ form.input('unique_id', id='field-unique_id', label=_('Unique ID'), placeholder=_('doj-a327-73809'), value=data.common_core.unique_id, error=errors.unique_id, classes=['control-full', 'control-medium'], attrs={'title': 'A unique identifier for the dataset or API as maintained within an Agency catalog or database.'}, is_required=true) }}
+{{ form.input('unique_id', id='field-unique_id', label=_('Unique ID'), placeholder=_('doj-a327-73809'), value=data.common_core.unique_id, error=errors.unique_id, classes=['control-full', 'control-medium'], attrs={'title': 'A unique identifier for the dataset or API as maintained within an Agency catalog or database. It is essential that this ID be unique within the Department or Agency and that it remains consistent.'}, is_required=true) }}
 
 <div class="control-group">
   <label class="control-label" for="field-public_access_level">
