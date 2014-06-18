@@ -25,7 +25,7 @@
     <label class="control-label" for="field-data_quality">
       {{ _("Meets Agency Data Quality") }}
     </label>
-    <div class="controls">
+    <div class="controls" title="Whether the dataset meets the agency Information Quality Guidelines">
         <select id="field-data_quality"
                 name="data_quality"
                 data-module="autocomplete"
@@ -44,7 +44,7 @@
 <div class="control-group">
   <label class="control-label" for="field-accrual_periodicity">
       {{ _("Frequency") }}</label>
-  <div class="controls">
+  <div class="controls" title="Frequency with which dataset is published.">
     <select id="field-accrual_periodicity" name="accrual_periodicity" data-module="autocomplete" title="Frequency with which dataset is published.">
       <option value=""></option>
         {% for level in h.accrual_periodicity %}
