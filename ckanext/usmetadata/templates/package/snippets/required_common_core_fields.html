@@ -20,8 +20,8 @@
   <label class="control-label" for="field-public_access_level">
       <span title="This field is required" class="control-required">*</span>
       {{ _("Public Access Level") }}</label>
-  <div class="controls">
-    <select id="field-public_access_level" name="public_access_level" data-module="autocomplete" title="The degree to which this dataset could be made publicly-available, regardless of whether it has been made available. Choices: Public (is or could be made publicly available), Restricted (available under certain conditions), or Private (never able to be made publicly available)">
+  <div class="controls" title="The degree to which this dataset could be made publicly-available, regardless of whether it has been made available. Choices: public (Data asset is or could be made publicly available to all without restrictions), restricted public (Data asset is available under certain use restrictions), or non-public (Data asset is not available to members of the public).">
+    <select id="field-public_access_level" name="public_access_level" data-module="autocomplete" title="The degree to which this dataset could be made publicly-available, regardless of whether it has been made available. Choices: public (Data asset is or could be made publicly available to all without restrictions), restricted public (Data asset is available under certain use restrictions), or non-public (Data asset is not available to members of the public).">
         {% for level in h.public_access_levels %}
       <option value="{{ level }}" {% if level == data.common_core.public_access_level %}selected{% endif %} >
         {{ level }}
