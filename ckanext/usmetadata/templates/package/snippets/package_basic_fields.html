@@ -31,17 +31,22 @@
 
 {% endblock package_basic_fields_tags %}
 
+{% block package_basic_fields_org %}
+   <div title="The publishing entity.">
+	{{ super() }}
+   </div>
+{% endblock package_basic_fields_org %}
+
 {% block package_metadata_fields_visibility %}
 
+    {% set data = h.load_data_into_dict(data) %}
+    {% set active = data.state == 'active' %}
+ 
         {% if always_private %}
      <input type="hidden" id="field-private" name="private" value="true">
         {% else %}
             {{ super() }}
         {% endif %}
-
-    {% set data = h.load_data_into_dict(data) %}
-    {% set active = data.state == 'active' %}
-
 
     {% snippet 'package/snippets/required_common_core_fields.html', data=data, errors=errors%}
 
