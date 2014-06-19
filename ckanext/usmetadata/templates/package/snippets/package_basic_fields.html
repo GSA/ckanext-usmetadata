@@ -47,7 +47,31 @@
 
     <h1>Required-If-Applicable Common Core Metadata</h1>
     {% snippet 'package/snippets/required_if_applicable_common_core_fields.html', data=data, errors=errors%}
-    
+    {% block license %}
+        <div class="control-group">
+        {% set error = errors.license_id %}
+        <label class="control-label" for="field-license">{{ _("License") }}</label>
+            <div class="controls">
+            <select id="field-license" name="license_id" data-module="autocomplete">
+              {% for license_desc, license_id in licenses|sort if license_desc  %}
+                <option value="{{ license_id }}" {% if data.get('license_id', 'notspecified') == license_id %}selected="selected"{% endif %}>{{ license_desc }}</option>
+              {% endfor %}
+            </select>
+            {% if error %}<span class="error-block">{{ error }}</span>{% endif %}
+            <span class="info-block info-inline">
+              <i class="icon-info-sign"></i>
+              {% trans %}
+                License definitions and additional information can be found
+                at <a href="http://opendefinition.org/licenses/">opendefinition.org</a>
+              {% endtrans %}
+            </span>
+            </div>
+        </div>
+    {% endblock license %}
+	
+	{{ form.input('spatial', label=_('Spatial'), id='field-spatial', placeholder=_('Lincoln, Nebraska'), value=data.common_core.spatial, error=errors.spatial, classes=['control-medium'], attrs={'title': 'The range of spatial applicability of a dataset. Could include a spatial region like a bounding box or a named place.'}) }}
+
+	{{ form.input('temporal', label=_('Temporal'), id='field-temporal', placeholder=_('2000-01-15/2010-01-15'), value=data.common_core.temporal, error=errors.temporal, classes=['control-medium'], attrs={'title': 'The range of temporal applicability of a dataset (i.e., a start and end date of applicability for the data).'}) }}
 
     <h1>Expanded Common Core Metadata</h1>
     {% snippet 'package/snippets/expanded_common_core_fields.html', data=data, errors=errors%}
