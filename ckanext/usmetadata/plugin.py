@@ -60,6 +60,7 @@ expanded_metadata = (
     {'id': 'system_of_records', 'validators': [v.String(max=2100)]},
     {'id': 'system_of_records_none_related_to_this_dataset', 'validators': [v.String(max=2100)]},
     {'id': 'primary_it_investment_uii', 'validators': [v.String(max=75)]},
+    {'id': 'webservice', 'validators': [v.Regex(r"^(http(?:s)?\:\/\/[a-zA-Z0-9\-]+(?:\.[a-zA-Z0-9\-]+)*\.[a-zA-Z]{2,6}(?:\/?|(?:\/[\w\-]+)*)(?:\/?|\/\w+\.[a-zA-Z]{2,4}(?:\?[\w]+\=[\w\-]+)?)?(?:\&[\w]+\=[\w\-]+)*)$")]},
 )
 
 #excluded download_url, endpoint, format and license as they may be discoverable
@@ -115,8 +116,9 @@ dataset_labels = {
     'data_quality': 'Meets the agency Information Quality Guidelines',
     'primary_it_investment_uii': 'Primary IT Investment UII',
     'accessURL': 'Download URL',
-    'webService': 'Endpoint',
-    'format': 'Format'
+    'webService': 'Endpoint',    
+    'format': 'Format',
+    'webservice' : 'Webservice'
 }
 
 # Dictionary of all media types
