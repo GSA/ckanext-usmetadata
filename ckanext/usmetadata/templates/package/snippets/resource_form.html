@@ -1,26 +1,10 @@
 {% ckan_extends %}
+    {% block basic_fields_name %}
+      {{ form.input('name', id='field-name', label=_('Name'), placeholder=_('e.g. January 2011 Gold Prices'), value=data.name, error=errors.name, classes=['control-full']) }}
+    {% endblock %}
 
-    {% block basic_fields_data %}
-      <div class="controls"{% if allow_upload %} data-module="resource-upload-field"{% endif %}>
-        
-        <i class="ckan-icon ckan-icon-link-file"></i>
-        <input id="field-resource-type-file" type="radio" name="resource_type" checked="checked" value="file" />
-        <label class="radio inline" for="field-resource-type-file">{{ _('Link to a file') }}</label>
-
-      </div>
-    </div>
-    {% endblock %}
-    
-	{% block basic_fields_url %}
-    {{ form.input('url', id='field-url', label=_('Resource'), placeholder=_('e.g. http://example.com/gold-prices-jan-2011.json'), value=data.url, error=errors.url, classes=['control-full', 'control-large']) }}
-    {% endblock %}
-	
-	{% block basic_fields_name %}
-    {{ form.input('name', id='field-name', label=_('Name'), placeholder=_('e.g. January 2011 Gold Prices'), value=data.name, error=errors.name, classes=['control-full']) }}
-    {% endblock %}
-	
     {% block basic_fields_format %}
-    {% set format_attrs = {'data-module': 'autocomplete', 'data-module-source': '/api/2/util/resource/media_autocomplete?incomplete=?'} %}
-    {% call form.input('format', id='field-format', label=_('Format'), placeholder=_('e.g. text/csv, application/xml, or application/json'), value=data.format, error=errors.format, classes=['control-medium'], attrs=format_attrs, is_required=true) %}
-    {% endcall %}
+        {% set format_attrs = {'data-module': 'autocomplete', 'data-module-source': '/api/2/util/resource/media_autocomplete?incomplete=?'} %}
+        {% call form.input('format', id='field-format', label=_('Format'), placeholder=_('e.g. text/csv, application/xml, or application/json'), value=data.format, error=errors.format, classes=['control-medium'], attrs=format_attrs, is_required=true) %}
+        {% endcall %}
     {% endblock %}
