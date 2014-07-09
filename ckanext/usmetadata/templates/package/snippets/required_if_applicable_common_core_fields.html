@@ -7,10 +7,6 @@
 
 {% block package_required_if_applicable_metadata %}
 
-{{ form.input('bureau_code', label=_('Bureau Code'), id='field-bureau-code', placeholder=_('001:40'), value=data.common_core.bureau_code, error=errors.bureau_code, classes=['control-medium'], attrs={'title': 'Federal agencies, combined agency and bureau code from OMB Circular A-11, Appendix C in the format of 015:10.'}) }}
-
-{{ form.input('program_code', label=_('Program Code'), id='field-program-code', placeholder=_('015:010'), value=data.common_core.program_code, error=errors.program_code, classes=['control-medium'], attrs={'title': 'Federal agencies, list the primary program related to this data asset, from the Federal Program Inventory. Use the format of 015:001'}) }}
-
 {{ form.input('access_level_comment', label=_('Access Level Comment'), id='field-access-level-comment', placeholder=_('An explanation for the access level field.'), value=data.common_core.access_level_comment, error=errors.access_level_comment, classes=['control-medium'], attrs={'title': 'An explanation for the selected “accessLevel” including instructions for how to access a restricted file, if applicable, or explanation for why a “non-public” or “restricted public” data assetis not “public,” if applicable. Text, 255 characters.'}) }}
 
 {% endblock package_required_if_applicable_metadata %}
