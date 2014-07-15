@@ -42,11 +42,11 @@
     {% set data = h.load_data_into_dict(data) %}
     {% set active = data.state == 'active' %}
  
-        {% if always_private %}
-     <input type="hidden" id="field-private" name="private" value="true">
-        {% else %}
-            {{ super() }}
-        {% endif %}
+    {% if always_private %}
+        <input type="hidden" id="field-private" name="private" value="true">
+    {% else %}
+        {{ super() }}
+    {% endif %}
 
     {% snippet 'package/snippets/required_common_core_fields.html', data=data, errors=errors%}
 

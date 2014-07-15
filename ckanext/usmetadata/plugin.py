@@ -116,7 +116,7 @@ dataset_labels = {
     'data_quality': 'Meets the agency Information Quality Guidelines',
     'primary_it_investment_uii': 'Primary IT Investment UII',
     'accessURL': 'Download URL',
-    'webService': 'Endpoint',    
+    'webService': 'Endpoint',
     'format': 'Format',
     'webservice' : 'Webservice'
 }
@@ -175,6 +175,16 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     p.implements(p.IConfigurer, inherit=False)
     p.implements(p.IDatasetForm, inherit=False)
     p.implements(p.interfaces.IRoutes, inherit=True)
+    p.implements(p.interfaces.IPackageController, inherit=True)
+
+    def edit(self, entity):
+        #if dataset uses filestore to upload datafiles then make that dataset Public by default
+        if hasattr(entity, 'type') and entity.type == u'dataset' and entity.private:
+            for resource in entity.resources:
+                if resource.url_type == u'upload':
+                    entity.private = False
+                    break
+        return entity
 
     def after_map(selfself, m):
         m.connect('media_type', '/api/2/util/resource/media_autocomplete',
