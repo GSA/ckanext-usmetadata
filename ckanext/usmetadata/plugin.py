@@ -247,7 +247,7 @@ class UsmetadataController(BaseController):
                     else:
                         errors = {}
                         error_summary = {_('Error'): msg}
-                        return self.new_resource(id, data, errors, error_summary)
+                        return self.new_resource_usmetadata(id, data, errors, error_summary)
                 # we have a resource so let them add metadata
                 # redirect(h.url_for(controller='package',
                 #                    action='new_metadata', id=id))
@@ -266,7 +266,7 @@ class UsmetadataController(BaseController):
             except ValidationError, e:
                 errors = e.error_dict
                 error_summary = e.error_summary
-                return self.new_resource(id, data, errors, error_summary)
+                return self.new_resource_usmetadata(id, data, errors, error_summary)
             except NotAuthorized:
                 abort(401, _('Unauthorized to create a resource'))
             except NotFound:
