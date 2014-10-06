@@ -33,15 +33,6 @@ from formencode.validators import validators
 
 redirect = base.redirect
 log = getLogger(__name__)
-#updated resource schema
-default_resource_schema = (
-    {
-        'url': [p.toolkit.get_validator('not_empty'), unicode],#, URL(add_http=False)],
-        'description': [p.toolkit.get_validator('not_empty'), unicode],
-        'format': [p.toolkit.get_validator('not_empty'), unicode],
-        'name': [p.toolkit.get_validator('not_empty'), unicode],
-    }
-)
 
 #excluded title, description, tags and last update as they're part of the default ckan dataset metadata
 required_metadata = (
@@ -190,7 +181,29 @@ schema_updates_for_show = [{meta['id']: meta['validators'] + [p.toolkit.get_conv
                            (get_req_metadata_for_show_update() + required_if_applicable_metadata + expanded_metadata)]
 
 class UsmetadataController(BaseController):
-    def new_resource_usmeta(self, id, data=None, errors=None, error_summary=None):
+    def get_package_info_usmetadata(self, id, context, errors, error_summary):
+        data = get_action('package_show')(context, {'id': id})
+        data_dict = get_action('package_show')(context, {'id': id})
+        data_dict['id'] = id
+        data_dict['state'] = 'active'
+        context['allow_state_change'] = True
+        try:
+            get_action('package_update')(context, data_dict)
+        except ValidationError, e:
+            errors = e.error_dict
+            error_summary = e.error_summary
+            return self.new_metadata(id, data, errors, error_summary)
+        except NotAuthorized:
+            abort(401, _('Unauthorized to update dataset'))
+        redirect(h.url_for(controller='package',
+                                 action='read', id=id))
+        errors = errors or {}
+        error_summary = error_summary or {}
+        vars = {'data': data, 'errors': errors, 'error_summary': error_summary}
+        vars['pkg_name'] = id
+        return vars
+
+    def new_resource_usmetadata(self, id, data=None, errors=None, error_summary=None):
         ''' FIXME: This is a temporary action to allow styling of the
         forms. '''
         if request.method == 'POST' and not data:
@@ -234,10 +247,15 @@ class UsmetadataController(BaseController):
                     else:
                         errors = {}
                         error_summary = {_('Error'): msg}
-                        return self.new_resource(id, data, errors, error_summary)
+                        return self.new_resource_usmetadata(id, data, errors, error_summary)
                 # we have a resource so let them add metadata
-                redirect(h.url_for(controller='package',
-                                   action='new_metadata', id=id))
+                # redirect(h.url_for(controller='package',
+                #                    action='new_metadata', id=id))
+                vars = self.get_package_info_usmetadata(id, context, errors, error_summary)
+                package_type = self._get_package_type(id)
+                self._setup_template_variables(context, {},package_type=package_type)
+                return render('package/new_package_metadata.html', extra_vars=vars)
+
             data['package_id'] = id
             try:
                 if resource_id:
@@ -248,7 +266,7 @@ class UsmetadataController(BaseController):
             except ValidationError, e:
                 errors = e.error_dict
                 error_summary = e.error_summary
-                return self.new_resource(id, data, errors, error_summary)
+                return self.new_resource_usmetadata(id, data, errors, error_summary)
             except NotAuthorized:
                 abort(401, _('Unauthorized to create a resource'))
             except NotFound:
@@ -259,28 +277,9 @@ class UsmetadataController(BaseController):
                 # redirect(h.url_for(controller='package',
                 #                    action='new_metadata', id=id))
                 #Github Issue # 129. Removing last stage of dataset creation.
-                data = get_action('package_show')(context, {'id': id})
-                data_dict = get_action('package_show')(context, {'id': id})
-                data_dict['id'] = id
-                data_dict['state'] = 'active'
-                context['allow_state_change'] = True
-                try:
-                    get_action('package_update')(context, data_dict)
-                except ValidationError, e:
-                    errors = e.error_dict
-                    error_summary = e.error_summary
-                    return self.new_metadata(id, data, errors, error_summary)
-                except NotAuthorized:
-                    abort(401, _('Unauthorized to update dataset'))
-                redirect(h.url_for(controller='package',
-                                         action='read', id=id))
-                errors = errors or {}
-                error_summary = error_summary or {}
-                vars = {'data': data, 'errors': errors, 'error_summary': error_summary}
-                vars['pkg_name'] = id
+                vars = self.get_package_info_usmetadata(id, context, errors, error_summary)
                 package_type = self._get_package_type(id)
-                self._setup_template_variables(context, {},
-                                               package_type=package_type)
+                self._setup_template_variables(context, {},package_type=package_type)
                 return render('package/new_package_metadata.html', extra_vars=vars)
             elif save_action == 'go-dataset':
                 # go to first stage of add dataset
@@ -337,7 +336,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         return entity
 
     def before_map(self, m):
-        m.connect('media_type','/dataset/new_resource/{id}',controller='ckanext.usmetadata.plugin:UsmetadataController',action='new_resource_usmeta')
+        m.connect('media_type','/dataset/new_resource/{id}',controller='ckanext.usmetadata.plugin:UsmetadataController',action='new_resource_usmetadata')
         return m
 
     def after_map(selfself, m):
