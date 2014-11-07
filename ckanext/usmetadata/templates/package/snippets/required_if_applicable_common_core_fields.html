@@ -7,6 +7,6 @@
 
 {% block package_required_if_applicable_metadata %}
 
-{{ form.input('access_level_comment', label=_('Access Level Comment'), id='field-access-level-comment', placeholder=_('An explanation for the access level field.'), value=data.common_core.access_level_comment, error=errors.access_level_comment, classes=['control-medium'], attrs={'title': 'An explanation for the selected “accessLevel” including instructions for how to access a restricted file, if applicable, or explanation for why a “non-public” or “restricted public” data assetis not “public,” if applicable. Text, 255 characters.'}) }}
+{{ form.input('access_level_comment', label=_('Rights'), id='field-access-level-comment', placeholder=_('An explanation for the access level field.'), value=data.common_core.access_level_comment, error=errors.access_level_comment, classes=['control-medium'], attrs={'title': 'An explanation for the selected “accessLevel” including instructions for how to access a restricted file, if applicable, or explanation for why a “non-public” or “restricted public” data assetis not “public,” if applicable. Text, 255 characters.'}) }}
 
 {% endblock package_required_if_applicable_metadata %}

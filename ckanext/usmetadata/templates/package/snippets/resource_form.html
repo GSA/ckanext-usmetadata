@@ -9,12 +9,31 @@
 
 {% block basic_fields_name %}
   {{ form.input('name', id='field-name', label=_('Name'), placeholder=_('e.g. January 2011 Gold Prices'), value=data.name, error=errors.name, classes=['control-full']) }}
+
 {% endblock %}
 
 {% block basic_fields_format %}
     {% set format_attrs = {'data-module': 'autocomplete', 'data-module-source': '/api/2/util/resource/media_autocomplete?incomplete=?'} %}
-    {% call form.input('format', id='field-format', label=_('Format'), placeholder=_('e.g. text/csv, application/xml, or application/json'), value=data.format, error=errors.format, classes=['control-medium'], attrs=format_attrs, is_required=true) %}
+
+    {% call form.input('format', id='field-format', label=_('Media Type'), placeholder=_('e.g. text/csv, application/xml, or application/json'),value=data.format, error=errors.format, classes=['control-medium'], attrs=format_attrs, is_required=true) %}
     {% endcall %}
+
+    {% call form.input('formatReadable', id='field-format-readable', label=_('Format'), placeholder=_('e.g. csv, xml, json'),
+        value=data.formatReadable, error=errors.formatReadable, classes=['control-medium'], is_required=false) %}
+    {% endcall %}
+
+    {{ form.input('describedBy', id='field-describedBy', label=_('Data Dictionary'), placeholder=_('http://www.agency.gov/widgets/schema.json'),
+        value=data.describedBy, error=errors.describedBy, classes=['control-medium'], is_required=false) }}
+
+    {{ form.input('describedByType', id='field-describedByType', label=_('Data Dictionary Type'), placeholder=_('application/schema+json'),
+        value=data.describedByType, error=errors.describedByType, classes=['control-medium'], is_required=false) }}
+
+    {{ form.input('conformsTo', id='field-conformsTo', label=_('Data Standard'), placeholder=_('http://www.agency.gov/widget-data-standard/'),
+        value=data.conformsTo, error=errors.conformsTo, classes=['control-medium'], is_required=false) }}
+{% endblock %}
+
+{% block basic_fields_name_2 %}
+
 {% endblock %}
 
 {% block save_button %}
