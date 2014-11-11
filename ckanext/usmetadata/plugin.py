@@ -67,6 +67,7 @@ expanded_metadata = (
     {'id': 'language', 'validators': [v.Regex(
         r"^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))(\s*,\s*(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))\s*)*$")]},
     {'id': 'data_quality', 'validators': [v.String(max=1000)]},
+    {'id': 'is_parent', 'validators': [v.String(max=1000)]},
     {'id': 'category', 'validators': [v.String(max=1000)]},
     {'id': 'related_documents', 'validators': [v.String(max=2100)]},
     {'id': 'homepage_url', 'validators': [v.String(max=2100)]},
@@ -99,6 +100,7 @@ accrual_periodicity = [u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biwee
 access_levels = ['public', 'restricted public', 'non-public']
 
 data_quality_options = {'': '', 'true': 'Yes', 'false': 'No'}
+is_parent_options = {'true': 'Yes', 'false': 'No'}
 
 #Used to display user-friendly labels on dataset page
 dataset_labels = {
@@ -132,7 +134,8 @@ dataset_labels = {
     'accessURL': 'Download URL',
     'webService': 'Endpoint',
     'format': 'Format',
-    'webservice' : 'Webservice'
+    'webservice' : 'Webservice',
+    'is_parent' : 'Is parent dataset'
 }
 
 # Dictionary of all media types
@@ -531,6 +534,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         return {'public_access_levels': access_levels,
                 'required_metadata': required_metadata,
                 'data_quality_options': data_quality_options,
+                'is_parent_options': is_parent_options,
                 'load_data_into_dict': self.load_data_into_dict,
                 'accrual_periodicity': accrual_periodicity,
                 'always_private': True}

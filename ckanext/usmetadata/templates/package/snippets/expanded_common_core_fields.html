@@ -70,4 +70,28 @@
 
 {{ form.input('webservice', label=_('Webservice'), id='field-webservice', placeholder=_('http://www.agency.gov/api/endpoint.json'), value=data.common_core.webservice, error=errors.webservice, classes=['control-medium'], attrs={'title': 'Endpoint of web service to access dataset.'} )}}
 
+<div class="control-group">
+    <label class="control-label" for="field-is_parent">
+      {{ _("Is parent") }}
+    </label>
+    <div class="controls" title="This dataset will be used to link other datasets in a collection">
+        <select id="field-is_parent"
+                name="is_parent"
+                data-module="autocomplete"
+                title="This dataset will be used to link other datasets in a collection">
+
+            {% for id, desc in h.is_parent_options.items() %}
+                <option value="{{ id }}" {% if id == data.common_core.is_parent %} selected {% endif %} >
+                    {{ desc }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+{{ form.input('parent', label=_('Parent Dataset'), id='field-parent', value=data.common_core.parent, error=errors.parent,
+    classes=['control-medium','control-group-dataset-parent'], attrs={'title': 'Select parent dataset for dataset collection'} )}}
+{#  TODO: Add dropdown list of all the parent items from current organization.  #}
+
 {% endblock package_expanded_metadata %}
+
