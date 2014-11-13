@@ -89,9 +89,19 @@
     </div>
 </div>
 
-{{ form.input('parent', label=_('Parent Dataset'), id='field-parent', value=data.common_core.parent, error=errors.parent,
-    classes=['control-medium','control-group-dataset-parent'], attrs={'title': 'Select parent dataset for dataset collection'} )}}
-{#  TODO: Add dropdown list of all the parent items from current organization.  #}
-
+<div class="control-group control-group-dataset-parent">
+  <label class="control-label" for="field-parent_dataset">
+      {{ _("Parent dataset") }}</label>
+  <div class="controls" title="Parent Dataset.">
+    <select id="field-parent_dataset" name="parent_dataset" data-module="autocomplete" title="Parent dataset.">
+      <option value=""></option>
+        {% for dataset_id,dataset_title in data.parent_dataset_options.items() %}
+      <option value="{{ dataset_id }}" {% if dataset_id == data.common_core.parent_dataset %}selected{% endif %} >
+        {{ dataset_title }}
+      </option>
+        {% endfor %}
+    </select>
+  </div>
+</div>
 {% endblock package_expanded_metadata %}
 

@@ -7,6 +7,7 @@ import ckan.lib.base as base
 import ckan.lib.navl.dictization_functions as dict_fns
 import ckan.model as model
 import ckan.plugins as p
+import db_utils
 
 from logging import getLogger
 from ckan.lib.base import BaseController
@@ -68,6 +69,7 @@ expanded_metadata = (
         r"^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))(\s*,\s*(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))\s*)*$")]},
     {'id': 'data_quality', 'validators': [v.String(max=1000)]},
     {'id': 'is_parent', 'validators': [v.String(max=1000)]},
+    {'id': 'parent_dataset', 'validators': [v.String(max=1000)]},
     {'id': 'category', 'validators': [v.String(max=1000)]},
     {'id': 'related_documents', 'validators': [v.String(max=2100)]},
     {'id': 'homepage_url', 'validators': [v.String(max=2100)]},
@@ -135,7 +137,8 @@ dataset_labels = {
     'webService': 'Endpoint',
     'format': 'Format',
     'webservice' : 'Webservice',
-    'is_parent' : 'Is parent dataset'
+    'is_parent' : 'Is parent dataset',
+    'parent_dataset' : 'Parent dataset'
 }
 
 # Dictionary of all media types
@@ -409,6 +412,9 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             for key in keys_to_remove:
                 del new_dict[key]
 
+        parent_dataset_options = db_utils.get_parent_organizations(20)
+        parent_dataset_options[""] = ""
+        new_dict['parent_dataset_options'] = parent_dataset_options
         return new_dict
 
         #See ckan.plugins.interfaces.IDatasetForm
