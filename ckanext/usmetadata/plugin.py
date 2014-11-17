@@ -72,6 +72,7 @@ expanded_metadata = (
     {'id': 'parent_dataset', 'validators': [v.String(max=1000)]},
     {'id': 'category', 'validators': [v.String(max=1000)]},
     {'id': 'related_documents', 'validators': [v.String(max=2100)]},
+    {'id': 'conforms_to', 'validators': [v.String(max=2100)]},
     {'id': 'homepage_url', 'validators': [v.String(max=2100)]},
     {'id': 'rss_feed', 'validators': [v.String(max=2100)]},
     {'id': 'system_of_records', 'validators': [v.String(max=2100)]},
@@ -83,6 +84,7 @@ expanded_metadata = (
 #excluded download_url, endpoint, format and license as they may be discoverable
 required_if_applicable_metadata = (
     {'id': 'data_dictionary', 'validators': [v.String(max=2100)]},
+    {'id': 'data_dictionary_type', 'validators': [v.String(max=2100)]},
     {'id': 'endpoint', 'validators': [v.String(max=2100)]},
     {'id': 'spatial', 'validators': [v.String(max=500)]},
     {'id': 'temporal', 'validators': [v.Regex(
@@ -127,7 +129,9 @@ dataset_labels = {
     'modified': 'Last Update',
     'related_documents': 'Related Documents',
     'data_dictionary': 'Data Dictionary',
+    'data_dictionary_type': 'Data Dictionary Type',
     'homepage_url': 'Homepage Url',
+    'conforms_to' : 'Data Standard',
     'unique_id': 'Unique Identifier',
     'system_of_records': 'System of Records',
     'release_date': 'Release Date',

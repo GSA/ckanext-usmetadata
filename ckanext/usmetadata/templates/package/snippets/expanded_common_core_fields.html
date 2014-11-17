@@ -9,17 +9,11 @@
 
 {{ form.input('category', label=_('Category'), id='field-category', placeholder=_('vegetables, non_starchy, green'), value=data.common_core.category, error=errors.category, classes=['control-medium'], attrs={'title': 'Main thematic category of the dataset. '} )}}
 
-{{ form.input('data_dictionary', label=_('Described By'), id='field-data_dictionary', placeholder=_('http://www.my.gov/datadictionary'), value=data.common_core.data_dictionary, error=errors.data_dictionary, classes=['control-medium'], attrs={'title': 'URL to the data dictionary for the dataset or API. Note that documentation other than a Data Dictionary can be referenced using Related Documents as shown in the expanded fields.'}) }}
+{{ form.input('data_dictionary', label=_('Data Dictionary'), id='field-data_dictionary', placeholder=_('http://www.my.gov/datadictionary'), value=data.common_core.data_dictionary, error=errors.data_dictionary, classes=['control-medium'], attrs={'title': 'URL to the data dictionary for the dataset or API. Note that documentation other than a Data Dictionary can be referenced using Related Documents as shown in the expanded fields.'}) }}
 
-{#<div class="control-group">#}
-{#  <label class="control-label" for="field-data_quality">#}
-{#      {{ _("Meets Organizational Data Quality") }}</label>#}
-{#  <div class="controls">#}
-{#    <input type="checkbox" id="field-data_quality" name="data_quality" class="checkbox"#}
-{#           title="Whether the dataset meets the agency Information Quality Guidelines (true/false)."#}
-{#            {% if data.common_core.data_quality %}checked{% endif %}>#}
-{#  </div>#}
-{#</div>#}
+{{ form.input('data_dictionary_type', label=_('Data Dictionary Type'), id='field-data_dictionary_type',
+    placeholder=_('application/schema+json'), value=data.common_core.data_dictionary_type, error=errors.data_dictionary_type,
+    classes=['control-medium'], is_required=false)}}
 
 <div class="control-group">
     <label class="control-label" for="field-data_quality">
@@ -55,6 +49,8 @@
     </select>
   </div>
 </div>
+
+{{ form.input('conforms_to', label=_('Data Standard'), id='field-conforms_to', placeholder=_('http://www.agency.gov/widget-data-standard/'), value=data.common_core.conforms_to, error=errors.conforms_to, classes=['control-medium'], is_required=false) }}
 
 {{ form.input('homepage_url', label=_('Homepage URL'), id='field-homepage_url', placeholder=_('http://www.agency.gov/vegetables'), value=data.common_core.homepage_url, error=errors.homepage_url, classes=['control-medium'], attrs={'title': 'Alternative landing page used to redirect user to a contextual, Agency-hosted homepage for the Dataset or API when selecting this resource from the Data.gov user interface.his field is not intended for an agency homepage (e.g. www.agency.gov), but rather if a dataset has a human-friendly hub or landing page that users should be directed to for all resources tied to the dataset. This allows agencies to better specify what a visitor receives after selecting one of the agency datasets on Data.gov or in third-party mashups.'} )}}
 
