@@ -79,6 +79,11 @@ expanded_metadata = (
     {'id': 'system_of_records_none_related_to_this_dataset', 'validators': [v.String(max=2100)]},
     {'id': 'primary_it_investment_uii', 'validators': [v.String(max=75)]},
     {'id': 'webservice', 'validators': [v.Regex(r"^(http(?:s)?\:\/\/[a-zA-Z0-9\-]+(?:\.[a-zA-Z0-9\-]+)*\.[a-zA-Z]{2,6}(?:\/?|(?:\/[\w\-]+)*)(?:\/?|\/\w+\.[a-zA-Z]{2,4}(?:\?[\w]+\=[\w\-]+)?)?(?:\&[\w]+\=[\w\-]+)*)$")]},
+    {'id': 'publisher_1', 'validators': [v.String(max=300)]},
+    {'id': 'publisher_2', 'validators': [v.String(max=300)]},
+    {'id': 'publisher_3', 'validators': [v.String(max=300)]},
+    {'id': 'publisher_4', 'validators': [v.String(max=300)]},
+    {'id': 'publisher_5', 'validators': [v.String(max=300)]}
 )
 
 #excluded download_url, endpoint, format and license as they may be discoverable
@@ -416,8 +421,8 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             for key in keys_to_remove:
                 del new_dict[key]
 
-        parent_dataset_options = db_utils.get_parent_organizations(20)
-        parent_dataset_options[""] = ""
+        parent_dataset_options = db_utils.get_parent_organizations(50)
+        parent_dataset_options[u''] = u' '
         new_dict['parent_dataset_options'] = parent_dataset_options
         return new_dict
 
