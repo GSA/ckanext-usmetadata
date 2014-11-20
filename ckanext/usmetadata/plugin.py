@@ -147,7 +147,12 @@ dataset_labels = {
     'format': 'Format',
     'webservice' : 'Webservice',
     'is_parent' : 'Is parent dataset',
-    'parent_dataset' : 'Parent dataset'
+    'parent_dataset' : 'Parent dataset',
+    'publisher_1' : 'Sub-agency',
+    'publisher_2' : 'Sub-agency',
+    'publisher_3' : 'Sub-agency',
+    'publisher_4' : 'Sub-agency',
+    'publisher_5' : 'Sub-agency',
 }
 
 # Dictionary of all media types
@@ -422,7 +427,6 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
                 del new_dict[key]
 
         parent_dataset_options = db_utils.get_parent_organizations(50)
-        parent_dataset_options[u''] = u' '
         new_dict['parent_dataset_options'] = parent_dataset_options
         return new_dict
 
