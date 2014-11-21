@@ -8,6 +8,7 @@ import ckan.lib.navl.dictization_functions as dict_fns
 import ckan.model as model
 import ckan.plugins as p
 import db_utils
+import collections
 
 from logging import getLogger
 from ckan.lib.base import BaseController
@@ -98,6 +99,7 @@ required_if_applicable_metadata = (
     {'id': 'program_code', 'validators': [v.Regex(r'^\d{3}:\d{3}(\s*,\s*\d{3}:\d{3}\s*)*$')]},
     {'id': 'access_level_comment', 'validators': [v.String(max=255)]},
     {'id': 'modified', 'validators': [v.DateValidator(), v.String(max=50)]},
+    {'id':'license_new', 'validators': [v.String(max=2100)]}
 )
 
 accrual_periodicity = [u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biweekly", u"Semiannual", u"Biennial",
@@ -110,50 +112,6 @@ access_levels = ['public', 'restricted public', 'non-public']
 
 data_quality_options = {'': '', 'true': 'Yes', 'false': 'No'}
 is_parent_options = {'true': 'Yes', 'false': 'No'}
-
-#Used to display user-friendly labels on dataset page
-dataset_labels = {
-    'public_access_level': 'Public Access Level',
-    'tag_string': 'Tags',
-    'access_level_comment': 'Access Level Comment',
-    'contact_name': 'Contact Name',
-    'category': 'Category',
-    'title': 'Title',
-    'temporal': 'Temporal',
-    'program_code': 'Program Code',
-    'spatial': 'Spatial',
-    'license_id': 'License',
-    'bureau_code': 'Bureau Code',
-    'tags': 'Tags',
-    'contact_email': 'Contact Email',
-    'publisher': 'Publisher',
-    'name': 'Name',
-    'language': 'Language',
-    'accrual_periodicity': 'Frequency',
-    'notes': 'Description',
-    'modified': 'Last Update',
-    'related_documents': 'Related Documents',
-    'data_dictionary': 'Data Dictionary',
-    'data_dictionary_type': 'Data Dictionary Type',
-    'homepage_url': 'Homepage Url',
-    'conforms_to' : 'Data Standard',
-    'unique_id': 'Unique Identifier',
-    'system_of_records': 'System of Records',
-    'release_date': 'Release Date',
-    'data_quality': 'Meets the agency Information Quality Guidelines',
-    'primary_it_investment_uii': 'Primary IT Investment UII',
-    'accessURL': 'Download URL',
-    'webService': 'Endpoint',
-    'format': 'Format',
-    'webservice' : 'Webservice',
-    'is_parent' : 'Is parent dataset',
-    'parent_dataset' : 'Parent dataset',
-    'publisher_1' : 'Sub-agency',
-    'publisher_2' : 'Sub-agency',
-    'publisher_3' : 'Sub-agency',
-    'publisher_4' : 'Sub-agency',
-    'publisher_5' : 'Sub-agency',
-}
 
 # Dictionary of all media types
 media_types = json.loads(open(os.path.join(os.path.dirname(__file__), 'media_types.json'), 'r').read())
@@ -387,7 +345,53 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             new_dict['common_core'] = {}
 
         reduced_extras = []
-        new_dict['labels'] = dataset_labels
+
+        #Used to display user-friendly labels on dataset page
+        dataset_labels = (
+            ('name','Name'),
+            ('title','Title'),
+            ('notes','Description'),
+            ('tag_string','Tags'),
+            ('tags','Tags'),
+            ('modified','Last Update'),
+            ('publisher','Publisher'),
+            ('publisher_1','Sub-agency'),
+            ('publisher_2','Sub-agency'),
+            ('publisher_3','Sub-agency'),
+            ('publisher_4','Sub-agency'),
+            ('publisher_5','Sub-agency'),
+            ('contact_name','Contact Name'),
+            ('contact_email','Contact Email'),
+            ('unique_id','Unique Identifier'),
+            ('public_access_level','Public Access Level'),
+            ('bureau_code','Bureau Code'),
+            ('program_code','Program Code'),
+            ('access_level_comment','Rights'),
+            ('license_id','License'),
+            ('license_new','License'),
+            ('spatial','Spatial'),
+            ('temporal','Temporal'),
+            ('category','Category'),
+            ('data_dictionary','Data Dictionary'),
+            ('data_dictionary_type','Data Dictionary Type'),
+            ('data_quality','Meets the agency Information Quality Guidelines'),
+            ('accrual_periodicity','Frequency'),
+            ('conforms_to','Data Standard'),
+            ('homepage_url','Homepage Url'),
+            ('language','Language'),
+            ('primary_it_investment_uii','Primary IT Investment UII'),
+            ('related_documents','Related Documents'),
+            ('release_date','Release Date'),
+            ('system_of_records','System of Records'),
+            ('webservice','Webservice'),
+            ('is_parent','Is parent dataset'),
+            ('parent_dataset','Parent dataset'),
+            ('accessURL','Download URL'),
+            ('webService','Endpoint'),
+            ('format','Format')
+        )
+
+        new_dict['labels'] = collections.OrderedDict(dataset_labels)
         try:
             for extra in new_dict['extras']:
                 #to take care of legacy On values for data_quality
@@ -425,6 +429,12 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
             for key in keys_to_remove:
                 del new_dict[key]
+
+        #reorder keys
+        new_dict['ordered_common_core'] = collections.OrderedDict()
+        for key in new_dict['labels']:
+            if key in new_dict['common_core']:
+                new_dict['ordered_common_core'][key] = new_dict['common_core'][key]
 
         parent_dataset_options = db_utils.get_parent_organizations(50)
         new_dict['parent_dataset_options'] = parent_dataset_options
