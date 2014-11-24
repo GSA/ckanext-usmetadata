@@ -301,8 +301,22 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     p.implements(p.ITemplateHelpers, inherit=False)
     p.implements(p.IConfigurer, inherit=False)
     p.implements(p.IDatasetForm, inherit=False)
+    p.implements(p.IResourceController, inherit=False)
     p.implements(p.interfaces.IRoutes, inherit=True)
     p.implements(p.interfaces.IPackageController, inherit=True)
+
+    def before_show(self, resource_dict):
+        labels = collections.OrderedDict()
+        labels["accessURL new"] = "Access URL"
+        labels["conformsTo"] = "Conforms To"
+        labels["describedBy"] = "Described By"
+        labels["describedByType"] = "Described By Type"
+        labels["format"] = "Media Type"
+        labels["formatReadable"] = "Format"
+        labels["created"] = "Created"
+
+        resource_dict['labels'] = labels
+        return resource_dict
 
     def edit(self, entity):
         #if dataset uses filestore to upload datafiles then make that dataset Public by default
@@ -387,6 +401,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             ('is_parent','Is parent dataset'),
             ('parent_dataset','Parent dataset'),
             ('accessURL','Download URL'),
+            ('accessURL_new','Access URL'),
             ('webService','Endpoint'),
             ('format','Format')
         )
