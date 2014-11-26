@@ -7,6 +7,8 @@ import ckan.lib.base as base
 import ckan.lib.navl.dictization_functions as dict_fns
 import ckan.model as model
 import ckan.plugins as p
+import db_utils
+import collections
 
 from logging import getLogger
 from ckan.lib.base import BaseController
@@ -63,23 +65,32 @@ required_metadata_update = (
 expanded_metadata = (
     {'id': 'release_date', 'validators': [v.String(max=500)]},
     {'id': 'accrual_periodicity', 'validators': [v.Regex(
-        r'^([Aa]nnual)|([Bb]imonthly)|([Ss]emiweekly)|([Dd]aily)|([Bb]iweekly)|([Ss]emiannual)|([Bb]iennial)|([Tt]riennial)|(Three times a week)|(Three times a month)|(Continuously updated)|([Mm]onthly)|([Qq]uarterly)|([Ss]emimonthly)|(Three times a year)|(Weekly)|(Completely irregular)$')]},
+        r'^([Dd]ecennial)|([Qq]uadrennial)|([Aa]nnual)|([Bb]imonthly)|([Ss]emiweekly)|([Dd]aily)|([Bb]iweekly)|([Ss]emiannual)|([Bb]iennial)|([Tt]riennial)|(Three times a week)|(Three times a month)|(Continuously updated)|([Mm]onthly)|([Qq]uarterly)|([Ss]emimonthly)|(Three times a year)|(Weekly)|(Completely irregular)$')]},
     {'id': 'language', 'validators': [v.Regex(
         r"^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))(\s*,\s*(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))\s*)*$")]},
     {'id': 'data_quality', 'validators': [v.String(max=1000)]},
+    {'id': 'is_parent', 'validators': [v.String(max=1000)]},
+    {'id': 'parent_dataset', 'validators': [v.String(max=1000)]},
     {'id': 'category', 'validators': [v.String(max=1000)]},
     {'id': 'related_documents', 'validators': [v.String(max=2100)]},
+    {'id': 'conforms_to', 'validators': [v.String(max=2100)]},
     {'id': 'homepage_url', 'validators': [v.String(max=2100)]},
     {'id': 'rss_feed', 'validators': [v.String(max=2100)]},
     {'id': 'system_of_records', 'validators': [v.String(max=2100)]},
     {'id': 'system_of_records_none_related_to_this_dataset', 'validators': [v.String(max=2100)]},
     {'id': 'primary_it_investment_uii', 'validators': [v.String(max=75)]},
     {'id': 'webservice', 'validators': [v.Regex(r"^(http(?:s)?\:\/\/[a-zA-Z0-9\-]+(?:\.[a-zA-Z0-9\-]+)*\.[a-zA-Z]{2,6}(?:\/?|(?:\/[\w\-]+)*)(?:\/?|\/\w+\.[a-zA-Z]{2,4}(?:\?[\w]+\=[\w\-]+)?)?(?:\&[\w]+\=[\w\-]+)*)$")]},
+    {'id': 'publisher_1', 'validators': [v.String(max=300)]},
+    {'id': 'publisher_2', 'validators': [v.String(max=300)]},
+    {'id': 'publisher_3', 'validators': [v.String(max=300)]},
+    {'id': 'publisher_4', 'validators': [v.String(max=300)]},
+    {'id': 'publisher_5', 'validators': [v.String(max=300)]}
 )
 
 #excluded download_url, endpoint, format and license as they may be discoverable
 required_if_applicable_metadata = (
     {'id': 'data_dictionary', 'validators': [v.String(max=2100)]},
+    {'id': 'data_dictionary_type', 'validators': [v.String(max=2100)]},
     {'id': 'endpoint', 'validators': [v.String(max=2100)]},
     {'id': 'spatial', 'validators': [v.String(max=500)]},
     {'id': 'temporal', 'validators': [v.Regex(
@@ -88,52 +99,19 @@ required_if_applicable_metadata = (
     {'id': 'program_code', 'validators': [v.Regex(r'^\d{3}:\d{3}(\s*,\s*\d{3}:\d{3}\s*)*$')]},
     {'id': 'access_level_comment', 'validators': [v.String(max=255)]},
     {'id': 'modified', 'validators': [v.DateValidator(), v.String(max=50)]},
+    {'id':'license_new', 'validators': [v.String(max=2100)]}
 )
 
-accrual_periodicity = [u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biweekly", u"Semiannual", u"Biennial",
+accrual_periodicity = [u"", u"Decennial", u"Quadrennial", u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biweekly", u"Semiannual", u"Biennial",
                        u"Triennial",
                        u"Three times a week", u"Three times a month", u"Continuously updated", u"Monthly", u"Quarterly",
                        u"Semimonthly",
-                       u"Three times a year", u"Weekly", u"Completely irregular"]
+                       u"Three times a year", u"Weekly"]
 
 access_levels = ['public', 'restricted public', 'non-public']
 
 data_quality_options = {'': '', 'true': 'Yes', 'false': 'No'}
-
-#Used to display user-friendly labels on dataset page
-dataset_labels = {
-    'public_access_level': 'Public Access Level',
-    'tag_string': 'Tags',
-    'access_level_comment': 'Access Level Comment',
-    'contact_name': 'Contact Name',
-    'category': 'Category',
-    'title': 'Title',
-    'temporal': 'Temporal',
-    'program_code': 'Program Code',
-    'spatial': 'Spatial',
-    'license_id': 'License',
-    'bureau_code': 'Bureau Code',
-    'tags': 'Tags',
-    'contact_email': 'Contact Email',
-    'publisher': 'Publisher',
-    'name': 'Name',
-    'language': 'Language',
-    'accrual_periodicity': 'Frequency',
-    'notes': 'Description',
-    'modified': 'Last Update',
-    'related_documents': 'Related Documents',
-    'data_dictionary': 'Data Dictionary',
-    'homepage_url': 'Homepage Url',
-    'unique_id': 'Unique Identifier',
-    'system_of_records': 'System of Records',
-    'release_date': 'Release Date',
-    'data_quality': 'Meets the agency Information Quality Guidelines',
-    'primary_it_investment_uii': 'Primary IT Investment UII',
-    'accessURL': 'Download URL',
-    'webService': 'Endpoint',
-    'format': 'Format',
-    'webservice' : 'Webservice'
-}
+is_parent_options = {'true': 'Yes', 'false': 'No'}
 
 # Dictionary of all media types
 media_types = json.loads(open(os.path.join(os.path.dirname(__file__), 'media_types.json'), 'r').read())
@@ -323,8 +301,22 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     p.implements(p.ITemplateHelpers, inherit=False)
     p.implements(p.IConfigurer, inherit=False)
     p.implements(p.IDatasetForm, inherit=False)
+    p.implements(p.IResourceController, inherit=False)
     p.implements(p.interfaces.IRoutes, inherit=True)
     p.implements(p.interfaces.IPackageController, inherit=True)
+
+    def before_show(self, resource_dict):
+        labels = collections.OrderedDict()
+        labels["accessURL new"] = "Access URL"
+        labels["conformsTo"] = "Conforms To"
+        labels["describedBy"] = "Described By"
+        labels["describedByType"] = "Described By Type"
+        labels["format"] = "Media Type"
+        labels["formatReadable"] = "Format"
+        labels["created"] = "Created"
+
+        resource_dict['labels'] = labels
+        return resource_dict
 
     def edit(self, entity):
         #if dataset uses filestore to upload datafiles then make that dataset Public by default
@@ -367,7 +359,54 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             new_dict['common_core'] = {}
 
         reduced_extras = []
-        new_dict['labels'] = dataset_labels
+
+        #Used to display user-friendly labels on dataset page
+        dataset_labels = (
+            ('name','Name'),
+            ('title','Title'),
+            ('notes','Description'),
+            ('tag_string','Tags'),
+            ('tags','Tags'),
+            ('modified','Last Update'),
+            ('publisher','Publisher'),
+            ('publisher_1','Sub-agency'),
+            ('publisher_2','Sub-agency'),
+            ('publisher_3','Sub-agency'),
+            ('publisher_4','Sub-agency'),
+            ('publisher_5','Sub-agency'),
+            ('contact_name','Contact Name'),
+            ('contact_email','Contact Email'),
+            ('unique_id','Unique Identifier'),
+            ('public_access_level','Public Access Level'),
+            ('bureau_code','Bureau Code'),
+            ('program_code','Program Code'),
+            ('access_level_comment','Rights'),
+            ('license_id','License'),
+            ('license_new','License'),
+            ('spatial','Spatial'),
+            ('temporal','Temporal'),
+            ('category','Category'),
+            ('data_dictionary','Data Dictionary'),
+            ('data_dictionary_type','Data Dictionary Type'),
+            ('data_quality','Meets the agency Information Quality Guidelines'),
+            ('accrual_periodicity','Frequency'),
+            ('conforms_to','Data Standard'),
+            ('homepage_url','Homepage Url'),
+            ('language','Language'),
+            ('primary_it_investment_uii','Primary IT Investment UII'),
+            ('related_documents','Related Documents'),
+            ('release_date','Release Date'),
+            ('system_of_records','System of Records'),
+            ('webservice','Webservice'),
+            ('is_parent','Is parent dataset'),
+            ('parent_dataset','Parent dataset'),
+            ('accessURL','Download URL'),
+            ('accessURL_new','Access URL'),
+            ('webService','Endpoint'),
+            ('format','Format')
+        )
+
+        new_dict['labels'] = collections.OrderedDict(dataset_labels)
         try:
             for extra in new_dict['extras']:
                 #to take care of legacy On values for data_quality
@@ -406,6 +445,14 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             for key in keys_to_remove:
                 del new_dict[key]
 
+        #reorder keys
+        new_dict['ordered_common_core'] = collections.OrderedDict()
+        for key in new_dict['labels']:
+            if key in new_dict['common_core']:
+                new_dict['ordered_common_core'][key] = new_dict['common_core'][key]
+
+        parent_dataset_options = db_utils.get_parent_organizations(50)
+        new_dict['parent_dataset_options'] = parent_dataset_options
         return new_dict
 
         #See ckan.plugins.interfaces.IDatasetForm
@@ -531,6 +578,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         return {'public_access_levels': access_levels,
                 'required_metadata': required_metadata,
                 'data_quality_options': data_quality_options,
+                'is_parent_options': is_parent_options,
                 'load_data_into_dict': self.load_data_into_dict,
                 'accrual_periodicity': accrual_periodicity,
                 'always_private': True}

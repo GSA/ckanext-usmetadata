@@ -12,7 +12,7 @@
     <tbody>
       {% block package_common_core %}
 
-      {% for meta in pkg_dict.common_core %}
+      {% for meta in pkg_dict.ordered_common_core %}
 
         <tr rel="dc:relation" resource="_:extra{{ i }}">
             {% if pkg_dict.labels[meta] %}
