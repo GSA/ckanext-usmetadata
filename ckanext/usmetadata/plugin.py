@@ -102,11 +102,11 @@ required_if_applicable_metadata = (
     {'id':'license_new', 'validators': [v.String(max=2100)]}
 )
 
-accrual_periodicity = [u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biweekly", u"Semiannual", u"Biennial",
+accrual_periodicity = [u"", u"Decennial", u"Quadrennial", u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biweekly", u"Semiannual", u"Biennial",
                        u"Triennial",
                        u"Three times a week", u"Three times a month", u"Continuously updated", u"Monthly", u"Quarterly",
                        u"Semimonthly",
-                       u"Three times a year", u"Weekly", u"Completely irregular"]
+                       u"Three times a year", u"Weekly"]
 
 access_levels = ['public', 'restricted public', 'non-public']
 
