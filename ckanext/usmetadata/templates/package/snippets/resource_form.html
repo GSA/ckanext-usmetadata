@@ -29,8 +29,9 @@
     {{ form.input('describedBy', id='field-describedBy', label=_('Data Dictionary'), placeholder=_('http://www.agency.gov/widgets/schema.json'),
         value=data.describedBy, error=errors.describedBy, classes=['control-medium'], is_required=false) }}
 
-    {{ form.input('describedByType', id='field-describedByType', label=_('Data Dictionary Type'), placeholder=_('application/schema+json'),
-        value=data.describedByType, error=errors.describedByType, classes=['control-medium'], is_required=false) }}
+    {% call form.input('describedByType', id='field-describedByType', label=_('Data Dictionary Type'), placeholder=_('e.g. text/csv, application/xml, or application/json'),
+        value=data.describedByType, error=errors.describedByType, classes=['control-medium'], attrs=format_attrs, is_required=false) %}
+    {% endcall %}
 
     {{ form.input('conformsTo', id='field-conformsTo', label=_('Data Standard'), placeholder=_('http://www.agency.gov/widget-data-standard/'),
         value=data.conformsTo, error=errors.conformsTo, classes=['control-medium'], is_required=false) }}
