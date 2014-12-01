@@ -11,9 +11,11 @@
 
 {{ form.input('data_dictionary', label=_('Data Dictionary'), id='field-data_dictionary', placeholder=_('http://www.my.gov/datadictionary'), value=data.common_core.data_dictionary, error=errors.data_dictionary, classes=['control-medium'], attrs={'title': 'URL to the data dictionary for the dataset or API. Note that documentation other than a Data Dictionary can be referenced using Related Documents as shown in the expanded fields.'}) }}
 
-{{ form.input('data_dictionary_type', label=_('Data Dictionary Type'), id='field-data_dictionary_type',
-    placeholder=_('application/schema+json'), value=data.common_core.data_dictionary_type, error=errors.data_dictionary_type,
-    classes=['control-medium'], is_required=false)}}
+{% set format_attrs = {'data-module': 'autocomplete', 'data-module-source': '/api/2/util/resource/media_autocomplete?incomplete=?'} %}
+
+{% call form.input('data_dictionary_type', id='field-data_dictionary_type', label=_('Data Dictionary Type'), placeholder=_('e.g. text/csv, application/xml, or application/json'),
+    value=data.common_core.data_dictionary_type, error=errors.data_dictionary_type, classes=['control-medium'], attrs=format_attrs) %}
+{% endcall %}
 
 <div class="control-group">
     <label class="control-label" for="field-data_quality">
