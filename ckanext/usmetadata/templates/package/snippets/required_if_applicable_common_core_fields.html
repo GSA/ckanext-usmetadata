@@ -13,5 +13,24 @@
     value=data.common_core.license_new, error=errors.license_new, classes=['control-medium'],
     attrs={'title': 'License URL'}) }}
 
+<div class="control-group">
+    <label class="control-label" for="field-data_quality">
+      {{ _("Data Quality") }}
+    </label>
+    <div class="controls" title="Whether the dataset meets the agency Information Quality Guidelines">
+        <select id="field-data_quality"
+                name="data_quality"
+                data-module="autocomplete"
+                title="Whether the dataset meets the agency Information Quality Guidelines">
+
+            {% for data_quality_id, data_quality_desc in h.data_quality_options.items() %}
+                <option value="{{ data_quality_id }}" {% if data_quality_id == data.common_core.data_quality %} selected {% endif %} >
+                    {{ data_quality_desc }}
+                </option>
+            {% endfor %}
+
+        </select>
+  </div>
+</div>
 
 {% endblock package_required_if_applicable_metadata %}
