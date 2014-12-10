@@ -9,13 +9,9 @@
 
 {{ form.input('access_level_comment', label=_('Rights'), id='field-access-level-comment', placeholder=_('An explanation for the access level field.'), value=data.common_core.access_level_comment, error=errors.access_level_comment, classes=['control-medium'], attrs={'title': 'An explanation for the selected “accessLevel” including instructions for how to access a restricted file, if applicable, or explanation for why a “non-public” or “restricted public” data assetis not “public,” if applicable. Text, 255 characters.'}) }}
 
-{{ form.input('license_new', label=_('License'), id='field-license-new', placeholder=_('http://creativecommons.org/publicdomain/zero/1.0/'),
-    value=data.common_core.license_new, error=errors.license_new, classes=['control-medium'],
-    attrs={'title': 'License URL'}) }}
-
 <div class="control-group">
     <label class="control-label" for="field-data_quality">
-      {{ _("Data Quality") }}
+      {{ _("Meets Agency Data Quality") }}
     </label>
     <div class="controls" title="Whether the dataset meets the agency Information Quality Guidelines">
         <select id="field-data_quality"
@@ -32,5 +28,9 @@
         </select>
   </div>
 </div>
+
+{{ form.input('license_new', label=_('License'), id='field-license-new', placeholder=_('http://creativecommons.org/publicdomain/zero/1.0/'),
+    value=data.common_core.license_new, error=errors.license_new, classes=['control-medium'],
+    attrs={'title': 'License URL'}) }}
 
 {% endblock package_required_if_applicable_metadata %}

@@ -27,10 +27,6 @@
     {{ form.input('publisher_4', id='field-publisher_4', label=_('Sub-agency'), placeholder=_('Federal Bureau of Investigation'), value=data.common_core.publisher_4, error=errors.publisher_4, classes=['control-full', 'control-medium', 'field-publisher_4'], attrs={'title': 'The publishing agency.'}, is_required=false) }}
     {{ form.input('publisher_5', id='field-publisher_5', label=_('Sub-agency'), placeholder=_('Federal Bureau of Investigation'), value=data.common_core.publisher_5, error=errors.publisher_5, classes=['control-full', 'control-medium', 'field-publisher_5'], attrs={'title': 'The publishing agency.'}, is_required=false) }}
 
-    {{ form.input('contact_name', id='field-contact_name', label=_('Contact Name (contactPoint)'), placeholder=_('John Smith'), value=data.common_core.contact_name, error=errors.contact_name, classes=['control-full', 'control-medium'], attrs={'title': "Contact person's name for the asset."}, is_required=true) }}
-
-    {{ form.input('contact_email', id='field-contact_email', label=_('Contact Email (contactPoint)'), placeholder=_('john.smith@fbi.gov'), value=data.common_core.contact_email, error=errors.contact_email, classes=['control-full', 'control-medium'], attrs={'title': " Contact person's email address. "}, is_required=true) }}
-
     {{ form.input('unique_id', id='field-unique_id', label=_('Identifier (Unique ID)'), placeholder=_('doj-a327-73809'), value=data.common_core.unique_id, error=errors.unique_id, classes=['control-full', 'control-medium'], attrs={'title': 'A unique identifier for the dataset or API as maintained within an Agency catalog or database. It is essential that this ID be unique within the Department or Agency and that it remains consistent.'}, is_required=true) }}
 
     <div class="control-group">
@@ -52,5 +48,10 @@
     {{ form.input('bureau_code', label=_('Bureau Code'), id='field-bureau-code', placeholder=_('001:40'), value=data.common_core.bureau_code, error=errors.bureau_code, classes=['control-medium'], attrs={'title': 'Federal agencies, combined agency and bureau code from OMB Circular A-11, Appendix C in the format of 015:10.'}, is_required=true) }}
 
     {{ form.input('program_code', label=_('Program Code'), id='field-program-code', placeholder=_('015:010'), value=data.common_core.program_code, error=errors.program_code, classes=['control-medium'], attrs={'title': 'Federal agencies, list the primary program related to this data asset, from the Federal Program Inventory. Use the format of 015:001'}, is_required=true) }}
+
+        <h3>Contact Point</h3>
+    {{ form.input('contact_name', id='field-contact_name', label=_('Contact Name'), placeholder=_('John Smith'), value=data.common_core.contact_name, error=errors.contact_name, classes=['control-full', 'control-medium'], attrs={'title': "Contact person's name for the asset."}, is_required=true) }}
+
+    {{ form.input('contact_email', id='field-contact_email', label=_('Contact Email'), placeholder=_('john.smith@fbi.gov'), value=data.common_core.contact_email, error=errors.contact_email, classes=['control-full', 'control-medium'], attrs={'title': " Contact person's email address. "}, is_required=true) }}
 
 {% endblock package_required_metadata %}
