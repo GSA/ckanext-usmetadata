@@ -30,8 +30,9 @@ parse_params = logic.parse_params
 flatten_to_string_key = logic.flatten_to_string_key
 
 import ckan.lib.helpers as h
-#from ckan.plugins import implements, SingletonPlugin, toolkit, IConfigurer, ITemplateHelpers, IDatasetForm, IPackageController
-from formencode.validators import validators
+# from ckan.plugins import implements, SingletonPlugin, toolkit, IConfigurer,
+# ITemplateHelpers, IDatasetForm, IPackageController
+# from formencode.validators import validators
 
 redirect = base.redirect
 log = getLogger(__name__)
@@ -40,46 +41,102 @@ log = getLogger(__name__)
 required_metadata = (
     {'id': 'title', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
     {'id': 'notes', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
-    #{'id':'tag_string', 'validators': [v.NotEmpty]},
+    #{'id': 'tag_string', 'validators': [v.NotEmpty]},
     {'id': 'public_access_level',
-     'validators': [v.Regex(r'^([Pp]ublic)|([Rr]estricted [Pp]ublic)|([Pp]rivate)|([nN]on-public)$')]},
+     'validators': [v.Regex(r'^(public)|(restricted public)|(non-public)$')]},
     {'id': 'publisher', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
     {'id': 'contact_name', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
     {'id': 'contact_email', 'validators': [v.Email(), v.String(max=100)]},
     #TODO should this unique_id be validated against any other unique IDs for this agency?
-    {'id': 'unique_id', 'validators': [p.toolkit.get_validator('not_empty'), unicode]}
+    {'id': 'unique_id', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
+    {'id': 'modified',
+     'validators': [v.Regex(r'^(([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?'
+                            r'|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))'
+                            r'([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d'
+                            r'([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?)'
+                            r'|((R\d*/)?P(?:\d+(?:\.\d+)?Y)?(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?W)?'
+                            r'(?:\d+(?:\.\d+)?D)?(?:T(?:\d+(?:\.\d+)?H)?(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?S)?)?)|'
+                            r'((R\d*/)?([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\4([12]\d|0[1-9]|3[01]))?'
+                            r'|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]'
+                            r'((([01]\d|2[0-3])((:?)[0-5]\d)?|24:?00)([\.,]\d+(?!:))?)?(\18[0-5]\d([\.,]\d+)?)?'
+                            r'([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?(/)P(?:\d+(?:\.\d+)?Y)?'
+                            r'(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?W)?(?:\d+(?:\.\d+)?D)?(?:T(?:\d+(?:\.\d+)?H)?'
+                            r'(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?S)?)?)$'), v.String(max=50)]},
+    {'id': 'bureau_code', 'validators': [v.Regex(
+        r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$'
+    )]},
+    {'id': 'program_code', 'validators': [v.Regex(
+        r'^\d{3}:\d{3}(\s*,\s*\d{3}:\d{3}\s*)*$'
+    )]}
 )
 
 #used to bypass validation on create
 required_metadata_update = (
     {'id': 'public_access_level',
-     'validators': [v.Regex(r'^([Pp]ublic)|([Rr]estricted [Pp]ublic)|([Pp]rivate)|([nN]on-public)$')]},
-    {'id': 'publisher', 'validators': [v.String(max=300)]},
+     'validators': [v.Regex(r'^(public)|(restricted public)|(non-public)$')]},
+    {'id': 'publisher', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
     {'id': 'contact_name', 'validators': [v.String(max=300)]},
     {'id': 'contact_email', 'validators': [v.Email(), v.String(max=100)]},
-    #TODO should this unique_id be validated against any other unique IDs for this agency?
-    {'id': 'unique_id', 'validators': [v.String(max=100)]}
+    {'id': 'modified',
+     'validators': [v.Regex(r'^(([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?'
+                            r'|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))'
+                            r'([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d'
+                            r'([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?)'
+                            r'|((R\d*/)?P(?:\d+(?:\.\d+)?Y)?(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?W)?'
+                            r'(?:\d+(?:\.\d+)?D)?(?:T(?:\d+(?:\.\d+)?H)?(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?S)?)?)|'
+                            r'((R\d*/)?([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\4([12]\d|0[1-9]|3[01]))?'
+                            r'|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]'
+                            r'((([01]\d|2[0-3])((:?)[0-5]\d)?|24:?00)([\.,]\d+(?!:))?)?(\18[0-5]\d([\.,]\d+)?)?'
+                            r'([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?(/)P(?:\d+(?:\.\d+)?Y)?'
+                            r'(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?W)?(?:\d+(?:\.\d+)?D)?(?:T(?:\d+(?:\.\d+)?H)?'
+                            r'(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?S)?)?)$'), v.String(max=50)]},
+    # TODO should this unique_id be validated against any other unique IDs for this agency?
+    {'id': 'unique_id', 'validators': [v.String(max=100)]},
+    {'id': 'bureau_code', 'validators': [v.Regex(
+        r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$'
+    )]},
+    {'id': 'program_code', 'validators': [v.Regex(
+        r'^\d{3}:\d{3}(\s*,\s*\d{3}:\d{3}\s*)*$'
+    )]}
 )
 
-#some of these could be excluded (e.g. related_documents) which can be captured from other ckan default data
+# some of these could be excluded (e.g. related_documents) which can be captured from other ckan default data
 expanded_metadata = (
-    {'id': 'release_date', 'validators': [v.String(max=500)]},
+    # issued
+    {'id': 'release_date', 'validators': [v.Regex(
+        r'^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?'
+        r'|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]'
+        r'\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$'
+    ), v.String(max=500)]},
     {'id': 'accrual_periodicity', 'validators': [v.Regex(
-        r'^([Dd]ecennial)|([Qq]uadrennial)|([Aa]nnual)|([Bb]imonthly)|([Ss]emiweekly)|([Dd]aily)|([Bb]iweekly)|([Ss]emiannual)|([Bb]iennial)|([Tt]riennial)|(Three times a week)|(Three times a month)|(Continuously updated)|([Mm]onthly)|([Qq]uarterly)|([Ss]emimonthly)|(Three times a year)|(Weekly)|(Completely irregular)$')]},
+        r'^([Dd]ecennial)|([Qq]uadrennial)|([Aa]nnual)|([Bb]imonthly)|([Ss]emiweekly)|([Dd]aily)|([Bb]iweekly)'
+        r'|([Ss]emiannual)|([Bb]iennial)|([Tt]riennial)|(Three times a week)|(Three times a month)'
+        r'|(Continuously updated)|([Mm]onthly)|([Qq]uarterly)|([Ss]emimonthly)|(Three times a year)'
+        r'|(Weekly)|(Completely irregular)$')]},
     {'id': 'language', 'validators': [v.Regex(
-        r"^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))(\s*,\s*(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))\s*)*$")]},
-    {'id': 'data_quality', 'validators': [v.String(max=1000)]},
+        r'^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?'
+        r'(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z]'
+        r'(-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)'
+        r'|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|'
+        r'i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu'
+        r'|zh-hakka|zh-min|zh-min-nan|zh-xiang)))$'
+    )]},
+    {'id': 'data_quality', 'validators': [bool]},
     {'id': 'is_parent', 'validators': [v.String(max=1000)]},
     {'id': 'parent_dataset', 'validators': [v.String(max=1000)]},
+    # theme
     {'id': 'category', 'validators': [v.String(max=1000)]},
+    # describedBy
     {'id': 'related_documents', 'validators': [v.String(max=2100)]},
-    {'id': 'conforms_to', 'validators': [v.String(max=2100)]},
-    {'id': 'homepage_url', 'validators': [v.String(max=2100)]},
+    {'id': 'conforms_to', 'validators': [v.URL(add_http=False, check_exists=True), v.String(max=2100)]},
+    {'id': 'homepage_url', 'validators': [v.URL(add_http=False, check_exists=True), v.String(max=2100)]},
     {'id': 'rss_feed', 'validators': [v.String(max=2100)]},
-    {'id': 'system_of_records', 'validators': [v.String(max=2100)]},
+    {'id': 'system_of_records', 'validators': [v.URL(add_http=False, check_exists=True), v.String(max=2100)]},
     {'id': 'system_of_records_none_related_to_this_dataset', 'validators': [v.String(max=2100)]},
-    {'id': 'primary_it_investment_uii', 'validators': [v.String(max=75)]},
-    {'id': 'webservice', 'validators': [v.Regex(r"^(http(?:s)?\:\/\/[a-zA-Z0-9\-]+(?:\.[a-zA-Z0-9\-]+)*\.[a-zA-Z]{2,6}(?:\/?|(?:\/[\w\-]+)*)(?:\/?|\/\w+\.[a-zA-Z]{2,4}(?:\?[\w]+\=[\w\-]+)?)?(?:\&[\w]+\=[\w\-]+)*)$")]},
+    {'id': 'primary_it_investment_uii', 'validators': [v.Regex(
+        r'^[0-9]{3}-[0-9]{9}$'
+    )]},
+    {'id': 'webservice', 'validators': [v.String(max=300)]},
     {'id': 'publisher_1', 'validators': [v.String(max=300)]},
     {'id': 'publisher_2', 'validators': [v.String(max=300)]},
     {'id': 'publisher_3', 'validators': [v.String(max=300)]},
@@ -87,19 +144,30 @@ expanded_metadata = (
     {'id': 'publisher_5', 'validators': [v.String(max=300)]}
 )
 
-#excluded download_url, endpoint, format and license as they may be discoverable
+# excluded download_url, endpoint, format and license as they may be discoverable
 required_if_applicable_metadata = (
-    {'id': 'data_dictionary', 'validators': [v.String(max=2100)]},
+    {'id': 'data_dictionary', 'validators': [v.URL(add_http=False, check_exists=True), v.String(max=2100)]},
     {'id': 'data_dictionary_type', 'validators': [v.String(max=2100)]},
     {'id': 'endpoint', 'validators': [v.String(max=2100)]},
     {'id': 'spatial', 'validators': [v.String(max=500)]},
     {'id': 'temporal', 'validators': [v.Regex(
-        r"^([0-9]{4})(-([0-9]{1,2})(-([0-9]{1,2})((.)([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?(/([0-9]{4})(-([0-9]{1,2})(-([0-9]{1,2})((.)([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?){0,1}$")]},
-    {'id': 'bureau_code', 'validators': [v.Regex(r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$')]},
-    {'id': 'program_code', 'validators': [v.Regex(r'^\d{3}:\d{3}(\s*,\s*\d{3}:\d{3}\s*)*$')]},
+        r'^(([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?'
+        r'|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))'
+        r'([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d'
+        r'([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?(/)([\+-]?\d{4}'
+        r'(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])'
+        r'(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])'
+        r'((:?)[0-5]\d)?|24:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])'
+        r'([01]\d|2[0-3]):?([0-5]\d)?)?)?)?)'
+        r'|((R\d*/)?([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\4([12]\d|0[1-9]|3[01]))?'
+        r'|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))'
+        r'([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24:?00)([\.,]\d+(?!:))?)?(\18[0-5]\d([\.,]\d+)?)?'
+        r'([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?(/)P(?:\d+(?:\.\d+)?Y)?'
+        r'(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?W)?(?:\d+(?:\.\d+)?D)?(?:T(?:\d+(?:\.\d+)?H)?'
+        r'(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?S)?)?)$'
+    )]},
     {'id': 'access_level_comment', 'validators': [v.String(max=255)]},
-    {'id': 'modified', 'validators': [v.DateValidator(), v.String(max=50)]},
-    {'id':'license_new', 'validators': [v.String(max=2100)]}
+    {'id': 'license_new', 'validators': [v.URL(add_http=False, check_exists=True), v.String(max=2100)]}
 )
 
 accrual_periodicity = [u"", u"Decennial", u"Quadrennial", u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biweekly", u"Semiannual", u"Biennial",
@@ -197,8 +265,7 @@ class UsmetadataController(BaseController):
             # see if we have any data that we are trying to save
             data_provided = False
             for key, value in data.iteritems():
-                if ((value or isinstance(value, cgi.FieldStorage))
-                    and key != 'resource_type'):
+                if value or isinstance(value, cgi.FieldStorage and key != 'resource_type'):
                     data_provided = True
                     break
             if not data_provided and save_action != "go-dataset-complete":
@@ -212,8 +279,7 @@ class UsmetadataController(BaseController):
                 except NotAuthorized:
                     abort(401, _('Unauthorized to update dataset'))
                 except NotFound:
-                    abort(404,
-                      _('The dataset {id} could not be found.').format(id=id))
+                    abort(404, _('The dataset {id} could not be found.').format(id=id))
                 if str.lower(config.get('ckan.package.resource_required', 'true')) == 'true' and not len(data_dict['resources']):
                     # no data so keep on page
                     msg = _('You must add at least one data resource')
@@ -254,7 +320,7 @@ class UsmetadataController(BaseController):
                 # go to final stage of add dataset
                 # redirect(h.url_for(controller='package',
                 #                    action='new_metadata', id=id))
-                #Github Issue # 129. Removing last stage of dataset creation.
+                # Github Issue # 129. Removing last stage of dataset creation.
                 vars = self.get_package_info_usmetadata(id, context, errors, error_summary)
                 package_type = self._get_package_type(id)
                 self._setup_template_variables(context, {},package_type=package_type)
@@ -273,8 +339,7 @@ class UsmetadataController(BaseController):
                                    action='new_resource', id=id))
         errors = errors or {}
         error_summary = error_summary or {}
-        vars = {'data': data, 'errors': errors,
-                'error_summary': error_summary, 'action': 'new'}
+        vars = {'data': data, 'errors': errors, 'error_summary': error_summary, 'action': 'new'}
         vars['pkg_name'] = id
         # get resources for sidebar
         context = {'model': model, 'session': model.Session,
@@ -328,7 +393,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         return entity
 
     def before_map(self, m):
-        m.connect('media_type','/dataset/new_resource/{id}',controller='ckanext.usmetadata.plugin:UsmetadataController',action='new_resource_usmetadata')
+        m.connect('media_type', '/dataset/new_resource/{id}',controller='ckanext.usmetadata.plugin:UsmetadataController',action='new_resource_usmetadata')
         return m
 
     def after_map(selfself, m):
@@ -360,50 +425,50 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
         reduced_extras = []
 
-        #Used to display user-friendly labels on dataset page
+        # Used to display user-friendly labels on dataset page
         dataset_labels = (
-            ('name','Name'),
-            ('title','Title'),
-            ('notes','Description'),
-            ('tag_string','Tags'),
-            ('tags','Tags'),
-            ('modified','Last Update'),
-            ('publisher','Publisher'),
-            ('publisher_1','Sub-agency'),
-            ('publisher_2','Sub-agency'),
-            ('publisher_3','Sub-agency'),
-            ('publisher_4','Sub-agency'),
-            ('publisher_5','Sub-agency'),
-            ('contact_name','Contact Name'),
-            ('contact_email','Contact Email'),
-            ('unique_id','Unique Identifier'),
-            ('public_access_level','Public Access Level'),
-            ('bureau_code','Bureau Code'),
-            ('program_code','Program Code'),
-            ('access_level_comment','Rights'),
-            ('license_id','License'),
-            ('license_new','License'),
-            ('spatial','Spatial'),
-            ('temporal','Temporal'),
-            ('category','Category'),
-            ('data_dictionary','Data Dictionary'),
-            ('data_dictionary_type','Data Dictionary Type'),
-            ('data_quality','Meets the agency Information Quality Guidelines'),
-            ('accrual_periodicity','Frequency'),
-            ('conforms_to','Data Standard'),
-            ('homepage_url','Homepage Url'),
-            ('language','Language'),
-            ('primary_it_investment_uii','Primary IT Investment UII'),
-            ('related_documents','Related Documents'),
-            ('release_date','Release Date'),
-            ('system_of_records','System of Records'),
-            ('webservice','Webservice'),
-            ('is_parent','Is parent dataset'),
-            ('parent_dataset','Parent dataset'),
-            ('accessURL','Download URL'),
-            ('accessURL_new','Access URL'),
-            ('webService','Endpoint'),
-            ('format','Format')
+            ('name', 'Name'),
+            ('title', 'Title'),
+            ('notes', 'Description'),
+            ('tag_string', 'Keywords (Tags)'),
+            ('tags', 'Keywords (Tags)'),
+            ('modified', 'Modified (Last Update)'),
+            ('publisher', 'Publisher'),
+            ('publisher_1', 'Sub-agency'),
+            ('publisher_2', 'Sub-agency'),
+            ('publisher_3', 'Sub-agency'),
+            ('publisher_4', 'Sub-agency'),
+            ('publisher_5', 'Sub-agency'),
+            ('contact_name', 'Contact Name'),
+            ('contact_email', 'Contact Email'),
+            ('unique_id', 'Identifier'),
+            ('public_access_level', 'Public Access Level'),
+            ('bureau_code', 'Bureau Code'),
+            ('program_code', 'Program Code'),
+            ('access_level_comment', 'Rights'),
+            ('license_id', 'License'),
+            ('license_new', 'License'),
+            ('spatial', 'Spatial'),
+            ('temporal', 'Temporal'),
+            ('category', 'Theme (Category)'),
+            ('data_dictionary', 'Data Dictionary'),
+            ('data_dictionary_type', 'Data Dictionary Type'),
+            ('data_quality', 'Meets the agency Information Quality Guidelines'),
+            ('accrual_periodicity', 'Accrual Periodicity (Frequency)'),
+            ('conforms_to', 'Conforms To (Data Standard) '),
+            ('homepage_url', 'Homepage Url'),
+            ('language', 'Language'),
+            ('primary_it_investment_uii', 'Primary IT Investment UII'),
+            ('related_documents', 'Related Documents'),
+            ('release_date', 'Release Date'),
+            ('system_of_records', 'System of Records'),
+            ('webservice', 'Webservice'),
+            ('is_parent', 'Is parent dataset'),
+            ('parent_dataset', 'Parent dataset'),
+            ('accessURL', 'Download URL'),
+            ('accessURL_new', 'Access URL'),
+            ('webService', 'Endpoint'),
+            ('format', 'Format')
         )
 
         new_dict['labels'] = collections.OrderedDict(dataset_labels)
@@ -427,7 +492,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             #this can happen when a form fails validation, as all the data will now be as key,value pairs, not under extras,
             #so we'll move them to the expected point again to fill in the values
             # e.g.
-            # { 'foo':'bar','publisher':'somename'} becomes {'foo':'bar', 'common_core':{'publisher':'somename'}}
+            # { 'foo':'bar', 'publisher':'somename'} becomes {'foo':'bar', 'common_core':{'publisher':'somename'}}
 
             keys_to_remove = []
 
@@ -571,7 +636,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
         return schema
 
-    #Method below allows functions and other methods to be called from the Jinja template using the h variable
+    # Method below allows functions and other methods to be called from the Jinja template using the h variable
     # always_private hides Visibility selector, essentially meaning that all datasets are private to an organization
     def get_helpers(self):
         log.debug('get_helpers() called')

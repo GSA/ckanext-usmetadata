@@ -33,7 +33,7 @@
         value=data.describedByType, error=errors.describedByType, classes=['control-medium'], attrs=format_attrs, is_required=false) %}
     {% endcall %}
 
-    {{ form.input('conformsTo', id='field-conformsTo', label=_('Data Standard'), placeholder=_('http://www.agency.gov/widget-data-standard/'),
+    {{ form.input('conformsTo', id='field-conformsTo', label=_('Conforms To (Data Standard)'), placeholder=_('http://www.agency.gov/widget-data-standard/'),
         value=data.conformsTo, error=errors.conformsTo, classes=['control-medium'], is_required=false) }}
 {% endblock %}
 
