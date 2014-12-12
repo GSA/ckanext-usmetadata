@@ -37,31 +37,22 @@ import ckan.lib.helpers as h
 redirect = base.redirect
 log = getLogger(__name__)
 
-#excluded title, description, tags and last update as they're part of the default ckan dataset metadata
+# excluded title, description, tags and last update as they're part of the default ckan dataset metadata
 required_metadata = (
     {'id': 'title', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
     {'id': 'notes', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
-    #{'id': 'tag_string', 'validators': [v.NotEmpty]},
+    # {'id': 'tag_string', 'validators': [v.NotEmpty]},
     {'id': 'public_access_level',
      'validators': [v.Regex(r'^(public)|(restricted public)|(non-public)$')]},
     {'id': 'publisher', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
     {'id': 'contact_name', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
     {'id': 'contact_email', 'validators': [v.Email(), v.String(max=100)]},
-    #TODO should this unique_id be validated against any other unique IDs for this agency?
+    # TODO should this unique_id be validated against any other unique IDs for this agency?
     {'id': 'unique_id', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
     {'id': 'modified',
-     'validators': [v.Regex(r'^(([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?'
-                            r'|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))'
-                            r'([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d'
-                            r'([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?)'
-                            r'|((R\d*/)?P(?:\d+(?:\.\d+)?Y)?(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?W)?'
-                            r'(?:\d+(?:\.\d+)?D)?(?:T(?:\d+(?:\.\d+)?H)?(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?S)?)?)|'
-                            r'((R\d*/)?([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\4([12]\d|0[1-9]|3[01]))?'
-                            r'|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]'
-                            r'((([01]\d|2[0-3])((:?)[0-5]\d)?|24:?00)([\.,]\d+(?!:))?)?(\18[0-5]\d([\.,]\d+)?)?'
-                            r'([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?(/)P(?:\d+(?:\.\d+)?Y)?'
-                            r'(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?W)?(?:\d+(?:\.\d+)?D)?(?:T(?:\d+(?:\.\d+)?H)?'
-                            r'(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?S)?)?)$'), v.String(max=50)]},
+        'validators': [v.Regex(
+            r'^[\-\dTWZPYMWDHMS:\+]{3,}$'
+        ), v.String(max=50)]},
     {'id': 'bureau_code', 'validators': [v.Regex(
         r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$'
     )]},
@@ -70,28 +61,19 @@ required_metadata = (
     )]}
 )
 
-#used to bypass validation on create
+# used to bypass validation on create
 required_metadata_update = (
     {'id': 'public_access_level',
      'validators': [v.Regex(r'^(public)|(restricted public)|(non-public)$')]},
     {'id': 'publisher', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
     {'id': 'contact_name', 'validators': [v.String(max=300)]},
     {'id': 'contact_email', 'validators': [v.Email(), v.String(max=100)]},
-    {'id': 'modified',
-     'validators': [v.Regex(r'^(([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?'
-                            r'|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))'
-                            r'([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d'
-                            r'([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?)'
-                            r'|((R\d*/)?P(?:\d+(?:\.\d+)?Y)?(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?W)?'
-                            r'(?:\d+(?:\.\d+)?D)?(?:T(?:\d+(?:\.\d+)?H)?(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?S)?)?)|'
-                            r'((R\d*/)?([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\4([12]\d|0[1-9]|3[01]))?'
-                            r'|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]'
-                            r'((([01]\d|2[0-3])((:?)[0-5]\d)?|24:?00)([\.,]\d+(?!:))?)?(\18[0-5]\d([\.,]\d+)?)?'
-                            r'([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?(/)P(?:\d+(?:\.\d+)?Y)?'
-                            r'(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?W)?(?:\d+(?:\.\d+)?D)?(?:T(?:\d+(?:\.\d+)?H)?'
-                            r'(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?S)?)?)$'), v.String(max=50)]},
     # TODO should this unique_id be validated against any other unique IDs for this agency?
     {'id': 'unique_id', 'validators': [v.String(max=100)]},
+    {'id': 'modified',
+        'validators': [v.Regex(
+            r'^[\-\dTWZPYMWDHMS:\+]{3,}$'
+        ), v.String(max=50)]},
     {'id': 'bureau_code', 'validators': [v.Regex(
         r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$'
     )]},
@@ -116,10 +98,10 @@ expanded_metadata = (
     {'id': 'language', 'validators': [v.Regex(
         r'^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?'
         r'(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z]'
-        r'(-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)'
-        r'|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|'
-        r'i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu'
-        r'|zh-hakka|zh-min|zh-min-nan|zh-xiang)))$'
+        r'(-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed'
+        r'|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu'
+        r'|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min'
+        r'|zh-min-nan|zh-xiang)))$'
     )]},
     {'id': 'data_quality', 'validators': [bool]},
     {'id': 'is_parent', 'validators': [v.String(max=1000)]},
@@ -151,20 +133,7 @@ required_if_applicable_metadata = (
     {'id': 'endpoint', 'validators': [v.String(max=2100)]},
     {'id': 'spatial', 'validators': [v.String(max=500)]},
     {'id': 'temporal', 'validators': [v.Regex(
-        r'^(([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?'
-        r'|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))'
-        r'([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d'
-        r'([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?(/)([\+-]?\d{4}'
-        r'(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])'
-        r'(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])'
-        r'((:?)[0-5]\d)?|24:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])'
-        r'([01]\d|2[0-3]):?([0-5]\d)?)?)?)?)'
-        r'|((R\d*/)?([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\4([12]\d|0[1-9]|3[01]))?'
-        r'|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))'
-        r'([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24:?00)([\.,]\d+(?!:))?)?(\18[0-5]\d([\.,]\d+)?)?'
-        r'([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?(/)P(?:\d+(?:\.\d+)?Y)?'
-        r'(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?W)?(?:\d+(?:\.\d+)?D)?(?:T(?:\d+(?:\.\d+)?H)?'
-        r'(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?S)?)?)$'
+        r'^[\-\dTWZPYMWDHMS:\+]{3,}/[\-\dTWZPYMWDHMS:\+]{3,}$'
     )]},
     {'id': 'access_level_comment', 'validators': [v.String(max=255)]},
     {'id': 'license_new', 'validators': [v.URL(add_http=False, check_exists=True), v.String(max=2100)]}
@@ -184,7 +153,8 @@ is_parent_options = {'true': 'Yes', 'false': 'No'}
 # Dictionary of all media types
 media_types = json.loads(open(os.path.join(os.path.dirname(__file__), 'media_types.json'), 'r').read())
 
-#all required_metadata should be required
+
+# all required_metadata should be required
 def get_req_metadata_for_create():
     log.debug('get_req_metadata_for_create')
     new_req_meta = copy.copy(required_metadata)
@@ -194,7 +164,7 @@ def get_req_metadata_for_create():
     return new_req_meta
 
 
-#used to bypass validation on create
+# used to bypass validation on create
 def get_req_metadata_for_update():
     log.debug('get_req_metadata_for_update')
     new_req_meta = copy.copy(required_metadata_update)
@@ -225,6 +195,7 @@ schema_updates_for_update = [{meta['id']: meta['validators'] + [p.toolkit.get_co
 schema_updates_for_show = [{meta['id']: meta['validators'] + [p.toolkit.get_converter('convert_from_extras')]} for meta
                            in
                            (get_req_metadata_for_show_update() + required_if_applicable_metadata + expanded_metadata)]
+
 
 class UsmetadataController(BaseController):
     def get_package_info_usmetadata(self, id, context, errors, error_summary):
@@ -359,6 +330,7 @@ class UsmetadataController(BaseController):
             template = 'package/new_resource.html'
         return render(template, extra_vars=vars)
 
+
 class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
     '''This plugin adds fields for the metadata (known as the Common Core) defined at
     https://github.com/project-open-data/project-open-data.github.io/blob/master/schema.md
@@ -384,7 +356,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         return resource_dict
 
     def edit(self, entity):
-        #if dataset uses filestore to upload datafiles then make that dataset Public by default
+        # if dataset uses filestore to upload datafiles then make that dataset Public by default
         if hasattr(entity, 'type') and entity.type == u'dataset' and entity.private:
             for resource in entity.resources:
                 if resource.url_type == u'upload':
@@ -474,7 +446,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         new_dict['labels'] = collections.OrderedDict(dataset_labels)
         try:
             for extra in new_dict['extras']:
-                #to take care of legacy On values for data_quality
+                # to take care of legacy On values for data_quality
                 if extra['key'] == 'data_quality' and extra['value'] == 'on':
                     extra['value'] = "true"
                 elif extra['key'] == 'data_quality' and extra['value'] == 'False':
@@ -489,20 +461,20 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         except KeyError as ex:
             log.debug('''Expected key ['%s'] not found, attempting to move common core keys to subdictionary''',
                       ex.message)
-            #this can happen when a form fails validation, as all the data will now be as key,value pairs, not under extras,
-            #so we'll move them to the expected point again to fill in the values
+            # this can happen when a form fails validation, as all the data will now be as key,value pairs, not under extras,
+            # so we'll move them to the expected point again to fill in the values
             # e.g.
             # { 'foo':'bar', 'publisher':'somename'} becomes {'foo':'bar', 'common_core':{'publisher':'somename'}}
 
             keys_to_remove = []
 
-            #TODO remove debug
+            # TODO remove debug
             log.debug('common core metadata: {0}'.format(common_metadata))
             for key, value in new_dict.iteritems():
-                #TODO remove debug
+                # TODO remove debug
                 log.debug('checking key: {0}'.format(key))
                 if key in common_metadata:
-                    #TODO remove debug
+                    # TODO remove debug
                     log.debug('adding key: {0}'.format(key))
                     new_dict['common_core'][key] = value
                     keys_to_remove.append(key)
@@ -510,7 +482,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             for key in keys_to_remove:
                 del new_dict[key]
 
-        #reorder keys
+        # reorder keys
         new_dict['ordered_common_core'] = collections.OrderedDict()
         for key in new_dict['labels']:
             if key in new_dict['common_core']:
@@ -520,22 +492,22 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         new_dict['parent_dataset_options'] = parent_dataset_options
         return new_dict
 
-        #See ckan.plugins.interfaces.IDatasetForm
+        # See ckan.plugins.interfaces.IDatasetForm
 
     def is_fallback(self):
         # Return True so that we use the extension's dataset form instead of CKAN's default for
         # /dataset/new and /dataset/edit
         return True
 
-    #See ckan.plugins.interfaces.IDatasetForm
+    # See ckan.plugins.interfaces.IDatasetForm
     def package_types(self):
         # This plugin doesn't handle any special package types, it just
         # registers itself as the default (above).
         #
-        #return ['dataset', 'package']
+        # return ['dataset', 'package']
         return []
 
-    #See ckan.plugins.interfaces.IDatasetForm
+    # See ckan.plugins.interfaces.IDatasetForm
     def update_config(self, config):
         # Instruct CKAN to look in the ```templates``` directory for customized templates and snippets
         p.toolkit.add_template_directory(config, 'templates')
@@ -547,14 +519,14 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         # templates.
         p.toolkit.add_resource('fanstatic', 'dataset_url')
 
-    #See ckan.plugins.interfaces.IDatasetForm
+    # See ckan.plugins.interfaces.IDatasetForm
     def _create_package_schema(self, schema):
         log.debug("_create_package_schema called")
 
         for update in schema_updates_for_create:
             schema.update(update)
 
-        #use convert_to_tags functions for taxonomy
+        # use convert_to_tags functions for taxonomy
         schema.update({
             'tag_string': [p.toolkit.get_validator('not_empty'),
                            p.toolkit.get_converter('convert_to_tags')],
@@ -570,7 +542,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         for update in schema_updates_for_update:
             schema.update(update)
 
-        #use convert_to_tags functions for taxonomy
+        # use convert_to_tags functions for taxonomy
         schema.update({
             'tag_string': [p.toolkit.get_validator('ignore_empty'),
                            p.toolkit.get_converter('convert_to_tags')],
@@ -590,25 +562,25 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
         return schema
 
-    #See ckan.plugins.interfaces.IDatasetForm
+    # See ckan.plugins.interfaces.IDatasetForm
     def create_package_schema(self):
-        #action, api, package_create
-        #action=new and controller=package
+        # action, api, package_create
+        # action=new and controller=package
         schema = super(CommonCoreMetadataFormPlugin, self).create_package_schema()
         schema = self._create_package_schema(schema)
         return schema
 
-    #See ckan.plugins.interfaces.IDatasetForm
+    # See ckan.plugins.interfaces.IDatasetForm
     def update_package_schema(self):
         log.debug('update_package_schema')
 
-        #find out action
+        # find out action
         action = request.environ['pylons.routes_dict']['action']
         controller = request.environ['pylons.routes_dict']['controller']
 
-        #new_resource and package
-        #action, api, resource_create
-        #action, api, package_update
+        # new_resource and package
+        # action, api, resource_create
+        # action, api, package_update
 
         # if action == 'new_resource' and controller == 'package':
         #     schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
@@ -622,7 +594,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
         return schema
 
-    #See ckan.plugins.interfaces.IDatasetForm
+    # See ckan.plugins.interfaces.IDatasetForm
     def show_package_schema(self):
         log.debug('show_package_schema called')
         schema = super(CommonCoreMetadataFormPlugin, self).show_package_schema()
@@ -631,8 +603,8 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         # (e.g. on dataset pages, or on the search page)
         schema['tags']['__extras'].append(p.toolkit.get_converter('free_tags_only'))
 
-        #BELOW LINE MAY BE CAUSING SOLR INDEXING ISSUES.
-        #schema = self._modify_package_schema_show(schema)
+        # BELOW LINE MAY BE CAUSING SOLR INDEXING ISSUES.
+        # schema = self._modify_package_schema_show(schema)
 
         return schema
 
