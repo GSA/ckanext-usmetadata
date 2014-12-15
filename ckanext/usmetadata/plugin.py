@@ -66,7 +66,7 @@ required_metadata = (
 required_metadata_update = (
     {'id': 'public_access_level',
      'validators': [v.Regex(r'^(public)|(restricted public)|(non-public)$')]},
-    {'id': 'publisher', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
+    {'id': 'publisher', 'validators': [v.String(max=300)]},
     {'id': 'contact_name', 'validators': [v.String(max=300)]},
     {'id': 'contact_email', 'validators': [v.Email(), v.String(max=100)]},
     # TODO should this unique_id be validated against any other unique IDs for this agency?
