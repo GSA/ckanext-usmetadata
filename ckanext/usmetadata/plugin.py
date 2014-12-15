@@ -52,7 +52,7 @@ required_metadata = (
     {'id': 'unique_id', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
     {'id': 'modified',
      'validators': [v.Regex(
-         r'^[\-\dTWZPYMWDHMS:\+]{3,}$'
+         r'^[\-\dTWRZP/YMWDHMS:\+]{3,}$'
      ), v.String(max=50)]},
     {'id': 'bureau_code', 'validators': [v.Regex(
         r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$'
@@ -73,7 +73,7 @@ required_metadata_update = (
     {'id': 'unique_id', 'validators': [v.String(max=100)]},
     {'id': 'modified',
      'validators': [v.Regex(
-         r'^[\-\dTWZPYMWDHMS:\+]{3,}$'
+         r'^[\-\dTWRZP/YMWDHMS:\+]{3,}$'
      ), v.String(max=50)]},
     {'id': 'bureau_code', 'validators': [v.Regex(
         r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$'
@@ -134,7 +134,7 @@ required_if_applicable_metadata = (
     {'id': 'endpoint', 'validators': [v.String(max=2100)]},
     {'id': 'spatial', 'validators': [v.String(max=500)]},
     {'id': 'temporal', 'validators': [v.Regex(
-        r'^[\-\dTWZPYMWDHMS:\+]{3,}/[\-\dTWZPYMWDHMS:\+]{3,}$'
+        r'^[\-\dTWRZP/YMWDHMS:\+]{3,}/[\-\dTWRZP/YMWDHMS:\+]{3,}$'
     )]},
     {'id': 'access_level_comment', 'validators': [v.String(max=255)]},
     {'id': 'license_new', 'validators': [v.URL(add_http=False, check_exists=True), v.String(max=2100)]}
