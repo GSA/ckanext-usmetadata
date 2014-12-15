@@ -444,7 +444,8 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             ('accessURL', 'Download URL'),
             ('accessURL_new', 'Access URL'),
             ('webService', 'Endpoint'),
-            ('format', 'Format')
+            ('format', 'Media type'),
+            ('formatReadable', 'Format')
         )
 
         new_dict['labels'] = collections.OrderedDict(dataset_labels)

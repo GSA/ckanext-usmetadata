@@ -14,9 +14,6 @@
 {% endblock %}
 
 {% block basic_fields_format %}
-    {{ form.input('accessURL_new', id='field-accessURL_new', label=_('Access URL'), placeholder=_('https://data.agency.gov/api/widgets-statistics/'),
-        value=data.accessURL_new, error=errors.accessURL_new, classes=['control-medium'], is_required=false) }}
-
     {% set format_attrs = {'data-module': 'autocomplete', 'data-module-source': '/api/2/util/resource/media_autocomplete?incomplete=?'} %}
 
     {% call form.input('format', id='field-format', label=_('Media Type'), placeholder=_('e.g. text/csv, application/xml, or application/json'),value=data.format, error=errors.format, classes=['control-medium'], attrs=format_attrs, is_required=true) %}
