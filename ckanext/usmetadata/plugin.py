@@ -238,7 +238,7 @@ class UsmetadataController(BaseController):
             # see if we have any data that we are trying to save
             data_provided = False
             for key, value in data.iteritems():
-                if value or isinstance(value, cgi.FieldStorage and key != 'resource_type'):
+                if value or isinstance(value, cgi.FieldStorage) and key != 'resource_type':
                     data_provided = True
                     break
             if not data_provided and save_action != "go-dataset-complete":
@@ -554,7 +554,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             # 'name': [p.toolkit.get_validator('not_empty'),
             # p.toolkit.get_converter('convert_to_extras')],
             # 'format': [p.toolkit.get_validator('not_empty'),
-            #                p.toolkit.get_converter('convert_to_extras')],
+            # p.toolkit.get_converter('convert_to_extras')],
             # }
         })
         return schema
