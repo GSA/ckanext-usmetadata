@@ -1,19 +1,20 @@
-import formencode.validators as v
 import copy
 import os
 import cgi
+import collections
+from logging import getLogger
+
+import formencode.validators as v
 import ckan.logic as logic
 import ckan.lib.base as base
 import ckan.lib.navl.dictization_functions as dict_fns
 import ckan.model as model
 import ckan.plugins as p
 import db_utils
-import collections
-
-from logging import getLogger
 from ckan.lib.base import BaseController
 from pylons import config
-from ckan.common import OrderedDict, _, json, request, c, g, response
+from ckan.common import _, json, request, c, g, response
+
 
 render = base.render
 abort = base.abort
@@ -50,9 +51,9 @@ required_metadata = (
     # TODO should this unique_id be validated against any other unique IDs for this agency?
     {'id': 'unique_id', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
     {'id': 'modified',
-        'validators': [v.Regex(
-            r'^[\-\dTWZPYMWDHMS:\+]{3,}$'
-        ), v.String(max=50)]},
+     'validators': [v.Regex(
+         r'^[\-\dTWZPYMWDHMS:\+]{3,}$'
+     ), v.String(max=50)]},
     {'id': 'bureau_code', 'validators': [v.Regex(
         r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$'
     )]},
@@ -71,9 +72,9 @@ required_metadata_update = (
     # TODO should this unique_id be validated against any other unique IDs for this agency?
     {'id': 'unique_id', 'validators': [v.String(max=100)]},
     {'id': 'modified',
-        'validators': [v.Regex(
-            r'^[\-\dTWZPYMWDHMS:\+]{3,}$'
-        ), v.String(max=50)]},
+     'validators': [v.Regex(
+         r'^[\-\dTWZPYMWDHMS:\+]{3,}$'
+     ), v.String(max=50)]},
     {'id': 'bureau_code', 'validators': [v.Regex(
         r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$'
     )]},
@@ -139,7 +140,8 @@ required_if_applicable_metadata = (
     {'id': 'license_new', 'validators': [v.URL(add_http=False, check_exists=True), v.String(max=2100)]}
 )
 
-accrual_periodicity = [u"", u"Decennial", u"Quadrennial", u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biweekly", u"Semiannual", u"Biennial",
+accrual_periodicity = [u"", u"Decennial", u"Quadrennial", u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biweekly",
+                       u"Semiannual", u"Biennial",
                        u"Triennial",
                        u"Three times a week", u"Three times a month", u"Continuously updated", u"Monthly", u"Quarterly",
                        u"Semimonthly",
@@ -213,7 +215,7 @@ class UsmetadataController(BaseController):
         except NotAuthorized:
             abort(401, _('Unauthorized to update dataset'))
         redirect(h.url_for(controller='package',
-                                 action='read', id=id))
+                           action='read', id=id))
         errors = errors or {}
         error_summary = error_summary or {}
         vars = {'data': data, 'errors': errors, 'error_summary': error_summary}
@@ -251,7 +253,8 @@ class UsmetadataController(BaseController):
                     abort(401, _('Unauthorized to update dataset'))
                 except NotFound:
                     abort(404, _('The dataset {id} could not be found.').format(id=id))
-                if str.lower(config.get('ckan.package.resource_required', 'true')) == 'true' and not len(data_dict['resources']):
+                if str.lower(config.get('ckan.package.resource_required', 'true')) == 'true' and not len(
+                        data_dict['resources']):
                     # no data so keep on page
                     msg = _('You must add at least one data resource')
                     # On new templates do not use flash message
@@ -265,11 +268,11 @@ class UsmetadataController(BaseController):
                         return self.new_resource_usmetadata(id, data, errors, error_summary)
                 # we have a resource so let them add metadata
                 # redirect(h.url_for(controller='package',
-                #                    action='new_metadata', id=id))
-                vars = self.get_package_info_usmetadata(id, context, errors, error_summary)
+                # action='new_metadata', id=id))
+                variables = self.get_package_info_usmetadata(id, context, errors, error_summary)
                 package_type = self._get_package_type(id)
-                self._setup_template_variables(context, {},package_type=package_type)
-                return render('package/new_package_metadata.html', extra_vars=vars)
+                self._setup_template_variables(context, {}, package_type=package_type)
+                return render('package/new_package_metadata.html', extra_vars=variables)
 
             data['package_id'] = id
             try:
@@ -286,16 +289,16 @@ class UsmetadataController(BaseController):
                 abort(401, _('Unauthorized to create a resource'))
             except NotFound:
                 abort(404,
-                    _('The dataset {id} could not be found.').format(id=id))
+                      _('The dataset {id} could not be found.').format(id=id))
             if save_action == 'go-metadata':
                 # go to final stage of add dataset
                 # redirect(h.url_for(controller='package',
-                #                    action='new_metadata', id=id))
+                # action='new_metadata', id=id))
                 # Github Issue # 129. Removing last stage of dataset creation.
-                vars = self.get_package_info_usmetadata(id, context, errors, error_summary)
+                variables = self.get_package_info_usmetadata(id, context, errors, error_summary)
                 package_type = self._get_package_type(id)
-                self._setup_template_variables(context, {},package_type=package_type)
-                return render('package/new_package_metadata.html', extra_vars=vars)
+                self._setup_template_variables(context, {}, package_type=package_type)
+                return render('package/new_package_metadata.html', extra_vars=variables)
             elif save_action == 'go-dataset':
                 # go to first stage of add dataset
                 redirect(h.url_for(controller='package',
@@ -310,8 +313,8 @@ class UsmetadataController(BaseController):
                                    action='new_resource', id=id))
         errors = errors or {}
         error_summary = error_summary or {}
-        vars = {'data': data, 'errors': errors, 'error_summary': error_summary, 'action': 'new'}
-        vars['pkg_name'] = id
+        variables = {'data': data, 'errors': errors, 'error_summary': error_summary, 'action': 'new'}
+        variables['pkg_name'] = id
         # get resources for sidebar
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author, 'auth_user_obj': c.userobj}
@@ -320,15 +323,15 @@ class UsmetadataController(BaseController):
         except NotFound:
             abort(404, _('The dataset {id} could not be found.').format(id=id))
         # required for nav menu
-        vars['pkg_dict'] = pkg_dict
+        variables['pkg_dict'] = pkg_dict
         template = 'package/new_resource_not_draft.html'
         if pkg_dict['state'] == 'draft':
-            vars['stage'] = ['complete', 'active']
+            variables['stage'] = ['complete', 'active']
             template = 'package/new_resource.html'
         elif pkg_dict['state'] == 'draft-complete':
-            vars['stage'] = ['complete', 'active', 'complete']
+            variables['stage'] = ['complete', 'active', 'complete']
             template = 'package/new_resource.html'
-        return render(template, extra_vars=vars)
+        return render(template, extra_vars=variables)
 
 
 class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
@@ -365,7 +368,8 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         return entity
 
     def before_map(self, m):
-        m.connect('media_type', '/dataset/new_resource/{id}',controller='ckanext.usmetadata.plugin:UsmetadataController',action='new_resource_usmetadata')
+        m.connect('media_type', '/dataset/new_resource/{id}',
+                  controller='ckanext.usmetadata.plugin:UsmetadataController', action='new_resource_usmetadata')
         return m
 
     def after_map(selfself, m):
@@ -531,8 +535,8 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             'tag_string': [p.toolkit.get_validator('not_empty'),
                            p.toolkit.get_converter('convert_to_tags')],
             # 'resources': {
-            #     'name': [p.toolkit.get_validator('not_empty')],
-            #     'format': [p.toolkit.get_validator('not_empty')],
+            # 'name': [p.toolkit.get_validator('not_empty')],
+            # 'format': [p.toolkit.get_validator('not_empty')],
             # }
         })
         return schema
@@ -547,9 +551,9 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             'tag_string': [p.toolkit.get_validator('ignore_empty'),
                            p.toolkit.get_converter('convert_to_tags')],
             # 'resources': {
-            #      'name': [p.toolkit.get_validator('not_empty'),
-            #                p.toolkit.get_converter('convert_to_extras')],
-            #      'format': [p.toolkit.get_validator('not_empty'),
+            # 'name': [p.toolkit.get_validator('not_empty'),
+            # p.toolkit.get_converter('convert_to_extras')],
+            # 'format': [p.toolkit.get_validator('not_empty'),
             #                p.toolkit.get_converter('convert_to_extras')],
             # }
         })
@@ -583,8 +587,8 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         # action, api, package_update
 
         # if action == 'new_resource' and controller == 'package':
-        #     schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
-        #     schema = self._create_resource_schema(schema)
+        # schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
+        # schema = self._create_resource_schema(schema)
         if action == 'edit' and controller == 'package':
             schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
             schema = self._create_package_schema(schema)
