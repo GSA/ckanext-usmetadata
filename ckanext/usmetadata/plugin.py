@@ -52,7 +52,15 @@ required_metadata = (
     {'id': 'unique_id', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
     {'id': 'modified',
      'validators': [v.Regex(
-         r'^[\-\dTWRZP/YMWDHMS:\+]{3,}$'
+         r'^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?'
+         r'|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]'
+         r'\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$|^(R\d*\/)?P(?:'
+         r'\d+(?:\.\d+)?Y)?(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?W)?(?:\d+(?:\.\d+)?D)?(?:T(?:\d+(?:\.\d+)?H)?(?:'
+         r'\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?S)?)?$|^(R\d*\/)?([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])'
+         r'(\4([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))'
+         r'([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\18[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])'
+         r'([01]\d|2[0-3]):?([0-5]\d)?)?)?)?(\/)P(?:\d+(?:\.\d+)?Y)?(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?W)?(?:'
+         r'\d+(?:\.\d+)?D)?(?:T(?:\d+(?:\.\d+)?H)?(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?S)?)?$'
      ), v.String(max=50)]},
     {'id': 'bureau_code', 'validators': [v.Regex(
         r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$'
@@ -73,7 +81,15 @@ required_metadata_update = (
     {'id': 'unique_id', 'validators': [v.String(max=100)]},
     {'id': 'modified',
      'validators': [v.Regex(
-         r'^[\-\dTWRZP/YMWDHMS:\+]{3,}$'
+         r'^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?'
+         r'|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]'
+         r'\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$|^(R\d*\/)?P(?:'
+         r'\d+(?:\.\d+)?Y)?(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?W)?(?:\d+(?:\.\d+)?D)?(?:T(?:\d+(?:\.\d+)?H)?(?:'
+         r'\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?S)?)?$|^(R\d*\/)?([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])'
+         r'(\4([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))'
+         r'([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\18[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])'
+         r'([01]\d|2[0-3]):?([0-5]\d)?)?)?)?(\/)P(?:\d+(?:\.\d+)?Y)?(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?W)?(?:'
+         r'\d+(?:\.\d+)?D)?(?:T(?:\d+(?:\.\d+)?H)?(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?S)?)?$'
      ), v.String(max=50)]},
     {'id': 'bureau_code', 'validators': [v.Regex(
         r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$'
@@ -111,10 +127,10 @@ expanded_metadata = (
     {'id': 'category', 'validators': [v.String(max=1000)]},
     # describedBy
     {'id': 'related_documents', 'validators': [v.String(max=2100)]},
-    {'id': 'conforms_to', 'validators': [v.URL(add_http=False, check_exists=True), v.String(max=2100)]},
-    {'id': 'homepage_url', 'validators': [v.URL(add_http=False, check_exists=True), v.String(max=2100)]},
+    {'id': 'conforms_to', 'validators': [v.URL(add_http=True), v.String(max=2100)]},
+    {'id': 'homepage_url', 'validators': [v.URL(add_http=True), v.String(max=2100)]},
     {'id': 'rss_feed', 'validators': [v.String(max=2100)]},
-    {'id': 'system_of_records', 'validators': [v.URL(add_http=False, check_exists=True), v.String(max=2100)]},
+    {'id': 'system_of_records', 'validators': [v.URL(add_http=True), v.String(max=2100)]},
     {'id': 'system_of_records_none_related_to_this_dataset', 'validators': [v.String(max=2100)]},
     {'id': 'primary_it_investment_uii', 'validators': [v.Regex(
         r'^[0-9]{3}-[0-9]{9}$'
@@ -129,7 +145,7 @@ expanded_metadata = (
 
 # excluded download_url, endpoint, format and license as they may be discoverable
 required_if_applicable_metadata = (
-    {'id': 'data_dictionary', 'validators': [v.URL(add_http=False, check_exists=True), v.String(max=2100)]},
+    {'id': 'data_dictionary', 'validators': [v.URL(add_http=True), v.String(max=2100)]},
     {'id': 'data_dictionary_type', 'validators': [v.String(max=2100)]},
     {'id': 'endpoint', 'validators': [v.String(max=2100)]},
     {'id': 'spatial', 'validators': [v.String(max=500)]},
@@ -137,7 +153,7 @@ required_if_applicable_metadata = (
         r'^[\-\dTWRZP/YMWDHMS:\+]{3,}/[\-\dTWRZP/YMWDHMS:\+]{3,}$'
     )]},
     {'id': 'access_level_comment', 'validators': [v.String(max=255)]},
-    {'id': 'license_new', 'validators': [v.URL(add_http=False, check_exists=True), v.String(max=2100)]}
+    {'id': 'license_new', 'validators': [v.URL(add_http=True), v.String(max=2100)]}
 )
 
 accrual_periodicity = [u"", u"Decennial", u"Quadrennial", u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biweekly",
