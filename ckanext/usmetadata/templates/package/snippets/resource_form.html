@@ -7,10 +7,11 @@
     <label style="padding-top:0px" class="control-label">Resource</label>
     <div class="controls"{% if allow_upload %} data-module="resource-upload-field"{% endif %}>
         <input id="field-resource-type-file" type="radio" name="resource_type"
-               {% if data.resource_type =='upload' or data.resource_type =='file'
+               {% if data.resource_type =='file'
                 or not data.resource_type %} checked="checked" {% endif %} value="file" />
         <label class="radio inline" for="field-resource-type-file">{{ _('Link to a file') }}</label>
-        <input id="field-resource-type-upload" type="radio" name="resource_type" value="upload" />
+        <input id="field-resource-type-upload" type="radio" name="resource_type"
+               {% if data.resource_type =='upload' %} checked="checked" {% endif %} value="upload" />
         <label class="radio inline" for="field-resource-type-upload">{{ _('Upload a file') }}</label>
         <input id="field-resource-type-api" type="radio" name="resource_type"
                {% if data.resource_type =='api' %} checked="checked" {% endif %} value="api" />
