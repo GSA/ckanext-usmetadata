@@ -458,7 +458,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             ('is_parent', 'Is parent dataset'),
             ('parent_dataset', 'Parent dataset'),
             ('accessURL', 'Download URL'),
-            ('accessURL_new', 'Access URL'),
+            # ('accessURL_new', 'Access URL'),
             ('webService', 'Endpoint'),
             ('format', 'Media type'),
             ('formatReadable', 'Format')
