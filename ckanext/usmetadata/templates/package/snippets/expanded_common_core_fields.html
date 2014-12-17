@@ -72,7 +72,7 @@
       {{ _("Parent dataset (for isPartOf)") }}</label>
   <div class="controls" title="Parent Dataset.">
     <select id="field-parent_dataset" name="parent_dataset" data-module="autocomplete" title="Parent dataset.">
-        <option value="" {% if not data.common_core %} selected="selected" {% endif %}>{{ _('No organization') }}</option>
+        <option value="" {% if not data.common_core %} selected="selected" {% endif %}>{{ _('No Parent dataset') }}</option>
 
         {% for dataset_id,dataset_title in data.parent_dataset_options.items() %}
       <option value="{{ dataset_id }}" {% if dataset_id == data.common_core.parent_dataset %}selected{% endif %} >
