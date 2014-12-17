@@ -156,6 +156,60 @@ required_if_applicable_metadata = (
     {'id': 'license_new', 'validators': [v.URL(add_http=True), v.String(max=2100)]}
 )
 
+
+# used for by passing API validation
+required_metadata_by_pass_validation = (
+    {'id': 'title', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
+    {'id': 'notes', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
+    {'id': 'public_access_level', 'validators': [v.String(max=2100)]},
+    {'id': 'publisher', 'validators': [v.String(max=300)]},
+    {'id': 'contact_name', 'validators': [v.String(max=2100)]},
+    {'id': 'contact_email', 'validators': [v.String(max=2100)]},
+    # TODO should this unique_id be validated against any other unique IDs for this agency?
+    {'id': 'unique_id', 'validators': [v.String(max=100)]},
+    {'id': 'modified', 'validators': [v.String(max=100)]},
+    {'id': 'bureau_code', 'validators': [v.String(max=2100)]},
+    {'id': 'program_code', 'validators': [v.String(max=2100)]}
+)
+
+# used for by passing API validation
+expanded_metadata_by_pass_validation = (
+    # issued
+    {'id': 'release_date', 'validators': [v.String(max=2100)]},
+    {'id': 'accrual_periodicity', 'validators': [v.String(max=2100)]},
+    {'id': 'language', 'validators': [v.String(max=2100)]},
+    {'id': 'data_quality', 'validators': [bool]},
+    {'id': 'is_parent', 'validators': [v.String(max=1000)]},
+    {'id': 'parent_dataset', 'validators': [v.String(max=1000)]},
+    # theme
+    {'id': 'category', 'validators': [v.String(max=1000)]},
+    # describedBy
+    {'id': 'related_documents', 'validators': [v.String(max=2100)]},
+    {'id': 'conforms_to', 'validators': [v.String(max=2100)]},
+    {'id': 'homepage_url', 'validators': [v.String(max=2100)]},
+    {'id': 'rss_feed', 'validators': [v.String(max=2100)]},
+    {'id': 'system_of_records', 'validators': [v.String(max=2100)]},
+    {'id': 'system_of_records_none_related_to_this_dataset', 'validators': [v.String(max=2100)]},
+    {'id': 'primary_it_investment_uii', 'validators': [v.String(max=2100)]},
+    {'id': 'webservice', 'validators': [v.String(max=300)]},
+    {'id': 'publisher_1', 'validators': [v.String(max=300)]},
+    {'id': 'publisher_2', 'validators': [v.String(max=300)]},
+    {'id': 'publisher_3', 'validators': [v.String(max=300)]},
+    {'id': 'publisher_4', 'validators': [v.String(max=300)]},
+    {'id': 'publisher_5', 'validators': [v.String(max=300)]}
+)
+
+# used for by passing API validation
+required_if_applicable_metadata_by_pass_validation = (
+    {'id': 'data_dictionary', 'validators': [v.String(max=2100)]},
+    {'id': 'data_dictionary_type', 'validators': [v.String(max=2100)]},
+    {'id': 'endpoint', 'validators': [v.String(max=2100)]},
+    {'id': 'spatial', 'validators': [v.String(max=500)]},
+    {'id': 'temporal', 'validators': [v.String(max=500)]},
+    {'id': 'access_level_comment', 'validators': [v.String(max=255)]},
+    {'id': 'license_new', 'validators': [v.String(max=2100)]}
+)
+
 accrual_periodicity = [u"", u"Decennial", u"Quadrennial", u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biweekly",
                        u"Semiannual", u"Biennial",
                        u"Triennial",
@@ -199,11 +253,23 @@ def get_req_metadata_for_show_update():
         meta['validators'].append(validator)
     return new_req_meta
 
+def get_req_metadata_for_api_create():
+    new_req_meta = copy.copy(required_metadata_by_pass_validation)
+    validator = p.toolkit.get_validator('ignore_missing')
+    for meta in new_req_meta:
+        meta['validators'].append(validator)
+    return new_req_meta
 
 for meta in required_if_applicable_metadata:
     meta['validators'].append(p.toolkit.get_validator('ignore_empty'))
 
 for meta in expanded_metadata:
+    meta['validators'].append(p.toolkit.get_validator('ignore_empty'))
+
+for meta in required_if_applicable_metadata_by_pass_validation:
+    meta['validators'].append(p.toolkit.get_validator('ignore_empty'))
+
+for meta in expanded_metadata_by_pass_validation:
     meta['validators'].append(p.toolkit.get_validator('ignore_empty'))
 
 schema_updates_for_create = [{meta['id']: meta['validators'] + [p.toolkit.get_converter('convert_to_extras')]} for meta
@@ -213,6 +279,8 @@ schema_updates_for_update = [{meta['id']: meta['validators'] + [p.toolkit.get_co
 schema_updates_for_show = [{meta['id']: meta['validators'] + [p.toolkit.get_converter('convert_from_extras')]} for meta
                            in
                            (get_req_metadata_for_show_update() + required_if_applicable_metadata + expanded_metadata)]
+schema_api_for_create = [{meta['id']: meta['validators'] + [p.toolkit.get_converter('convert_to_extras')]} for meta
+                             in (get_req_metadata_for_api_create() + required_if_applicable_metadata_by_pass_validation + expanded_metadata_by_pass_validation)]
 
 
 class UsmetadataController(BaseController):
@@ -543,9 +611,12 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     # See ckan.plugins.interfaces.IDatasetForm
     def _create_package_schema(self, schema):
         log.debug("_create_package_schema called")
-
-        for update in schema_updates_for_create:
-            schema.update(update)
+        if request.path_qs == u'/api/action/package_create':
+            for update in schema_api_for_create:
+                schema.update(update)
+        else:
+            for update in schema_updates_for_create:
+                schema.update(update)
 
         # use convert_to_tags functions for taxonomy
         schema.update({
