@@ -306,6 +306,16 @@ class UsmetadataController(BaseController):
         vars['pkg_name'] = id
         return vars
 
+    def map_old_keys(self, error_summary):
+        replace = {
+            'Format': 'Media Type'
+        }
+        for old_key, new_key in replace.items():
+            if old_key in error_summary.keys():
+                error_summary[new_key] = error_summary[old_key]
+                del error_summary[old_key]
+        return error_summary
+
     def new_resource_usmetadata(self, id, data=None, errors=None, error_summary=None):
         ''' FIXME: This is a temporary action to allow styling of the
         forms. '''
@@ -367,7 +377,7 @@ class UsmetadataController(BaseController):
                     get_action('resource_create')(context, data)
             except ValidationError, e:
                 errors = e.error_dict
-                error_summary = e.error_summary
+                error_summary = self.map_old_keys(e.error_summary)
                 return self.new_resource_usmetadata(id, data, errors, error_summary)
             except NotAuthorized:
                 abort(401, _('Unauthorized to create a resource'))
