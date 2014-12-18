@@ -1,0 +1,9 @@
+.btn-remove-url, .hidden {display:none}
+.controls .radio.inline{padding-left:3px; padding-top:0px}
+.controls input[type="radio"]{top:0px}
+.controls .ckan-icon{top:0px}
+.controls .radio.inline {
+  padding-left: 3px;
+  padding-right: 15px;
+  padding-top: 0;
+}
