@@ -54,27 +54,7 @@
     {% snippet 'package/snippets/required_if_applicable_common_core_fields.html', data=data, errors=errors%}
 
     {% block license %}
-        <div class="control-group">
-        {% set error = errors.license_id %}
-        <label class="control-label" for="field-license">{{ _("License (deprecated)") }}</label>
-            <div class="controls">
-            <select id="field-license" name="license_id" data-module="autocomplete">
-              {% for license_desc, license_id in licenses|sort if license_desc  %}
-                <option value="{{ license_id }}" {% if data.get('license_id', 'notspecified') == license_id %}selected="selected"{% endif %}>{{ license_desc }}</option>
-              {% endfor %}
-            </select>
-            {% if error %}<span class="error-block">{{ error }}</span>{% endif %}
-            <span class="info-block info-inline">
-              <i class="icon-info-sign"></i>
-              {% trans %}
-                License definitions and additional information can be found
-                at <a href="http://opendefinition.org/licenses/">opendefinition.org</a>
-              {% endtrans %}
-            </span>
-            </div>
-        <div style="padding-left: 0px; margin-left: 130px;">
-        This field has been deprecated please use new License field above.</div>
-        </div>
+        <input type="hidden" name="license_id" value="{{ data.get('license_id', 'notspecified') }}" />
     {% endblock license %}
 
 	{{ form.input('spatial', label=_('Spatial'), id='field-spatial', placeholder=_('Lincoln, Nebraska'), value=data.common_core.spatial, error=errors.spatial, classes=['control-medium'], attrs={'title': 'The range of spatial applicability of a dataset. Could include a spatial region like a bounding box or a named place.'}) }}
