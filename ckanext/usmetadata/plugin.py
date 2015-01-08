@@ -120,7 +120,7 @@ expanded_metadata = (
         r'|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min'
         r'|zh-min-nan|zh-xiang)))$'
     )]},
-    {'id': 'data_quality', 'validators': [bool]},
+    {'id': 'data_quality', 'validators': [v.String(max=1000)]},
     {'id': 'is_parent', 'validators': [v.String(max=1000)]},
     {'id': 'parent_dataset', 'validators': [v.String(max=1000)]},
     # theme
@@ -178,7 +178,7 @@ expanded_metadata_by_pass_validation = (
     {'id': 'release_date', 'validators': [v.String(max=2100)]},
     {'id': 'accrual_periodicity', 'validators': [v.String(max=2100)]},
     {'id': 'language', 'validators': [v.String(max=2100)]},
-    {'id': 'data_quality', 'validators': [bool]},
+    {'id': 'data_quality', 'validators': [v.String(max=1000)]},
     {'id': 'is_parent', 'validators': [v.String(max=1000)]},
     {'id': 'parent_dataset', 'validators': [v.String(max=1000)]},
     # theme
