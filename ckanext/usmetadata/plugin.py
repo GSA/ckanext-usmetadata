@@ -219,6 +219,22 @@ accrual_periodicity = [u"", u"Decennial", u"Quadrennial", u"Annual", u"Bimonthly
 
 access_levels = ['public', 'restricted public', 'non-public']
 
+license_options = {'': '',
+                    'https://creativecommons.org/licenses/by/4.0': 'https://creativecommons.org/licenses/by/4.0',
+                    'https://creativecommons.org/licenses/by-sa/4.0': 'https://creativecommons.org/licenses/by-sa/4.0',
+                    'http://creativecommons.org/publicdomain/zero/1.0/':'http://creativecommons.org/publicdomain/zero/1.0/',
+                    'https://creativecommons.org/licenses/by-nc/4.0':'https://creativecommons.org/licenses/by-nc/4.0',
+                    'http://www.gnu.org/copyleft/fdl.html':'http://www.gnu.org/copyleft/fdl.html',
+                    'http://opendatacommons.org/licenses/by/1-0/':'http://opendatacommons.org/licenses/by/1-0/',
+                    'http://opendatacommons.org/licenses/odbl/':'http://opendatacommons.org/licenses/odbl/',
+                    'http://opendatacommons.org/licenses/pddl/':'http://opendatacommons.org/licenses/pddl/',
+                    'https://project-open-data.cio.gov/unknown-license/#v1-legacy/other-at':'https://project-open-data.cio.gov/unknown-license/#v1-legacy/other-at',
+                    'https://project-open-data.cio.gov/unknown-license/#v1-legacy/other-nc':'https://project-open-data.cio.gov/unknown-license/#v1-legacy/other-nc',
+                    'https://project-open-data.cio.gov/unknown-license/#v1-legacy/other-closed':'https://project-open-data.cio.gov/unknown-license/#v1-legacy/other-closed',
+                    'https://project-open-data.cio.gov/unknown-license/#v1-legacy/other-open':'https://project-open-data.cio.gov/unknown-license/#v1-legacy/other-open',
+                    'http://creativecommons.org/publicdomain/mark/1.0/other-pd':'http://creativecommons.org/publicdomain/mark/1.0/other-pd',
+                    'http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/':'http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/'}
+
 data_quality_options = {'': '', 'true': 'Yes', 'false': 'No'}
 is_parent_options = {'true': 'Yes', 'false': 'No'}
 
@@ -464,11 +480,16 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     def before_map(self, m):
         m.connect('media_type', '/dataset/new_resource/{id}',
                   controller='ckanext.usmetadata.plugin:UsmetadataController', action='new_resource_usmetadata')
+
+        m.connect('media_type', '/api/2/util/resource/license_url_autocomplete',
+                  controller='ckanext.usmetadata.plugin:LicenseURLController', action='get_license_url')
+
         return m
 
     def after_map(selfself, m):
         m.connect('media_type', '/api/2/util/resource/media_autocomplete',
                   controller='ckanext.usmetadata.plugin:MediaController', action='get_media_types')
+
         return m
 
     @classmethod
@@ -717,6 +738,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         return {'public_access_levels': access_levels,
                 'required_metadata': required_metadata,
                 'data_quality_options': data_quality_options,
+                'license_options':license_options,
                 'is_parent_options': is_parent_options,
                 'load_data_into_dict': self.load_data_into_dict,
                 'accrual_periodicity': accrual_periodicity,
@@ -739,5 +761,21 @@ class MediaController(BaseController):
                 retval.append(dict['media_type'])
             if len(retval) >= 50:
                 break
+
+        return json.dumps({'ResultSet': {'Result': retval}})
+
+class LicenseURLController(BaseController):
+    """Controller to return the acceptable media types as JSON, powering the front end"""
+
+    def get_license_url(self):
+        # set content type (charset required or pylons throws an error)
+        q = request.params.get('incomplete', '')
+
+        response.content_type = 'application/json; charset=UTF-8'
+
+        retval = []
+
+        for key in license_options:
+            retval.append(key)
 
         return json.dumps({'ResultSet': {'Result': retval}})
