@@ -486,7 +486,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
         return m
 
-    def after_map(selfself, m):
+    def after_map(self, m):
         m.connect('media_type', '/api/2/util/resource/media_autocomplete',
                   controller='ckanext.usmetadata.plugin:MediaController', action='get_media_types')
 
