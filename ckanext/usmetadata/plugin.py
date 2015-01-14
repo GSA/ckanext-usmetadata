@@ -769,7 +769,7 @@ class CurlController(BaseController):
             # ctype = f.headers['content-type']
 
             ctype = ctype.split(';', 1)
-            return json.dumps({'ResultSet': {'Result': ctype[0]}})
+            return json.dumps({'ResultSet': {'CType': ctype[0], 'Status':res.status}})
         except:
             return json.dumps({'ResultSet': {'Error': 'fatal'}})
 

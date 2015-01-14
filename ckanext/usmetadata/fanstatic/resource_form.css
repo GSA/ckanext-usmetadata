@@ -7,3 +7,9 @@
   padding-right: 15px;
   padding-top: 0;
 }
+.bad {
+  color: red;
+}
+.good {
+  color:green;
+}

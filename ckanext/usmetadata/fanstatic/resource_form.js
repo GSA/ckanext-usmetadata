@@ -17,20 +17,44 @@ $(document).ready(function(){
 
     $('#field-image-url').after('<p></p>');
 
-    $('#field-image-url').change(function () {
+
+    $('#field-image-url').add('#field-format').change(function () {
         $('#field-image-url').next('p').replaceWith('<p>Detecting Media Type...</p>');
         $.getJSON(
             '/api/2/util/resource/content_type',
             {'url': $('#field-image-url').val()},
             function (result) {
-                if (typeof(result.ResultSet.Result) != "undefined") {
-                    var ct = result.ResultSet.Result;
-                    $('#field-format').val(ct);
-                    $('#s2id_field-format .select2-chosen').text(ct);
-                    $('#s2id_field-format .select2-choice').removeClass('select2-default');
-                    $('#field-image-url').next('p').replaceWith('<p>Media Type was detected as <strong>' + ct + '</strong></p>');
+                if (typeof(result.ResultSet.CType) != "undefined") {
+                    var ct = result.ResultSet.CType;
+                    var status = result.ResultSet.Status;
+                    var sclass = (200 == status ? 'good' : 'bad')
+                    var currentMediaType = $('#field-format').val();
+
+                    var statusPrint = 'URL returned status <strong class="' + sclass + '">' + status + '</strong>';
+                    var ctypePrint = '<br />Media Type was detected as <strong>' + ct + '</strong>';
+                    var typeMatchPrint = '';
+
+                    if (200 != status) {
+                        ctypePrint = '';
+                    } else if ('' == currentMediaType) {
+                        $('#field-format').val(ct);
+                        $('#s2id_field-format .select2-chosen').text(ct);
+                        $('#s2id_field-format .select2-choice').removeClass('select2-default');
+                        typeMatchPrint = '<br /><span class="good">Detected type matches ' +
+                        'currently selected type <strong>' + ct + '</strong></span>';
+                    } else if (ct == currentMediaType) {
+                        typeMatchPrint = '<br /><span class="good">Detected type matches ' +
+                        'currently selected type <strong>' + ct + '</strong></span>';
+                    } else {
+                        typeMatchPrint = '<br /><span class="bad">Detected type <strong>' + ct + '</strong> ' +
+                        'does not match ' + 'currently selected type <strong>' + currentMediaType + '</strong></span>';
+                    }
+
+                    $('#field-image-url').next('p').replaceWith(
+                        '<p>' + statusPrint + ctypePrint + typeMatchPrint + '</p>'
+                    );
                 } else {
-                    $('#field-image-url').next('p').replaceWith('<p>Media Type was not detected</p>');
+                    $('#field-image-url').next('p').replaceWith('<p class="bad">Could not reach given url</p>');
                 }
             })
     })
