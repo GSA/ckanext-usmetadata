@@ -54,7 +54,13 @@ $(document).ready(function(){
                         '<p>' + statusPrint + ctypePrint + typeMatchPrint + '</p>'
                     );
                 } else {
-                    $('#field-image-url').next('p').replaceWith('<p class="bad">Could not reach given url</p>');
+                    var errorPrint = '';
+                    if ("undefined" != typeof(result.ResultSet.Error)) {
+                        errorPrint = result.ResultSet.Error;
+                    }
+                    $('#field-image-url').next('p').replaceWith(
+                        '<p class="weird">Could not reach given url: '+errorPrint+'</p>'
+                    );
                 }
             })
     })

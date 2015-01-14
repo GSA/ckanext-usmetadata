@@ -763,6 +763,11 @@ class CurlController(BaseController):
             conn = httplib.HTTPConnection(parsed_uri.hostname)
             conn.request("HEAD", url_path)
             res = conn.getresponse()
+
+            error = res.getheader('X-Error-Message', None)
+            if error:
+                return json.dumps({'ResultSet': {'Error': error}})
+
             ctype = res.getheader('content-type')
 
             # f = urllib2.urlopen(url)
@@ -771,7 +776,8 @@ class CurlController(BaseController):
             ctype = ctype.split(';', 1)
             return json.dumps({'ResultSet': {'CType': ctype[0], 'Status':res.status}})
         except:
-            return json.dumps({'ResultSet': {'Error': 'fatal'}})
+            raise
+            return json.dumps({'ResultSet': {'Error': 'Unknown'}})
 
 
 class MediaController(BaseController):
