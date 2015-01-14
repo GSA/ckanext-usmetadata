@@ -776,8 +776,7 @@ class CurlController(BaseController):
             ctype = ctype.split(';', 1)
             return json.dumps({'ResultSet': {'CType': ctype[0], 'Status':res.status}})
         except:
-            raise
-            return json.dumps({'ResultSet': {'Error': 'Unknown'}})
+            return json.dumps({'ResultSet': {'Error': 'Unknown error'}})
 
 
 class MediaController(BaseController):
