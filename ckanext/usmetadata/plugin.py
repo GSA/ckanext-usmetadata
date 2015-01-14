@@ -11,6 +11,8 @@ import ckan.lib.navl.dictization_functions as dict_fns
 import ckan.model as model
 import ckan.plugins as p
 import db_utils
+from urlparse import urlparse
+import httplib
 from ckan.lib.base import BaseController
 from pylons import config
 from ckan.common import _, json, request, c, g, response
@@ -490,6 +492,8 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         m.connect('media_type', '/api/2/util/resource/media_autocomplete',
                   controller='ckanext.usmetadata.plugin:MediaController', action='get_media_types')
 
+        m.connect('content_type', '/api/2/util/resource/content_type',
+                  controller='ckanext.usmetadata.plugin:CurlController', action='get_content_type')
         return m
 
     @classmethod
@@ -743,6 +747,31 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
                 'load_data_into_dict': self.load_data_into_dict,
                 'accrual_periodicity': accrual_periodicity,
                 'always_private': True}
+
+
+class CurlController(BaseController):
+    """Controller to obtain info by url"""
+
+    def get_content_type(self):
+        # set content type (charset required or pylons throws an error)
+        try:
+            url = request.params.get('url', '')
+            parsed_uri = urlparse(url)
+            domain_pos = url.find(parsed_uri.hostname)
+            url_path = url[domain_pos + len(parsed_uri.hostname):]
+
+            conn = httplib.HTTPConnection(parsed_uri.hostname)
+            conn.request("HEAD", url_path)
+            res = conn.getresponse()
+            ctype = res.getheader('content-type')
+
+            # f = urllib2.urlopen(url)
+            # ctype = f.headers['content-type']
+
+            ctype = ctype.split(';', 1)
+            return json.dumps({'ResultSet': {'Result': ctype[0]}})
+        except:
+            return json.dumps({'ResultSet': {'Error': 'fatal'}})
 
 
 class MediaController(BaseController):
