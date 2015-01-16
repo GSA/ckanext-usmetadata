@@ -15,56 +15,103 @@ $(document).ready(function(){
         resource_type_change($('input[name="resource_type"]:checked').val());
     }, 500);
 
+
+    var resourceFormValid = true;
+
     $('#field-image-url').after('<p></p>');
+    $('#field-image-url').add('#field-format').change(verify_media_type);
 
+    validate_resource();
 
-    $('#field-image-url').add('#field-format').change(function () {
-        $('#field-image-url').next('p').replaceWith('<p>Detecting Media Type...</p>');
-        $.getJSON(
-            '/api/2/util/resource/content_type',
-            {'url': $('#field-image-url').val()},
-            function (result) {
-                if (typeof(result.ResultSet.CType) != "undefined") {
-                    var ct = result.ResultSet.CType;
-                    var status = result.ResultSet.Status;
-                    var sclass = (200 == status ? 'good' : 'bad')
-                    var currentMediaType = $('#field-format').val();
+    $('#field-format').add('#field-describedBy').add('#field-describedByType').change(validate_resource);
 
-                    var statusPrint = 'URL returned status <strong class="' + sclass + '">' + status + '</strong>';
-                    var ctypePrint = '<br />Media Type was detected as <strong>' + ct + '</strong>';
-                    var typeMatchPrint = '';
-
-                    if (200 != status) {
-                        ctypePrint = '';
-                    } else if ('' == currentMediaType) {
-                        $('#field-format').val(ct);
-                        $('#s2id_field-format .select2-chosen').text(ct);
-                        $('#s2id_field-format .select2-choice').removeClass('select2-default');
-                        typeMatchPrint = '<br /><span class="good">Detected type matches ' +
-                        'currently selected type <strong>' + ct + '</strong></span>';
-                    } else if (ct == currentMediaType) {
-                        typeMatchPrint = '<br /><span class="good">Detected type matches ' +
-                        'currently selected type <strong>' + ct + '</strong></span>';
-                    } else {
-                        typeMatchPrint = '<br /><span class="bad">Detected type <strong>' + ct + '</strong> ' +
-                        'does not match ' + 'currently selected type <strong>' + currentMediaType + '</strong></span>';
-                    }
-
-                    $('#field-image-url').next('p').replaceWith(
-                        '<p>' + statusPrint + ctypePrint + typeMatchPrint + '</p>'
-                    );
-                } else {
-                    var errorPrint = '';
-                    if ("undefined" != typeof(result.ResultSet.Error)) {
-                        errorPrint = result.ResultSet.Error;
-                    }
-                    $('#field-image-url').next('p').replaceWith(
-                        '<p class="weird">Could not reach given url: '+errorPrint+'</p>'
-                    );
-                }
-            })
-    })
+    $('.dataset-resource-form').submit(function(event){
+        if (!resourceFormValid){
+            event.preventDefault();
+        }
+    });
 });
+
+function validate_resource() {
+    $.getJSON(
+        '/api/2/util/resource/validate_resource',
+        {
+//            'url': $('#field-image-url').val(),
+            'format': $('#field-format').val(),
+            'describedBy': $('#field-describedBy').val(),
+            'describedByType': $('#field-describedByType').val()
+        },
+        function (result) {
+            $('input').next('p.bad').remove();
+            $('input').parent().prev('label').removeClass('bad');
+            if (typeof(result.ResultSet.Invalid) != "undefined") {
+                var InvalidObj = result.ResultSet.Invalid
+                for (var key in InvalidObj) {
+                    if (InvalidObj.hasOwnProperty(key)) {
+                        $('#field-'+key).after('<p class="bad">'+InvalidObj[key]+'</p>');
+                        $('#field-'+key).parent().prev('label').addClass('bad');
+                    }
+                }
+                 resourceFormValid = false;
+            } else {
+                resourceFormValid = true;
+            }
+        }
+    )
+}
+
+function verify_media_type() {
+    $('#field-image-url').next('p').replaceWith('<p>Detecting Media Type...</p>');
+    $.getJSON(
+        '/api/2/util/resource/content_type',
+        {'url': $('#field-image-url').val()},
+        function (result) {
+            if (typeof(result.ResultSet.CType) != "undefined") {
+                var ct = result.ResultSet.CType;
+                var status = result.ResultSet.Status;
+                var sclass = (200 == status ? 'good' : 'bad')
+                var currentMediaType = $('#field-format').val();
+
+                var statusPrint = 'URL returned status <strong class="' + sclass + '">' + status + '</strong>';
+                var ctypePrint = '<br />Media Type was detected as <strong>' + ct + '</strong>';
+                var typeMatchPrint = '';
+
+                if (200 != status) {
+                    ctypePrint = '';
+                } else if ('' == currentMediaType) {
+                    $('#field-format').val(ct);
+                    $('#s2id_field-format .select2-chosen').text(ct);
+                    $('#s2id_field-format .select2-choice').removeClass('select2-default');
+                    typeMatchPrint = '<br /><span class="good">Detected type matches ' +
+                    'currently selected type <strong>' + ct + '</strong></span>';
+                } else if (ct == currentMediaType) {
+                    typeMatchPrint = '<br /><span class="good">Detected type matches ' +
+                    'currently selected type <strong>' + ct + '</strong></span>';
+                } else {
+                    resourceFormValid = false;
+                    typeMatchPrint = '<br /><span class="red">Detected type <strong>' + ct + '</strong> ' +
+                    'does not match ' + 'currently selected type <strong>' + currentMediaType + '</strong></span>';
+                }
+
+                $('#field-image-url').next('p').replaceWith(
+                    '<p>' + statusPrint + ctypePrint + typeMatchPrint + '</p>'
+                );
+            } else {
+                var errorPrint = '';
+                var errorClass = 'red';
+                if ("undefined" != typeof(result.ResultSet.Error)) {
+                    errorPrint = result.ResultSet.Error;
+                } else if ("undefined" != typeof(result.ResultSet.ProtocolError)) {
+                    errorPrint = result.ResultSet.ProtocolError;
+                    errorClass = "weird";
+                }
+                $('#field-image-url').next('p').replaceWith(
+                    '<p class="' + errorClass + '">Could not reach given url: ' + errorPrint + '</p>'
+                );
+            }
+            validate_resource();
+        })
+}
 
 function resource_type_change(val)
 {

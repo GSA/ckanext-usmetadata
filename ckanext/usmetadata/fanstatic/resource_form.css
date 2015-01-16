@@ -7,7 +7,7 @@
   padding-right: 15px;
   padding-top: 0;
 }
-.bad {
+.bad, .red {
   color: red;
 }
 .good {
