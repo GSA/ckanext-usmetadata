@@ -21,6 +21,16 @@ $(document).ready(function(){
     $('#field-image-url').after('<p></p>');
     $('#field-image-url').add('#field-format').change(verify_media_type);
 
+    $('#field-resource-type-file').parent().children('input').change(
+        function(){
+            if ("file" == $(this).val()){
+                verify_media_type()
+            } else {
+                $('#field-image-url').next('p').replaceWith('<p></p>');
+            }
+        }
+    )
+
     validate_resource();
 
     $('#field-resource-type-file').parent().children('input')
@@ -64,6 +74,12 @@ function validate_resource() {
 }
 
 function verify_media_type() {
+    $('#field-image-url').next('p').replaceWith('<p></p>');
+
+    if ($('#field-resource-type-file').parent().children('input:checked').val() != "file") {
+        return;
+    }
+
     $('#field-image-url').next('p').replaceWith('<p>Detecting Media Type...</p>');
     $.getJSON(
         '/api/2/util/resource/content_type',
