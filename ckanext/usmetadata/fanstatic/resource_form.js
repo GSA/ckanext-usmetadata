@@ -16,14 +16,16 @@ $(document).ready(function(){
     }, 500);
 
 
-    var resourceFormValid = true;
+    resourceFormValid = true;
 
     $('#field-image-url').after('<p></p>');
     $('#field-image-url').add('#field-format').change(verify_media_type);
 
     validate_resource();
 
-    $('#field-format').add('#field-describedBy').add('#field-describedByType').change(validate_resource);
+    $('#field-resource-type-file').parent().children('input')
+        .add('#field-format').add('#field-describedBy').add('#field-describedByType')
+        .change(validate_resource);
 
     $('.dataset-resource-form').submit(function(event){
         if (!resourceFormValid){
@@ -37,6 +39,7 @@ function validate_resource() {
         '/api/2/util/resource/validate_resource',
         {
 //            'url': $('#field-image-url').val(),
+            'resource_type': $('#field-resource-type-file').parent().children('input:checked').val(),
             'format': $('#field-format').val(),
             'describedBy': $('#field-describedBy').val(),
             'describedByType': $('#field-describedByType').val()
@@ -88,7 +91,9 @@ function verify_media_type() {
                     typeMatchPrint = '<br /><span class="good">Detected type matches ' +
                     'currently selected type <strong>' + ct + '</strong></span>';
                 } else {
-                    resourceFormValid = false;
+                    if (typeof(result.ResultSet.InvalidFormat) != "undefined") {
+                        resourceFormValid = false;
+                    }
                     typeMatchPrint = '<br /><span class="red">Detected type <strong>' + ct + '</strong> ' +
                     'does not match ' + 'currently selected type <strong>' + currentMediaType + '</strong></span>';
                 }

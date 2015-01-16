@@ -17,6 +17,7 @@ import httplib
 from ckan.lib.base import BaseController
 from pylons import config
 from ckan.common import _, json, request, c, g, response
+from ckan.lib.navl.validators import ignore_missing
 
 
 render = base.render
@@ -311,7 +312,7 @@ schema_updates_for_show = [{meta['id']: meta['validators'] + [p.toolkit.get_conv
                            (get_req_metadata_for_show_update() + required_if_applicable_metadata + expanded_metadata)]
 schema_api_for_create = [{meta['id']: meta['validators'] + [p.toolkit.get_converter('convert_to_extras')]} for meta
                          in (
-    get_req_metadata_for_api_create() + required_if_applicable_metadata_by_pass_validation + expanded_metadata_by_pass_validation)]
+        get_req_metadata_for_api_create() + required_if_applicable_metadata_by_pass_validation + expanded_metadata_by_pass_validation)]
 
 
 class UsmetadataController(BaseController):
@@ -770,7 +771,8 @@ class ResourceValidator(BaseController):
 
     def validate_resource(self):
         try:
-            url = request.params.get('url', False)
+            # url = request.params.get('url', False)
+            resource_type = request.params.get('resource_type', False)
             media_type = request.params.get('format', False)
             described_by = request.params.get('describedBy', False)
             described_by_type = request.params.get('describedByType', False)
@@ -779,12 +781,14 @@ class ResourceValidator(BaseController):
 
             if media_type and not IANA_MIME_REGEX.match(media_type):
                 errors['format'] = 'The value is not valid IANA MIME Media type'
+            elif not media_type and resource_type in ['file', 'upload']:
+                errors['format'] = 'The value is required for this type of resource'
 
             if described_by and not URL_REGEX.match(described_by):
                 errors['describedBy'] = 'Invalid URL format'
 
-            if url and not URL_REGEX.match(url):
-                errors['image-url'] = 'Invalid URL format'
+            # if url and not URL_REGEX.match(url):
+            # errors['image-url'] = 'Invalid URL format'
 
             if described_by_type and not IANA_MIME_REGEX.match(described_by_type):
                 errors['describedByType'] = 'The value is not valid IANA MIME Media type'
@@ -806,16 +810,16 @@ class CurlController(BaseController):
             url = request.params.get('url', '')
 
             if not URL_REGEX.match(url):
-                return json.dumps({'ResultSet': {'Error': 'Invalid URL'}})
+                return json.dumps({'ResultSet': {'Error': 'Invalid URL', 'InvalidFormat': 'True'}})
 
             parsed_uri = urlparse(url)
             domain_pos = url.find(parsed_uri.hostname)
             url_path = url[domain_pos + len(parsed_uri.hostname):]
 
             # if url.find('https') > -1:
-            #     conn = httplib.HTTPSConnection(parsed_uri.hostname)
+            # conn = httplib.HTTPSConnection(parsed_uri.hostname)
             # else:
-            #     conn = httplib.HTTPConnection(parsed_uri.hostname)
+            # conn = httplib.HTTPConnection(parsed_uri.hostname)
             conn = httplib.HTTPConnection(parsed_uri.hostname)
 
             conn.request("HEAD", url_path)
