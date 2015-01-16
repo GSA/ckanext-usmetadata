@@ -69,3 +69,9 @@ this.ckan.module('usmetadata-slug-preview-slug', function (jQuery, _) {
     }
   };
 });
+
+//Bug fix Github # 166
+//Inventory_user is navigated to the Error 404 page_when last breadcrumb is selected on the resource uplaod page in IE.
+window.onload = function() {
+    jQuery("#content .toolbar .breadcrumb .active a").prop("href", document.URL)
+}

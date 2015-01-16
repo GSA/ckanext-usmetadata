@@ -7,3 +7,12 @@
   padding-right: 15px;
   padding-top: 0;
 }
+.bad, .red {
+  color: red;
+}
+.good {
+  color:green;
+}
+.weird {
+  color:darkslategrey;
+}

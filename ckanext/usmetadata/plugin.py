@@ -3,6 +3,7 @@ import os
 import cgi
 import collections
 from logging import getLogger
+import re
 
 import formencode.validators as v
 import ckan.logic as logic
@@ -11,9 +12,12 @@ import ckan.lib.navl.dictization_functions as dict_fns
 import ckan.model as model
 import ckan.plugins as p
 import db_utils
+from urlparse import urlparse
+import httplib
 from ckan.lib.base import BaseController
 from pylons import config
 from ckan.common import _, json, request, c, g, response
+from ckan.lib.navl.validators import ignore_missing
 
 
 render = base.render
@@ -37,6 +41,15 @@ import ckan.lib.helpers as h
 
 redirect = base.redirect
 log = getLogger(__name__)
+
+URL_REGEX = re.compile(
+    r'^(?:http|ftp)s?://'  # http:// or https:// or ftp:// or ftps://
+    r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'  # domain...
+    r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
+    r'(?::\d+)?'  # optional port
+    r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+
+IANA_MIME_REGEX = re.compile(r"^[-\w]+/[-\w]+(\.[-\w]+)*([+][-\w]+)?$")
 
 # excluded title, description, tags and last update as they're part of the default ckan dataset metadata
 required_metadata = (
@@ -219,6 +232,22 @@ accrual_periodicity = [u"", u"Decennial", u"Quadrennial", u"Annual", u"Bimonthly
 
 access_levels = ['public', 'restricted public', 'non-public']
 
+license_options = {'': '',
+                   'https://creativecommons.org/licenses/by/4.0': 'https://creativecommons.org/licenses/by/4.0',
+                   'https://creativecommons.org/licenses/by-sa/4.0': 'https://creativecommons.org/licenses/by-sa/4.0',
+                   'http://creativecommons.org/publicdomain/zero/1.0/': 'http://creativecommons.org/publicdomain/zero/1.0/',
+                   'https://creativecommons.org/licenses/by-nc/4.0': 'https://creativecommons.org/licenses/by-nc/4.0',
+                   'http://www.gnu.org/copyleft/fdl.html': 'http://www.gnu.org/copyleft/fdl.html',
+                   'http://opendatacommons.org/licenses/by/1-0/': 'http://opendatacommons.org/licenses/by/1-0/',
+                   'http://opendatacommons.org/licenses/odbl/': 'http://opendatacommons.org/licenses/odbl/',
+                   'http://opendatacommons.org/licenses/pddl/': 'http://opendatacommons.org/licenses/pddl/',
+                   'https://project-open-data.cio.gov/unknown-license/#v1-legacy/other-at': 'https://project-open-data.cio.gov/unknown-license/#v1-legacy/other-at',
+                   'https://project-open-data.cio.gov/unknown-license/#v1-legacy/other-nc': 'https://project-open-data.cio.gov/unknown-license/#v1-legacy/other-nc',
+                   'https://project-open-data.cio.gov/unknown-license/#v1-legacy/other-closed': 'https://project-open-data.cio.gov/unknown-license/#v1-legacy/other-closed',
+                   'https://project-open-data.cio.gov/unknown-license/#v1-legacy/other-open': 'https://project-open-data.cio.gov/unknown-license/#v1-legacy/other-open',
+                   'http://creativecommons.org/publicdomain/mark/1.0/other-pd': 'http://creativecommons.org/publicdomain/mark/1.0/other-pd',
+                   'http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/': 'http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/'}
+
 data_quality_options = {'': '', 'true': 'Yes', 'false': 'No'}
 is_parent_options = {'true': 'Yes', 'false': 'No'}
 
@@ -253,12 +282,14 @@ def get_req_metadata_for_show_update():
         meta['validators'].append(validator)
     return new_req_meta
 
+
 def get_req_metadata_for_api_create():
     new_req_meta = copy.copy(required_metadata_by_pass_validation)
     validator = p.toolkit.get_validator('ignore_missing')
     for meta in new_req_meta:
         meta['validators'].append(validator)
     return new_req_meta
+
 
 for meta in required_if_applicable_metadata:
     meta['validators'].append(p.toolkit.get_validator('ignore_empty'))
@@ -280,7 +311,8 @@ schema_updates_for_show = [{meta['id']: meta['validators'] + [p.toolkit.get_conv
                            in
                            (get_req_metadata_for_show_update() + required_if_applicable_metadata + expanded_metadata)]
 schema_api_for_create = [{meta['id']: meta['validators'] + [p.toolkit.get_converter('convert_to_extras')]} for meta
-                             in (get_req_metadata_for_api_create() + required_if_applicable_metadata_by_pass_validation + expanded_metadata_by_pass_validation)]
+                         in (
+        get_req_metadata_for_api_create() + required_if_applicable_metadata_by_pass_validation + expanded_metadata_by_pass_validation)]
 
 
 class UsmetadataController(BaseController):
@@ -464,11 +496,21 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     def before_map(self, m):
         m.connect('media_type', '/dataset/new_resource/{id}',
                   controller='ckanext.usmetadata.plugin:UsmetadataController', action='new_resource_usmetadata')
+
+        m.connect('media_type', '/api/2/util/resource/license_url_autocomplete',
+                  controller='ckanext.usmetadata.plugin:LicenseURLController', action='get_license_url')
+
         return m
 
-    def after_map(selfself, m):
+    def after_map(self, m):
         m.connect('media_type', '/api/2/util/resource/media_autocomplete',
                   controller='ckanext.usmetadata.plugin:MediaController', action='get_media_types')
+
+        m.connect('content_type', '/api/2/util/resource/content_type',
+                  controller='ckanext.usmetadata.plugin:CurlController', action='get_content_type')
+
+        m.connect('resource_validation', '/api/2/util/resource/validate_resource',
+                  controller='ckanext.usmetadata.plugin:ResourceValidator', action='validate_resource')
         return m
 
     @classmethod
@@ -717,10 +759,85 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         return {'public_access_levels': access_levels,
                 'required_metadata': required_metadata,
                 'data_quality_options': data_quality_options,
+                'license_options': license_options,
                 'is_parent_options': is_parent_options,
                 'load_data_into_dict': self.load_data_into_dict,
                 'accrual_periodicity': accrual_periodicity,
                 'always_private': True}
+
+
+class ResourceValidator(BaseController):
+    """Controller to validate resource"""
+
+    def validate_resource(self):
+        try:
+            # url = request.params.get('url', False)
+            resource_type = request.params.get('resource_type', False)
+            media_type = request.params.get('format', False)
+            described_by = request.params.get('describedBy', False)
+            described_by_type = request.params.get('describedByType', False)
+
+            errors = {}
+
+            if media_type and not IANA_MIME_REGEX.match(media_type):
+                errors['format'] = 'The value is not valid IANA MIME Media type'
+            elif not media_type and resource_type in ['file', 'upload']:
+                errors['format'] = 'The value is required for this type of resource'
+
+            if described_by and not URL_REGEX.match(described_by):
+                errors['describedBy'] = 'Invalid URL format'
+
+            # if url and not URL_REGEX.match(url):
+            # errors['image-url'] = 'Invalid URL format'
+
+            if described_by_type and not IANA_MIME_REGEX.match(described_by_type):
+                errors['describedByType'] = 'The value is not valid IANA MIME Media type'
+
+            # url = request.params.get('url', '')
+            if errors:
+                return json.dumps({'ResultSet': {'Invalid': errors}})
+            return json.dumps({'ResultSet': {'Success': errors}})
+        except:
+            return json.dumps({'ResultSet': {'Error': 'Unknown error'}})
+
+
+class CurlController(BaseController):
+    """Controller to obtain info by url"""
+
+    def get_content_type(self):
+        # set content type (charset required or pylons throws an error)
+        try:
+            url = request.params.get('url', '')
+
+            if not URL_REGEX.match(url):
+                return json.dumps({'ResultSet': {'Error': 'Invalid URL', 'InvalidFormat': 'True'}})
+
+            parsed_uri = urlparse(url)
+            domain_pos = url.find(parsed_uri.hostname)
+            url_path = url[domain_pos + len(parsed_uri.hostname):]
+
+            # if url.find('https') > -1:
+            # conn = httplib.HTTPSConnection(parsed_uri.hostname)
+            # else:
+            # conn = httplib.HTTPConnection(parsed_uri.hostname)
+            conn = httplib.HTTPConnection(parsed_uri.hostname)
+
+            conn.request("HEAD", url_path)
+            res = conn.getresponse()
+
+            error = res.getheader('X-Error-Message', None)
+            if error:
+                return json.dumps({'ResultSet': {'ProtocolError': error}})
+
+            ctype = res.getheader('content-type')
+
+            # f = urllib2.urlopen(url)
+            # ctype = f.headers['content-type']
+
+            ctype = ctype.split(';', 1)
+            return json.dumps({'ResultSet': {'CType': ctype[0], 'Status': res.status}})
+        except:
+            return json.dumps({'ResultSet': {'Error': 'Unknown error'}})
 
 
 class MediaController(BaseController):
@@ -739,5 +856,22 @@ class MediaController(BaseController):
                 retval.append(dict['media_type'])
             if len(retval) >= 50:
                 break
+
+        return json.dumps({'ResultSet': {'Result': retval}})
+
+
+class LicenseURLController(BaseController):
+    """Controller to return the acceptable media types as JSON, powering the front end"""
+
+    def get_license_url(self):
+        # set content type (charset required or pylons throws an error)
+        q = request.params.get('incomplete', '')
+
+        response.content_type = 'application/json; charset=UTF-8'
+
+        retval = []
+
+        for key in license_options:
+            retval.append(key)
 
         return json.dumps({'ResultSet': {'Result': retval}})
