@@ -21,15 +21,7 @@ $(document).ready(function(){
     $('#field-image-url').after('<p></p>');
     $('#field-image-url').add('#field-format').change(verify_media_type);
 
-    $('#field-resource-type-file').parent().children('input').change(
-        function(){
-            if ("file" == $(this).val()){
-                verify_media_type()
-            } else {
-                $('#field-image-url').next('p').replaceWith('<p></p>');
-            }
-        }
-    )
+    $('#field-resource-type-file').parent().children('input').change(verify_media_type);
 
     validate_resource();
 
@@ -76,8 +68,10 @@ function validate_resource() {
 function verify_media_type() {
     $('#field-image-url').next('p').replaceWith('<p></p>');
 
-    if ($('#field-resource-type-file').parent().children('input:checked').val() != "file") {
-        return;
+    var resource_type = $('#field-resource-type-file').parent().children('input:checked').val()
+    var prepopulateMediaType = (resource_type == "file");
+    if (resource_type == "upload") {
+        return
     }
 
     $('#field-image-url').next('p').replaceWith('<p>Detecting Media Type...</p>');
@@ -98,20 +92,26 @@ function verify_media_type() {
                 if (200 != status) {
                     ctypePrint = '';
                 } else if ('' == currentMediaType) {
-                    $('#field-format').val(ct);
-                    $('#s2id_field-format .select2-chosen').text(ct);
-                    $('#s2id_field-format .select2-choice').removeClass('select2-default');
-                    typeMatchPrint = '<br /><span class="good">Detected type matches ' +
-                    'currently selected type <strong>' + ct + '</strong></span>';
+                    if (prepopulateMediaType){
+                        $('#field-format').val(ct);
+                        $('#s2id_field-format .select2-chosen').text(ct);
+                        $('#s2id_field-format .select2-choice').removeClass('select2-default');
+                        typeMatchPrint = '<br /><span class="good">Detected type matches ' +
+                        'currently selected type <strong>' + ct + '</strong></span>';
+                    }
                 } else if (ct == currentMediaType) {
-                    typeMatchPrint = '<br /><span class="good">Detected type matches ' +
-                    'currently selected type <strong>' + ct + '</strong></span>';
+                    if (prepopulateMediaType) {
+                        typeMatchPrint = '<br /><span class="good">Detected type matches ' +
+                        'currently selected type <strong>' + ct + '</strong></span>';
+                    }
                 } else {
                     if (typeof(result.ResultSet.InvalidFormat) != "undefined") {
                         resourceFormValid = false;
                     }
-                    typeMatchPrint = '<br /><span class="red">Detected type <strong>' + ct + '</strong> ' +
-                    'does not match ' + 'currently selected type <strong>' + currentMediaType + '</strong></span>';
+                    if (prepopulateMediaType){
+                        typeMatchPrint = '<br /><span class="red">Detected type <strong>' + ct + '</strong> ' +
+                        'does not match ' + 'currently selected type <strong>' + currentMediaType + '</strong></span>';
+                    }
                 }
 
                 $('#field-image-url').next('p').replaceWith(
