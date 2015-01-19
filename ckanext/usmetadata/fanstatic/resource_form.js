@@ -3,12 +3,6 @@ $(document).ready(function(){
         function(){resource_type_change($(this).val());}
     );
 
-    $('form.dataset-resource-form').submit(function(){
-        if (!$('input[name="url"]').val()) {
-            $('input[name="resource_type"]').prop("checked", false);
-        }
-    })
-
     window.setInterval(function(){
         $('.resource-upload .btn').eq(2).remove();
         $('.resource-url .btn-remove-url').remove();
@@ -21,15 +15,18 @@ $(document).ready(function(){
     $('#field-image-url').after('<p></p>');
     $('#field-image-url').add('#field-format').change(verify_media_type);
 
-    $('#field-resource-type-file').parent().children('input').change(verify_media_type);
+    $('input[name="resource_type"]').change(verify_media_type);
 
     validate_resource();
 
-    $('#field-resource-type-file').parent().children('input')
-        .add('#field-format').add('#field-describedBy').add('#field-describedByType')
+    $('input[name="resource_type"]').add('#field-format').add('#field-describedBy').add('#field-describedByType')
         .change(validate_resource);
 
-    $('.dataset-resource-form').submit(function(event){
+    $('form.dataset-resource-form').submit(function(event){
+        // allow submitting empty resource on dataset create
+        if (!$('input[name="url"]').val() && $('#field-resource-type-file').prop("checked")) {
+            $('#field-resource-type-file').prop("checked", false);
+        }
         if (!resourceFormValid){
             event.preventDefault();
         }
@@ -40,8 +37,8 @@ function validate_resource() {
     $.getJSON(
         '/api/2/util/resource/validate_resource',
         {
-//            'url': $('#field-image-url').val(),
-            'resource_type': $('#field-resource-type-file').parent().children('input:checked').val(),
+            'url': $('#field-image-url').val(),
+            'resource_type': $('input[name="resource_type"]:checked').val(),
             'format': $('#field-format').val(),
             'describedBy': $('#field-describedBy').val(),
             'describedByType': $('#field-describedByType').val()
@@ -68,7 +65,7 @@ function validate_resource() {
 function verify_media_type() {
     $('#field-image-url').next('p').replaceWith('<p></p>');
 
-    var resource_type = $('#field-resource-type-file').parent().children('input:checked').val()
+    var resource_type = $('input[name="resource_type"]:checked').val()
     var prepopulateMediaType = (resource_type == "file");
     if (resource_type == "upload") {
         return

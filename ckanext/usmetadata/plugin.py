@@ -771,7 +771,7 @@ class ResourceValidator(BaseController):
 
     def validate_resource(self):
         try:
-            # url = request.params.get('url', False)
+            url = request.params.get('url', False)
             resource_type = request.params.get('resource_type', False)
             media_type = request.params.get('format', False)
             described_by = request.params.get('describedBy', False)
@@ -782,7 +782,8 @@ class ResourceValidator(BaseController):
             if media_type and not IANA_MIME_REGEX.match(media_type):
                 errors['format'] = 'The value is not valid IANA MIME Media type'
             elif not media_type and resource_type in ['file', 'upload']:
-                errors['format'] = 'The value is required for this type of resource'
+                if url or resource_type == 'upload':
+                    errors['format'] = 'The value is required for this type of resource'
 
             if described_by and not URL_REGEX.match(described_by):
                 errors['describedBy'] = 'Invalid URL format'
