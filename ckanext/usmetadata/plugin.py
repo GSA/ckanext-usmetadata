@@ -12,12 +12,10 @@ import ckan.lib.navl.dictization_functions as dict_fns
 import ckan.model as model
 import ckan.plugins as p
 import db_utils
-from urlparse import urlparse
-import httplib
 from ckan.lib.base import BaseController
 from pylons import config
 from ckan.common import _, json, request, c, g, response
-from ckan.lib.navl.validators import ignore_missing
+import requests
 
 
 render = base.render
@@ -813,32 +811,19 @@ class CurlController(BaseController):
             if not URL_REGEX.match(url):
                 return json.dumps({'ResultSet': {'Error': 'Invalid URL', 'InvalidFormat': 'True'}})
 
-            parsed_uri = urlparse(url)
-            domain_pos = url.find(parsed_uri.hostname)
-            url_path = url[domain_pos + len(parsed_uri.hostname):]
-
-            # if url.find('https') > -1:
-            # conn = httplib.HTTPSConnection(parsed_uri.hostname)
-            # else:
-            # conn = httplib.HTTPConnection(parsed_uri.hostname)
-            conn = httplib.HTTPConnection(parsed_uri.hostname)
-
-            conn.request("HEAD", url_path)
-            res = conn.getresponse()
-
-            error = res.getheader('X-Error-Message', None)
-            if error:
-                return json.dumps({'ResultSet': {'ProtocolError': error}})
-
-            ctype = res.getheader('content-type')
-
-            # f = urllib2.urlopen(url)
-            # ctype = f.headers['content-type']
-
-            ctype = ctype.split(';', 1)
-            return json.dumps({'ResultSet': {'CType': ctype[0], 'Status': res.status}})
-        except:
-            return json.dumps({'ResultSet': {'Error': 'Unknown error'}})
+            r = requests.head(url)
+            method = 'HEAD'
+            if r.status_code > 399 or r.headers.get('content-type') is None:
+                r = requests.get(url)
+                method = 'GET'
+                if r.status_code > 399 or r.headers.get('content-type') is None:
+                    return json.dumps({'ResultSet': {'Error': 'Returned status: ' + str(r.status_code)}})
+            content_type = r.headers.get('content-type')
+            content_type = content_type.split(';', 1)
+            return json.dumps({'ResultSet': {'CType': content_type[0], 'Status': r.status_code, 'Method': method}})
+        except Exception, e:
+            return json.dumps({'ResultSet': {'Error': 'unknown error (please report to devs)'}})
+            # return json.dumps({'ResultSet': {'Error': type(e).__name__}})
 
 
 class MediaController(BaseController):
