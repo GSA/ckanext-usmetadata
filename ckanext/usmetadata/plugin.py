@@ -787,14 +787,14 @@ class ResourceValidator(BaseController):
                 if url or resource_type == 'upload':
                     errors['format'] = 'The value is required for this type of resource'
 
-            self.check_url(described_by, warnings, 'describedBy')
-            self.check_url(conforms_to, warnings, 'conformsTo')
+            self.check_url(described_by, errors, warnings, 'describedBy')
+            self.check_url(conforms_to, errors, warnings, 'conformsTo')
 
             # if url and not URL_REGEX.match(url):
             # errors['image-url'] = 'Invalid URL format'
 
             if described_by_type and not IANA_MIME_REGEX.match(described_by_type.strip()):
-                warnings['describedByType'] = 'The value is not valid IANA MIME Media type'
+                errors['describedByType'] = 'The value is not valid IANA MIME Media type'
 
             # url = request.params.get('url', '')
             if errors:
@@ -803,7 +803,7 @@ class ResourceValidator(BaseController):
         except:
             return json.dumps({'ResultSet': {'Error': 'Unknown error'}})
 
-    def check_url(self, url, errors, error_key, skip_empty=True):
+    def check_url(self, url, errors, warnings, error_key, skip_empty=True):
         if skip_empty and not url:
             return
         url = url.strip()
@@ -815,9 +815,9 @@ class ResourceValidator(BaseController):
                 if r.status_code > 399:
                     r = requests.get(url, verify=False)
                     if r.status_code > 399:
-                        errors[error_key] = 'URL returns status ' + str(r.status_code) + ' (' + str(r.reason)+')'
+                        warnings[error_key] = 'URL returns status ' + str(r.status_code) + ' (' + str(r.reason)+')'
             except:
-                errors[error_key] = 'Could not check url'
+                warnings[error_key] = 'Could not check url'
 
 
 class CurlController(BaseController):

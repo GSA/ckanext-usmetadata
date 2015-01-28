@@ -56,8 +56,7 @@ function validate_resource() {
                 var WarningObj = result.ResultSet.Warnings
                 for (var key in WarningObj) {
                     if (WarningObj.hasOwnProperty(key)) {
-                        $('#field-' + key).after('<p class="warning">' + WarningObj[key] + '</p>');
-                        $('#field-' + key).parent().prev('label').addClass('warning');
+                        $('#field-' + key).after('<p class="warning">Warning: ' + WarningObj[key] + '</p>');
                     }
                 }
             }
