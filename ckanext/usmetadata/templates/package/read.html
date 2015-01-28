@@ -1,5 +1,26 @@
 {% ckan_extends %}
 
+{# override core template to hide private icon on dataset page. #}
+{% block package_description %}
+    <h1>
+      {% block page_heading %}
+        {{ pkg.title or pkg.name }}
+        {% if pkg.state.startswith('draft') %}
+          [{{ _('Draft') }}]
+        {% endif %}
+      {% endblock %}
+    </h1>
+    {% block package_notes %}
+      {% if c.pkg_notes_formatted %}
+        <div class="notes embedded-content">
+          {{ c.pkg_notes_formatted }}
+        </div>
+      {% endif %}
+    {% endblock %}
+    {# FIXME why is this here? seems wrong #}
+    <span class="insert-comment-thread"></span>
+{% endblock %}
+
 {% block package_additional_info %}
 
     {% set pkg = h.load_data_into_dict(pkg) %}
