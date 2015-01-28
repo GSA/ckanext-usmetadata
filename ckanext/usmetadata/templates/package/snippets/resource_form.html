@@ -28,7 +28,7 @@
        data-module-field_url="url" data-module-field_upload="upload" data-module-field_clear="clear_upload"
          data-module-upload_label="{{ _('File') }}">
 
-        {{ form.input('url', label=_('URL'), id='field-image-url', placeholder=_('eg. http://example.com/gold-prices-jan-2011.json'), value=data.url, error=errors.get('url'), classes=['control-full', 'resource-url']) }}
+        {{ form.input('url', label=_('URL'), id='field-image-url', placeholder=_('eg. http://example.com/gold-prices-jan-2011.json'), value=data.url, error=errors.get('url'), classes=['control-full', 'resource-url'], is_required=true) }}
 
         {{ form.input('upload', label=_('File'), id='field-image-upload', type='file', placeholder='', value='', error='', classes=['control-full','resource-upload']) }}
         {% if is_upload %}
@@ -48,7 +48,7 @@
 {% block basic_fields_format %}
     {% set format_attrs = {'data-module': 'autocomplete', 'data-module-source': '/api/2/util/resource/media_autocomplete?incomplete=?'} %}
 
-    {% call form.input('format', id='field-format', label=_('Media Type'), placeholder=_('e.g. text/csv, application/xml, or application/json'),value=data.format, error=errors.format, classes=['control-medium'], attrs=format_attrs, is_required=true) %}
+    {% call form.input('format', id='field-format', label=_('Media Type'), placeholder=_('e.g. text/csv, application/xml, or application/json'),value=data.format, error=errors.format, classes=['control-medium'], attrs=format_attrs, is_required=false) %}
     {% endcall %}
 
     {% call form.input('formatReadable', id='field-format-readable', label=_('Format'), placeholder=_('e.g. csv, xml, json'),

@@ -4,6 +4,7 @@ import cgi
 import collections
 from logging import getLogger
 import re
+import pprint
 
 import formencode.validators as v
 import ckan.logic as logic
@@ -12,11 +13,11 @@ import ckan.lib.navl.dictization_functions as dict_fns
 import ckan.model as model
 import ckan.plugins as p
 import db_utils
-from urlparse import urlparse
-import httplib
 from ckan.lib.base import BaseController
 from pylons import config
 from ckan.common import _, json, request, c, g, response
+import requests
+from requests.status_codes import codes
 
 
 render = base.render
@@ -311,7 +312,7 @@ schema_updates_for_show = [{meta['id']: meta['validators'] + [p.toolkit.get_conv
                            (get_req_metadata_for_show_update() + required_if_applicable_metadata + expanded_metadata)]
 schema_api_for_create = [{meta['id']: meta['validators'] + [p.toolkit.get_converter('convert_to_extras')]} for meta
                          in (
-    get_req_metadata_for_api_create() + required_if_applicable_metadata_by_pass_validation + expanded_metadata_by_pass_validation)]
+        get_req_metadata_for_api_create() + required_if_applicable_metadata_by_pass_validation + expanded_metadata_by_pass_validation)]
 
 
 class UsmetadataController(BaseController):
@@ -771,30 +772,52 @@ class ResourceValidator(BaseController):
     def validate_resource(self):
         try:
             url = request.params.get('url', False)
+            resource_type = request.params.get('resource_type', False)
             media_type = request.params.get('format', False)
             described_by = request.params.get('describedBy', False)
             described_by_type = request.params.get('describedByType', False)
+            conforms_to = request.params.get('conformsTo', False)
 
             errors = {}
+            warnings = {}
 
             if media_type and not IANA_MIME_REGEX.match(media_type):
                 errors['format'] = 'The value is not valid IANA MIME Media type'
+            elif not media_type and resource_type in ['file', 'upload']:
+                if url or resource_type == 'upload':
+                    errors['format'] = 'The value is required for this type of resource'
 
-            if described_by and not URL_REGEX.match(described_by):
-                errors['describedBy'] = 'Invalid URL format'
+            self.check_url(described_by, warnings, 'describedBy')
+            self.check_url(conforms_to, warnings, 'conformsTo')
 
-            if url and not URL_REGEX.match(url):
-                errors['image-url'] = 'Invalid URL format'
+            # if url and not URL_REGEX.match(url):
+            # errors['image-url'] = 'Invalid URL format'
 
-            if described_by_type and not IANA_MIME_REGEX.match(described_by_type):
-                errors['describedByType'] = 'The value is not valid IANA MIME Media type'
+            if described_by_type and not IANA_MIME_REGEX.match(described_by_type.strip()):
+                warnings['describedByType'] = 'The value is not valid IANA MIME Media type'
 
             # url = request.params.get('url', '')
             if errors:
-                return json.dumps({'ResultSet': {'Invalid': errors}})
-            return json.dumps({'ResultSet': {'Success': errors}})
+                return json.dumps({'ResultSet': {'Invalid': errors, 'Warnings': warnings}})
+            return json.dumps({'ResultSet': {'Success': errors, 'Warnings': warnings}})
         except:
             return json.dumps({'ResultSet': {'Error': 'Unknown error'}})
+
+    def check_url(self, url, errors, error_key, skip_empty=True):
+        if skip_empty and not url:
+            return
+        url = url.strip()
+        if not URL_REGEX.match(url):
+            errors[error_key] = 'Invalid URL format'
+        else:
+            try:
+                r = requests.head(url, verify=False)
+                if r.status_code > 399:
+                    r = requests.get(url, verify=False)
+                    if r.status_code > 399:
+                        errors[error_key] = 'URL returns status ' + str(r.status_code) + ' (' + str(r.reason)+')'
+            except:
+                errors[error_key] = 'Could not check url'
 
 
 class CurlController(BaseController):
@@ -806,34 +829,30 @@ class CurlController(BaseController):
             url = request.params.get('url', '')
 
             if not URL_REGEX.match(url):
-                return json.dumps({'ResultSet': {'Error': 'Invalid URL'}})
+                return json.dumps({'ResultSet': {'Error': 'Invalid URL', 'InvalidFormat': 'True'}})
 
-            parsed_uri = urlparse(url)
-            domain_pos = url.find(parsed_uri.hostname)
-            url_path = url[domain_pos + len(parsed_uri.hostname):]
-
-            # if url.find('https') > -1:
-            #     conn = httplib.HTTPSConnection(parsed_uri.hostname)
-            # else:
-            #     conn = httplib.HTTPConnection(parsed_uri.hostname)
-            conn = httplib.HTTPConnection(parsed_uri.hostname)
-
-            conn.request("HEAD", url_path)
-            res = conn.getresponse()
-
-            error = res.getheader('X-Error-Message', None)
-            if error:
-                return json.dumps({'ResultSet': {'ProtocolError': error}})
-
-            ctype = res.getheader('content-type')
-
-            # f = urllib2.urlopen(url)
-            # ctype = f.headers['content-type']
-
-            ctype = ctype.split(';', 1)
-            return json.dumps({'ResultSet': {'CType': ctype[0], 'Status': res.status}})
-        except:
-            return json.dumps({'ResultSet': {'Error': 'Unknown error'}})
+            r = requests.head(url)
+            method = 'HEAD'
+            if r.status_code > 399 or r.headers.get('content-type') is None:
+                r = requests.get(url)
+                method = 'GET'
+                if r.status_code > 399 or r.headers.get('content-type') is None:
+                    # return json.dumps({'ResultSet': {'Error': 'Returned status: ' + str(r.status_code)}})
+                    return json.dumps({'ResultSet': {
+                            'CType': False,
+                            'Status': r.status_code,
+                            'Reason': r.reason,
+                            'Method': method}})
+            content_type = r.headers.get('content-type')
+            content_type = content_type.split(';', 1)
+            return json.dumps({'ResultSet': {
+                'CType': content_type[0],
+                'Status': r.status_code,
+                'Reason': r.reason,
+                'Method': method}})
+        except Exception, e:
+            return json.dumps({'ResultSet': {'Error': 'unknown error (please report to devs)'}})
+            # return json.dumps({'ResultSet': {'Error': type(e).__name__}})
 
 
 class MediaController(BaseController):

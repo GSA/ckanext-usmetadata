@@ -1,18 +1,38 @@
-.btn-remove-url, .hidden {display:none}
-.controls .radio.inline{padding-left:3px; padding-top:0px}
-.controls input[type="radio"]{top:0px}
-.controls .ckan-icon{top:0px}
+.btn-remove-url, .hidden {
+    display: none
+}
+
 .controls .radio.inline {
-  padding-left: 3px;
-  padding-right: 15px;
-  padding-top: 0;
+    padding-left: 3px;
+    padding-top: 0px
 }
+
+.controls input[type="radio"] {
+    top: 0px
+}
+
+.controls .ckan-icon {
+    top: 0px
+}
+
+.controls .radio.inline {
+    padding-left: 3px;
+    padding-right: 15px;
+    padding-top: 0;
+}
+
 .bad, .red {
-  color: red;
+    color: red;
 }
+
 .good {
-  color:green;
+    color: green;
 }
+
 .weird {
-  color:darkslategrey;
+    color: darkslategrey;
+}
+
+.warning {
+    color: salmon;
 }
