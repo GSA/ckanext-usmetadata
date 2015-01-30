@@ -4,7 +4,6 @@ import cgi
 import collections
 from logging import getLogger
 import re
-import pprint
 
 import formencode.validators as v
 import ckan.logic as logic
@@ -17,7 +16,6 @@ from ckan.lib.base import BaseController
 from pylons import config
 from ckan.common import _, json, request, c, g, response
 import requests
-from requests.status_codes import codes
 
 
 render = base.render
@@ -800,7 +798,8 @@ class ResourceValidator(BaseController):
             if errors:
                 return json.dumps({'ResultSet': {'Invalid': errors, 'Warnings': warnings}})
             return json.dumps({'ResultSet': {'Success': errors, 'Warnings': warnings}})
-        except:
+        except Exception as ex:
+            log.error('validate_resource exception: %s ', ex)
             return json.dumps({'ResultSet': {'Error': 'Unknown error'}})
 
     def check_url(self, url, errors, warnings, error_key, skip_empty=True):
@@ -811,12 +810,13 @@ class ResourceValidator(BaseController):
             errors[error_key] = 'Invalid URL format'
         else:
             try:
-                r = requests.head(url, verify=False)
+                r = requests.head(url, verify=False, timeout=3)
                 if r.status_code > 399:
-                    r = requests.get(url, verify=False)
+                    r = requests.get(url, verify=False, timeout=3)
                     if r.status_code > 399:
-                        warnings[error_key] = 'URL returns status ' + str(r.status_code) + ' (' + str(r.reason)+')'
-            except:
+                        warnings[error_key] = 'URL returns status ' + str(r.status_code) + ' (' + str(r.reason) + ')'
+            except Exception as ex:
+                log.error('check_url exception: %s ', ex)
                 warnings[error_key] = 'Could not check url'
 
 
@@ -831,18 +831,18 @@ class CurlController(BaseController):
             if not URL_REGEX.match(url):
                 return json.dumps({'ResultSet': {'Error': 'Invalid URL', 'InvalidFormat': 'True'}})
 
-            r = requests.head(url)
+            r = requests.head(url, verify=False, timeout=3)
             method = 'HEAD'
             if r.status_code > 399 or r.headers.get('content-type') is None:
-                r = requests.get(url)
+                r = requests.get(url, verify=False, timeout=3)
                 method = 'GET'
                 if r.status_code > 399 or r.headers.get('content-type') is None:
                     # return json.dumps({'ResultSet': {'Error': 'Returned status: ' + str(r.status_code)}})
                     return json.dumps({'ResultSet': {
-                            'CType': False,
-                            'Status': r.status_code,
-                            'Reason': r.reason,
-                            'Method': method}})
+                        'CType': False,
+                        'Status': r.status_code,
+                        'Reason': r.reason,
+                        'Method': method}})
             content_type = r.headers.get('content-type')
             content_type = content_type.split(';', 1)
             return json.dumps({'ResultSet': {
@@ -850,7 +850,8 @@ class CurlController(BaseController):
                 'Status': r.status_code,
                 'Reason': r.reason,
                 'Method': method}})
-        except Exception, e:
+        except Exception as ex:
+            log.error('get_content_type exception: %s ', ex)
             return json.dumps({'ResultSet': {'Error': 'unknown error (please report to devs)'}})
             # return json.dumps({'ResultSet': {'Error': type(e).__name__}})
 
