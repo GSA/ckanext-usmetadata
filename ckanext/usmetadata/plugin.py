@@ -810,9 +810,9 @@ class ResourceValidator(BaseController):
             errors[error_key] = 'Invalid URL format'
         else:
             try:
-                r = requests.head(url, verify=False, timeout=3)
+                r = requests.head(url, verify=False)
                 if r.status_code > 399:
-                    r = requests.get(url, verify=False, timeout=3)
+                    r = requests.get(url, verify=False)
                     if r.status_code > 399:
                         warnings[error_key] = 'URL returns status ' + str(r.status_code) + ' (' + str(r.reason) + ')'
             except Exception as ex:
@@ -831,10 +831,10 @@ class CurlController(BaseController):
             if not URL_REGEX.match(url):
                 return json.dumps({'ResultSet': {'Error': 'Invalid URL', 'InvalidFormat': 'True'}})
 
-            r = requests.head(url, verify=False, timeout=3)
+            r = requests.head(url, verify=False)
             method = 'HEAD'
             if r.status_code > 399 or r.headers.get('content-type') is None:
-                r = requests.get(url, verify=False, timeout=3)
+                r = requests.get(url, verify=False)
                 method = 'GET'
                 if r.status_code > 399 or r.headers.get('content-type') is None:
                     # return json.dumps({'ResultSet': {'Error': 'Returned status: ' + str(r.status_code)}})
