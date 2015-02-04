@@ -16,7 +16,7 @@ from ckan.lib.base import BaseController
 from pylons import config
 from ckan.common import _, json, request, c, g, response
 import requests
-
+from sqlalchemy.util import OrderedDict
 
 render = base.render
 abort = base.abort
@@ -468,6 +468,19 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     p.implements(p.IResourceController, inherit=False)
     p.implements(p.interfaces.IRoutes, inherit=True)
     p.implements(p.interfaces.IPackageController, inherit=True)
+    p.implements(p.IFacets, inherit=True)
+
+
+    def dataset_facets(self, facets_dict, package_type):
+        if package_type <> 'dataset':
+            return facets_dict
+        d = collections.OrderedDict()
+        d['public_access_level'] = 'Access Level'
+        for k, v in facets_dict.items():
+           d[k] = v
+
+        return d
+
 
     def before_show(self, resource_dict):
         labels = collections.OrderedDict()
