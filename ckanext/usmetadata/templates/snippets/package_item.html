@@ -7,6 +7,26 @@
 <li class="{{ item_class or "dataset-item" }}">
   {% block package_item_content %}
     <div class="dataset-content">
+      {% for extra in package.extras  %}
+        {% if extra['key'] == 'public_access_level' and extra['value'] == 'public' %}
+            <span class="dataset-private label label-inverse pull-right">
+                <i class="icon-unlock"></i>
+                {{ _('Public') }}
+            </span>
+        {% endif %}
+        {% if extra['key'] == 'public_access_level' and extra['value'] == 'non-public' %}
+            <span class="dataset-private label label-inverse pull-right">
+                <i class="icon-lock"></i>
+                {{ _('Non-public') }}
+            </span>
+        {% endif %}
+        {% if extra['key'] == 'public_access_level' and extra['value'] == 'restricted public' %}
+            <span class="dataset-private label label-inverse pull-right">
+                <i class="icon-lock"></i>
+                {{ _('restricted public') }}
+            </span>
+        {% endif %}
+      {% endfor %}
       <h3 class="dataset-heading">
         {{ h.link_to(h.truncate(title, truncate_title), h.url_for(controller='package', action='read', id=package.name)) }}
         {% if package.get('state', '').startswith('draft') %}
