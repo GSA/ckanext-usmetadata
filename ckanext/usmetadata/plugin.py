@@ -466,7 +466,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     p.implements(p.interfaces.IPackageController, inherit=True)
     p.implements(p.IFacets, inherit=True)
 
-
+    # Add access level facet on dataset page
     def dataset_facets(self, facets_dict, package_type):
         if package_type <> 'dataset':
             return facets_dict
@@ -474,9 +474,17 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         d['public_access_level'] = 'Access Level'
         for k, v in facets_dict.items():
            d[k] = v
-
         return d
 
+    # Add access level facet on organization page
+    def organization_facets(self, facets_dict, organization_type, package_type):
+        if organization_type <> 'organization':
+            return facets_dict
+        d = collections.OrderedDict()
+        d['public_access_level'] = 'Access Level'
+        for k, v in facets_dict.items():
+           d[k] = v
+        return d
 
     def before_show(self, resource_dict):
         labels = collections.OrderedDict()
@@ -636,7 +644,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             if key in new_dict['common_core']:
                 new_dict['ordered_common_core'][key] = new_dict['common_core'][key]
 
-        parent_dataset_options = db_utils.get_parent_organizations(50)
+        parent_dataset_options = db_utils.get_parent_organizations(c)
         new_dict['parent_dataset_options'] = parent_dataset_options
         return new_dict
 
