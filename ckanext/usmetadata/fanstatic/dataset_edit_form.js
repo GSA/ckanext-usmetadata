@@ -32,6 +32,7 @@ $(document).ready(function () {
             .add('#field-primary-it-investment-uii')
             .add('#field-related_documents')
             .add('#field-release_date')
+            .add('#field-system_of_records')
             .change(validate_dataset).change();
 
         $('form.dataset-form').submit(function (event) {
@@ -56,7 +57,8 @@ function validate_dataset(){
             'language': $('#field-language').val(),
             'investment_uii': $('#field-primary-it-investment-uii').val(),
             'references': $('#field-related_documents').val(),
-            'issued': $('#field-release_date').val()
+            'issued': $('#field-release_date').val(),
+            'system_of_records': $('#field-system_of_records').val()
         },
         function (result) {
             $('input').next('p.bad').remove();
