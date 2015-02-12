@@ -552,6 +552,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             new_dict['common_core'] = {}
 
         reduced_extras = []
+        parent_dataset_id = ""
 
         # Used to display user-friendly labels on dataset page
         dataset_labels = (
@@ -614,6 +615,11 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
                 else:
                     reduced_extras.append(extra)
 
+                #Check if parent dataset is present and if yes get details
+                if extra['key'] == 'parent_dataset':
+                    parent_dataset_id = extra['value']
+
+
             new_dict['extras'] = reduced_extras
         except KeyError as ex:
             log.debug('''Expected key ['%s'] not found, attempting to move common core keys to subdictionary''',
@@ -645,7 +651,15 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             if key in new_dict['common_core']:
                 new_dict['ordered_common_core'][key] = new_dict['common_core'][key]
 
+
         parent_dataset_options = db_utils.get_parent_organizations(c)
+
+        #If parent dataset is set, Make sure dataset dropdown always has that value.
+        if parent_dataset_id != "":
+            package_dict = p.toolkit.get_action('package_show')(None, {'id': parent_dataset_id})
+            if package_dict['id'] not in parent_dataset_options:
+                parent_dataset_options[package_dict['id']] = package_dict['title']
+
         new_dict['parent_dataset_options'] = parent_dataset_options
         return new_dict
 
