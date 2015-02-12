@@ -1,22 +1,23 @@
 import copy
-import os
 import cgi
 import collections
 from logging import getLogger
-import re
 
+import os
+import re
 import formencode.validators as v
 import ckan.logic as logic
 import ckan.lib.base as base
 import ckan.lib.navl.dictization_functions as dict_fns
 import ckan.model as model
 import ckan.plugins as p
-import db_utils
 from ckan.lib.base import BaseController
 from pylons import config
 from ckan.common import _, json, request, c, g, response
 import requests
-from sqlalchemy.util import OrderedDict
+
+import db_utils
+
 
 render = base.render
 abort = base.abort
@@ -140,13 +141,10 @@ expanded_metadata = (
     {'id': 'related_documents', 'validators': [v.String(max=2100)]},
     {'id': 'conforms_to', 'validators': [v.URL(add_http=True), v.String(max=2100)]},
     {'id': 'homepage_url', 'validators': [v.URL(add_http=True), v.String(max=2100)]},
-    {'id': 'rss_feed', 'validators': [v.String(max=2100)]},
     {'id': 'system_of_records', 'validators': [v.URL(add_http=True), v.String(max=2100)]},
-    {'id': 'system_of_records_none_related_to_this_dataset', 'validators': [v.String(max=2100)]},
     {'id': 'primary_it_investment_uii', 'validators': [v.Regex(
         r'^[0-9]{3}-[0-9]{9}$'
     )]},
-    {'id': 'webservice', 'validators': [v.String(max=300)]},
     {'id': 'publisher_1', 'validators': [v.String(max=300)]},
     {'id': 'publisher_2', 'validators': [v.String(max=300)]},
     {'id': 'publisher_3', 'validators': [v.String(max=300)]},
@@ -158,7 +156,6 @@ expanded_metadata = (
 required_if_applicable_metadata = (
     {'id': 'data_dictionary', 'validators': [v.URL(add_http=True), v.String(max=2100)]},
     {'id': 'data_dictionary_type', 'validators': [v.String(max=2100)]},
-    {'id': 'endpoint', 'validators': [v.String(max=2100)]},
     {'id': 'spatial', 'validators': [v.String(max=500)]},
     {'id': 'temporal', 'validators': [v.Regex(
         r'^[\-\dTWRZP/YMWDHMS:\+]{3,}/[\-\dTWRZP/YMWDHMS:\+]{3,}$'
@@ -477,7 +474,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         d = collections.OrderedDict()
         d['public_access_level'] = 'Access Level'
         for k, v in facets_dict.items():
-           d[k] = v
+            d[k] = v
         return d
 
     # Add access level facet on organization page
@@ -487,7 +484,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         d = collections.OrderedDict()
         d['public_access_level'] = 'Access Level'
         for k, v in facets_dict.items():
-           d[k] = v
+            d[k] = v
         return d
 
     def before_show(self, resource_dict):
