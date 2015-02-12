@@ -84,7 +84,7 @@ LANGUAGE_REGEX = re.compile(
     r'(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))$'
 )
 
-PRIMARY_IT_INVESTMENT_UII_REGEX = re.compile(r"$[0-9]{3}-[0-9]{9}^")
+PRIMARY_IT_INVESTMENT_UII_REGEX = re.compile(r"^[0-9]{3}-[0-9]{9}$")
 
 ISSUED_REGEX = re.compile(
     r'^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?'
@@ -855,6 +855,7 @@ class DatasetValidator(BaseController):
             investment_uii = request.params.get('investment_uii', False)
             references = request.params.get('references', False)
             issued = request.params.get('issued', False)
+            system_of_records = request.params.get('system_of_records', False)
 
             errors = {}
             warnings = {}
@@ -866,6 +867,7 @@ class DatasetValidator(BaseController):
             self.check_url(described_by, errors, warnings, 'data_dictionary')
             self.check_url(conforms_to, errors, warnings, 'conforms_to')
             self.check_url(landing_page, errors, warnings, 'homepage_url')
+            self.check_url(system_of_records, errors, warnings, 'system_of_records')
 
             if described_by_type and not IANA_MIME_REGEX.match(described_by_type):
                 errors['data_dictionary_type'] = 'The value is not valid IANA MIME Media type'
