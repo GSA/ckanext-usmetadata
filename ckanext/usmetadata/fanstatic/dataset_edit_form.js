@@ -17,23 +17,37 @@ $(document).ready(function () {
         }
     }).change();
 
-    //if ($('form.dataset-form').size()) {
-    //    $('input[name="resource_type"]').add('#field-format').add('#field-describedBy')
-    //        .add('#field-describedByType').add('#field-conformsTo')
-    //        .change(validate_resource).change();
-    //}
+    if ($('form.dataset-form').size()) {
+        $('#field-access-level-comment')
+            .add('#field-license-new')
+            .add('#field-temporal')
+            .add('#field-data_dictionary')
+            .add('#field-data_dictionary_type')
+            .add('#field-conforms_to')
+            .add('#field-homepage_url')
+            .add('#field-language')
+            .add('#field-primary-it-investment-uii')
+            .add('#field-related_documents')
+            .add('#field-release_date')
+            .change(validate_dataset).change();
+    }
 });
 
 function validate_dataset(){
     $.getJSON(
         '/api/2/util/resource/validate_dataset',
         {
-            'url': $('#field-image-url').val(),
-            'resource_type': $('input[name="resource_type"]:checked').val(),
-            'format': $('#field-format').val(),
-            'describedBy': $('#field-describedBy').val(),
-            'describedByType': $('#field-describedByType').val(),
-            'conformsTo': $('#field-conformsTo').val()
+            'rights': $('#field-access-level-comment').val(),
+            'license_url': $('#field-license-new').val(),
+            'temporal': $('#field-temporal').val(),
+            'described_by': $('#field-data_dictionary').val(),
+            'described_by_type': $('#field-data_dictionary_type').val(),
+            'conforms_to': $('#field-conforms_to').val(),
+            'landing_page': $('#field-homepage_url').val(),
+            'language': $('#field-language').val(),
+            'investment_uii': $('#field-primary-it-investment-uii').val(),
+            'references': $('#field-related_documents').val(),
+            'issued': $('#field-release_date').val()
         },
         function (result) {
             $('input').next('p.bad').remove();

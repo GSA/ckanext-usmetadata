@@ -50,6 +50,48 @@ URL_REGEX = re.compile(
 
 IANA_MIME_REGEX = re.compile(r"^[-\w]+/[-\w]+(\.[-\w]+)*([+][-\w]+)?$")
 
+TEMPORAL_REGEX_1 = re.compile(
+    r'^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?'
+    r'|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]'
+    r'\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?(\/)([\+-]?\d{4}'
+    r'(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|'
+    r'(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]'
+    r'\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$'
+)
+
+TEMPORAL_REGEX_2 = re.compile(
+    r'^(R\d*\/)?([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\4([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])'
+    r'(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)'
+    r'([\.,]\d+(?!:))?)?(\18[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?(\/)'
+    r'P(?:\d+(?:\.\d+)?Y)?(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?W)?(?:\d+(?:\.\d+)?D)?(?:T(?:\d+(?:\.\d+)?H)?'
+    r'(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?S)?)?$'
+)
+
+TEMPORAL_REGEX_3 = re.compile(
+    r'^(R\d*\/)?P(?:\d+(?:\.\d+)?Y)?(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?W)?(?:\d+(?:\.\d+)?D)?(?:T(?:\d+'
+    r'(?:\.\d+)?H)?(?:\d+(?:\.\d+)?M)?(?:\d+(?:\.\d+)?S)?)?\/([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])'
+    r'(\4([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))'
+    r'([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\18[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])'
+    r'([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$'
+)
+
+LANGUAGE_REGEX = re.compile(
+    r'^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?'
+    r'(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*'
+    r'(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|'
+    r'((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo'
+    r'|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|'
+    r'(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))$'
+)
+
+PRIMARY_IT_INVESTMENT_UII_REGEX = re.compile(r"$[0-9]{3}-[0-9]{9}^")
+
+ISSUED_REGEX = re.compile(
+    r'^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?'
+    r'|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]'
+    r'\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$'
+)
+
 # excluded title, description, tags and last update as they're part of the default ckan dataset metadata
 required_metadata = (
     {'id': 'title', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
@@ -527,6 +569,9 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
         m.connect('resource_validation', '/api/2/util/resource/validate_resource',
                   controller='ckanext.usmetadata.plugin:ResourceValidator', action='validate_resource')
+
+        m.connect('dataset_validation', '/api/2/util/resource/validate_dataset',
+                  controller='ckanext.usmetadata.plugin:DatasetValidator', action='validate_dataset')
         return m
 
     @classmethod
@@ -615,10 +660,9 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
                 else:
                     reduced_extras.append(extra)
 
-                #Check if parent dataset is present and if yes get details
+                # Check if parent dataset is present and if yes get details
                 if extra['key'] == 'parent_dataset':
                     parent_dataset_id = extra['value']
-
 
             new_dict['extras'] = reduced_extras
         except KeyError as ex:
@@ -651,10 +695,9 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             if key in new_dict['common_core']:
                 new_dict['ordered_common_core'][key] = new_dict['common_core'][key]
 
-
         parent_dataset_options = db_utils.get_parent_organizations(c)
 
-        #If parent dataset is set, Make sure dataset dropdown always has that value.
+        # If parent dataset is set, Make sure dataset dropdown always has that value.
         if parent_dataset_id != "":
             package_dict = p.toolkit.get_action('package_show')(None, {'id': parent_dataset_id})
             if package_dict['id'] not in parent_dataset_options:
@@ -794,6 +837,94 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
                 'load_data_into_dict': self.load_data_into_dict,
                 'accrual_periodicity': accrual_periodicity,
                 'always_private': True}
+
+
+class DatasetValidator(BaseController):
+    """Controller to validate resource"""
+
+    def validate_dataset(self):
+        try:
+            rights = request.params.get('rights', False)
+            license_url = request.params.get('license_url', False)
+            temporal = request.params.get('temporal', False)
+            described_by = request.params.get('described_by', False)
+            described_by_type = request.params.get('described_by_type', False)
+            conforms_to = request.params.get('conforms_to', False)
+            landing_page = request.params.get('landing_page', False)
+            language = request.params.get('language', False)
+            investment_uii = request.params.get('investment_uii', False)
+            references = request.params.get('references', False)
+            issued = request.params.get('issued', False)
+
+            errors = {}
+            warnings = {}
+
+            if rights and len(rights) > 255:
+                warnings['access-level-comment'] = 'The length of the string exceeds limit of 255 chars'
+
+            self.check_url(license_url, warnings, warnings, 'license-new')
+            self.check_url(described_by, warnings, warnings, 'data_dictionary')
+            self.check_url(conforms_to, warnings, warnings, 'conforms_to')
+            self.check_url(landing_page, warnings, warnings, 'homepage_url')
+
+            if described_by_type and not IANA_MIME_REGEX.match(described_by_type):
+                warnings['data_dictionary_type'] = 'The value is not valid IANA MIME Media type'
+
+            if temporal:
+                if "/" not in temporal:
+                    #
+                    warnings['temporal'] = 'Invalid Temporal Format. Missing slash'
+                elif not TEMPORAL_REGEX_1.match(temporal) \
+                        and not TEMPORAL_REGEX_2.match(temporal) \
+                        and not TEMPORAL_REGEX_3.match(temporal):
+                    warnings['temporal'] = 'Invalid Temporal Format'
+
+            if language:
+                language = language.split(',')
+                for s in language:
+                    s = s.strip()
+                    if not LANGUAGE_REGEX.match(s):
+                        warnings['language'] = 'Invalid Language Format: ' + str(s)
+
+            if investment_uii:
+                if not PRIMARY_IT_INVESTMENT_UII_REGEX.match(investment_uii):
+                    warnings['primary-it-investment-uii'] = 'Invalid Format. Must be `023-000000001` format'
+
+            if references:
+                references = references.split(',')
+                for s in references:
+                    url = s.strip()
+                    if not URL_REGEX.match(url):
+                        warnings['related_documents'] = 'One of urls is invalid:<br /> ' + url
+
+            if issued:
+                if not ISSUED_REGEX.match(issued):
+                    warnings['release_date'] = 'Invalid Format'
+
+            if errors:
+                return json.dumps({'ResultSet': {'Invalid': errors, 'Warnings': warnings}})
+            return json.dumps({'ResultSet': {'Success': errors, 'Warnings': warnings}})
+        except Exception as ex:
+            log.error('validate_resource exception: %s ', ex)
+            return json.dumps({'ResultSet': {'Error': 'Unknown error'}})
+
+    def check_url(self, url, errors, warnings, error_key, skip_empty=True):
+        if skip_empty and not url:
+            return
+        url = url.strip()
+        if not URL_REGEX.match(url):
+            errors[error_key] = 'Invalid URL format'
+        return
+        # else:
+        # try:
+        # r = requests.head(url, verify=False)
+        # if r.status_code > 399:
+        # r = requests.get(url, verify=False)
+        #             if r.status_code > 399:
+        #                 warnings[error_key] = 'URL returns status ' + str(r.status_code) + ' (' + str(r.reason) + ')'
+        #     except Exception as ex:
+        #         log.error('check_url exception: %s ', ex)
+        #         warnings[error_key] = 'Could not check url'
 
 
 class ResourceValidator(BaseController):
