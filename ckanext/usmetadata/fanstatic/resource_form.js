@@ -21,9 +21,13 @@ $(document).ready(function () {
 
         $('input[name="resource_type"]').change(verify_media_type);
 
+        if (document.URL.indexOf('/new_resource/') > 10) {
+            validate_resource();
+        }
+
         $('input[name="resource_type"]').add('#field-format').add('#field-describedBy')
             .add('#field-describedByType').add('#field-conformsTo')
-            .change(validate_resource).change();
+            .change(validate_resource);
 
         $('form.dataset-resource-form').submit(function (event) {
             // allow submitting empty resource on dataset create
