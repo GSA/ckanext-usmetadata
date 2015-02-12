@@ -1,22 +1,23 @@
 import copy
-import os
 import cgi
 import collections
 from logging import getLogger
-import re
 
+import os
+import re
 import formencode.validators as v
 import ckan.logic as logic
 import ckan.lib.base as base
 import ckan.lib.navl.dictization_functions as dict_fns
 import ckan.model as model
 import ckan.plugins as p
-import db_utils
 from ckan.lib.base import BaseController
 from pylons import config
 from ckan.common import _, json, request, c, g, response
 import requests
-from sqlalchemy.util import OrderedDict
+
+import db_utils
+
 
 render = base.render
 abort = base.abort
@@ -473,7 +474,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         d = collections.OrderedDict()
         d['public_access_level'] = 'Access Level'
         for k, v in facets_dict.items():
-           d[k] = v
+            d[k] = v
         return d
 
     # Add access level facet on organization page
@@ -483,7 +484,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         d = collections.OrderedDict()
         d['public_access_level'] = 'Access Level'
         for k, v in facets_dict.items():
-           d[k] = v
+            d[k] = v
         return d
 
     def before_show(self, resource_dict):
