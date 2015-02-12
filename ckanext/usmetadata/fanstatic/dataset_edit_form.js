@@ -18,6 +18,9 @@ $(document).ready(function () {
     }).change();
 
     if ($('form.dataset-form').size()) {
+
+        datasetFormValid = true;
+
         $('#field-access-level-comment')
             .add('#field-license-new')
             .add('#field-temporal')
@@ -30,6 +33,12 @@ $(document).ready(function () {
             .add('#field-related_documents')
             .add('#field-release_date')
             .change(validate_dataset).change();
+
+        $('form.dataset-form').submit(function (event) {
+            if (!datasetFormValid) {
+                event.preventDefault();
+            }
+        });
     }
 });
 
@@ -71,9 +80,9 @@ function validate_dataset(){
                         $('#field-' + key).parent().prev('label').addClass('bad');
                     }
                 }
-                resourceFormValid = false;
+                datasetFormValid = false;
             } else {
-                resourceFormValid = true;
+                datasetFormValid = true;
             }
         }
     )

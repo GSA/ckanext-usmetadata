@@ -860,46 +860,45 @@ class DatasetValidator(BaseController):
             warnings = {}
 
             if rights and len(rights) > 255:
-                warnings['access-level-comment'] = 'The length of the string exceeds limit of 255 chars'
+                errors['access-level-comment'] = 'The length of the string exceeds limit of 255 chars'
 
-            self.check_url(license_url, warnings, warnings, 'license-new')
-            self.check_url(described_by, warnings, warnings, 'data_dictionary')
-            self.check_url(conforms_to, warnings, warnings, 'conforms_to')
-            self.check_url(landing_page, warnings, warnings, 'homepage_url')
+            self.check_url(license_url, errors, warnings, 'license-new')
+            self.check_url(described_by, errors, warnings, 'data_dictionary')
+            self.check_url(conforms_to, errors, warnings, 'conforms_to')
+            self.check_url(landing_page, errors, warnings, 'homepage_url')
 
             if described_by_type and not IANA_MIME_REGEX.match(described_by_type):
-                warnings['data_dictionary_type'] = 'The value is not valid IANA MIME Media type'
+                errors['data_dictionary_type'] = 'The value is not valid IANA MIME Media type'
 
             if temporal:
                 if "/" not in temporal:
-                    #
-                    warnings['temporal'] = 'Invalid Temporal Format. Missing slash'
+                    errors['temporal'] = 'Invalid Temporal Format. Missing slash'
                 elif not TEMPORAL_REGEX_1.match(temporal) \
                         and not TEMPORAL_REGEX_2.match(temporal) \
                         and not TEMPORAL_REGEX_3.match(temporal):
-                    warnings['temporal'] = 'Invalid Temporal Format'
+                    errors['temporal'] = 'Invalid Temporal Format'
 
             if language:
                 language = language.split(',')
                 for s in language:
                     s = s.strip()
                     if not LANGUAGE_REGEX.match(s):
-                        warnings['language'] = 'Invalid Language Format: ' + str(s)
+                        errors['language'] = 'Invalid Language Format: ' + str(s)
 
             if investment_uii:
                 if not PRIMARY_IT_INVESTMENT_UII_REGEX.match(investment_uii):
-                    warnings['primary-it-investment-uii'] = 'Invalid Format. Must be `023-000000001` format'
+                    errors['primary-it-investment-uii'] = 'Invalid Format. Must be `023-000000001` format'
 
             if references:
                 references = references.split(',')
                 for s in references:
                     url = s.strip()
                     if not URL_REGEX.match(url):
-                        warnings['related_documents'] = 'One of urls is invalid: ' + url
+                        errors['related_documents'] = 'One of urls is invalid: ' + url
 
             if issued:
                 if not ISSUED_REGEX.match(issued):
-                    warnings['release_date'] = 'Invalid Format'
+                    errors['release_date'] = 'Invalid Format'
 
             if errors:
                 return json.dumps({'ResultSet': {'Invalid': errors, 'Warnings': warnings}})
