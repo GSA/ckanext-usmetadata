@@ -855,6 +855,7 @@ class DatasetValidator(BaseController):
             investment_uii = request.params.get('investment_uii', False)
             references = request.params.get('references', False)
             issued = request.params.get('issued', False)
+            system_of_records = request.params.get('system_of_records', False)
 
             errors = {}
             warnings = {}
@@ -866,6 +867,7 @@ class DatasetValidator(BaseController):
             self.check_url(described_by, errors, warnings, 'data_dictionary')
             self.check_url(conforms_to, errors, warnings, 'conforms_to')
             self.check_url(landing_page, errors, warnings, 'homepage_url')
+            self.check_url(system_of_records, errors, warnings, 'system_of_records')
 
             if described_by_type and not IANA_MIME_REGEX.match(described_by_type):
                 errors['data_dictionary_type'] = 'The value is not valid IANA MIME Media type'
