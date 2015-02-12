@@ -895,7 +895,7 @@ class DatasetValidator(BaseController):
                 for s in references:
                     url = s.strip()
                     if not URL_REGEX.match(url):
-                        warnings['related_documents'] = 'One of urls is invalid:<br /> ' + url
+                        warnings['related_documents'] = 'One of urls is invalid: ' + url
 
             if issued:
                 if not ISSUED_REGEX.match(issued):
