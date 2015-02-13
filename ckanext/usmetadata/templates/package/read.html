@@ -2,6 +2,26 @@
 
 {# override core template to hide private icon on dataset page. #}
 {% block package_description %}
+    {% for extra in pkg.extras  %}
+        {% if extra['key'] == 'public_access_level' and extra['value'] == 'public' %}
+            <span class="dataset-private label label-inverse pull-right">
+                <i class="icon-unlock"></i>
+                {{ _('Public') }}
+            </span>
+        {% endif %}
+        {% if extra['key'] == 'public_access_level' and extra['value'] == 'non-public' %}
+            <span class="dataset-private label label-inverse pull-right">
+                <i class="icon-lock"></i>
+                {{ _('Non-public') }}
+            </span>
+        {% endif %}
+        {% if extra['key'] == 'public_access_level' and extra['value'] == 'restricted public' %}
+            <span class="dataset-private label label-inverse pull-right">
+                <i class="icon-lock"></i>
+                {{ _('restricted public') }}
+            </span>
+        {% endif %}
+    {% endfor %}
     <h1>
       {% block page_heading %}
         {{ pkg.title or pkg.name }}

@@ -1,39 +1,44 @@
 $(document).ready(function () {
-    $('input[name="resource_type"]').change(
-        function () {
-            resource_type_change($(this).val());
+    //to be sure we are editing a resource
+    if ($('form.dataset-resource-form').size()) {
+        $('input[name="resource_type"]').change(
+            function () {
+                resource_type_change($(this).val());
+            }
+        );
+
+        window.setInterval(function () {
+            $('.resource-upload .btn').eq(2).remove();
+            $('.resource-url .btn-remove-url').remove();
+            resource_type_change($('input[name="resource_type"]:checked').val());
+        }, 500);
+
+
+        resourceFormValid = true;
+
+        $('#field-image-url').after('<p></p>');
+        $('#field-image-url').add('#field-format').change(verify_media_type);
+
+        $('input[name="resource_type"]').change(verify_media_type);
+
+        if (document.URL.indexOf('/new_resource/') > 10) {
+            validate_resource();
         }
-    );
 
-    window.setInterval(function () {
-        $('.resource-upload .btn').eq(2).remove();
-        $('.resource-url .btn-remove-url').remove();
-        resource_type_change($('input[name="resource_type"]:checked').val());
-    }, 500);
+        $('input[name="resource_type"]').add('#field-format').add('#field-describedBy')
+            .add('#field-describedByType').add('#field-conformsTo')
+            .change(validate_resource);
 
-
-    resourceFormValid = true;
-
-    $('#field-image-url').after('<p></p>');
-    $('#field-image-url').add('#field-format').change(verify_media_type);
-
-    $('input[name="resource_type"]').change(verify_media_type);
-
-    validate_resource();
-
-    $('input[name="resource_type"]').add('#field-format').add('#field-describedBy')
-        .add('#field-describedByType').add('#field-conformsTo')
-        .change(validate_resource);
-
-    $('form.dataset-resource-form').submit(function (event) {
-        // allow submitting empty resource on dataset create
-        if (!$('input[name="url"]').val() && $('#field-resource-type-file').prop("checked")) {
-            $('#field-resource-type-file').prop("checked", false);
-        }
-        if (!resourceFormValid) {
-            event.preventDefault();
-        }
-    });
+        $('form.dataset-resource-form').submit(function (event) {
+            // allow submitting empty resource on dataset create
+            if (!$('input[name="url"]').val() && $('#field-resource-type-file').prop("checked")) {
+                $('#field-resource-type-file').prop("checked", false);
+            }
+            if (!resourceFormValid) {
+                event.preventDefault();
+            }
+        });
+    }
 });
 
 function validate_resource() {
@@ -99,7 +104,7 @@ function verify_media_type() {
                 var currentMediaType = $('#field-format').val();
 
                 var statusPrint = 'URL returned status <strong class="' + sclass + '">'
-                    + status + ' (' +reason+')</strong>';
+                    + status + ' (' + reason + ')</strong>';
                 var ctypePrint = '<br />Media Type was detected as <strong>' + ct + '</strong>';
                 var typeMatchPrint = '';
 
@@ -161,6 +166,10 @@ function resource_type_change(val) {
             $('#field-image-upload').show();
             $('.resource-url').hide();
             break;
+        case 'api':
+            if (!$('#field-format-readable').val()) {
+                $('#field-format-readable').val('API');
+            }
         default:
             $('.resource-upload').hide();
             $('.resource-upload .btn').first().hide();
