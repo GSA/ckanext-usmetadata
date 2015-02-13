@@ -84,7 +84,7 @@ LANGUAGE_REGEX = re.compile(
     r'(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))$'
 )
 
-PRIMARY_IT_INVESTMENT_UII_REGEX = re.compile(r"$[0-9]{3}-[0-9]{9}^")
+PRIMARY_IT_INVESTMENT_UII_REGEX = re.compile(r"^[0-9]{3}-[0-9]{9}$")
 
 ISSUED_REGEX = re.compile(
     r'^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?'
