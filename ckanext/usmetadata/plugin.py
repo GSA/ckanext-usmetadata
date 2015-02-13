@@ -699,9 +699,10 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
         # If parent dataset is set, Make sure dataset dropdown always has that value.
         if parent_dataset_id != "":
-            package_dict = p.toolkit.get_action('package_show')(None, {'id': parent_dataset_id})
-            if package_dict['id'] not in parent_dataset_options:
-                parent_dataset_options[package_dict['id']] = package_dict['title']
+            parent_dataset_title = db_utils.get_organization_title(parent_dataset_id)
+
+            if parent_dataset_id not in parent_dataset_options:
+                parent_dataset_options[parent_dataset_id] = parent_dataset_title
 
         new_dict['parent_dataset_options'] = parent_dataset_options
         return new_dict

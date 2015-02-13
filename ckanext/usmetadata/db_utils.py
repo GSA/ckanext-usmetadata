@@ -7,6 +7,12 @@ import ckan.model as model
 
 cached_tables = {}
 
+def get_organization_title(id):
+    query = "select id, title from package where package.id = '"+id+"'"
+    connection = model.Session.connection()
+    res = connection.execute(query).fetchone()
+    return res._row[1]
+
 def get_parent_organizations(c):
     items = {}
     if c.userobj.sysadmin:
