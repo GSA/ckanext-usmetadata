@@ -2,6 +2,7 @@ import copy
 import cgi
 import collections
 from logging import getLogger
+import datetime
 
 import os
 import re
@@ -11,13 +12,11 @@ import ckan.lib.base as base
 import ckan.lib.navl.dictization_functions as dict_fns
 import ckan.model as model
 import ckan.plugins as p
+import requests
+import db_utils
 from ckan.lib.base import BaseController
 from pylons import config
 from ckan.common import _, json, request, c, g, response
-import requests
-
-import db_utils
-
 
 render = base.render
 abort = base.abort
@@ -558,6 +557,9 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         m.connect('media_type', '/api/2/util/resource/license_url_autocomplete',
                   controller='ckanext.usmetadata.plugin:LicenseURLController', action='get_license_url')
 
+        m.connect('clone_dataset', '/dataset/{id}/clone',
+                  controller='ckanext.usmetadata.plugin:CloneController', action='clone_dataset_metadata')
+
         return m
 
     def after_map(self, m):
@@ -572,6 +574,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
         m.connect('dataset_validation', '/api/2/util/resource/validate_dataset',
                   controller='ckanext.usmetadata.plugin:DatasetValidator', action='validate_dataset')
+
         return m
 
     @classmethod
@@ -983,6 +986,50 @@ class ResourceValidator(BaseController):
             except Exception as ex:
                 log.error('check_url exception: %s ', ex)
                 warnings[error_key] = 'Could not check url'
+
+
+
+class CloneController(BaseController):
+    """Controller to clone dataset metadata"""
+
+    def clone_dataset_metadata(self, id):
+        context = {'model': model, 'session': model.Session,
+                       'user': c.user or c.author, 'auth_user_obj': c.userobj}
+        pkg_dict = get_action('package_show')(context, {'id': id})
+
+        # udpate name and title
+        pkg_dict['title'] = pkg_dict['title']+ "-" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        pkg_dict['name'] = pkg_dict['name'] + "-" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        pkg_dict['state'] = 'draft'
+        pkg_dict['tag_string'] = [{""}]
+        # remove id from original dataset
+        if 'id' in pkg_dict:
+            del pkg_dict['id']
+
+        # remove resource for now.
+        if 'resources' in pkg_dict:
+            del pkg_dict['resources']
+
+        # extras have to on top level. otherwise validation fails
+        temp = {}
+        for extra in pkg_dict['extras']:
+            temp[extra['key']] = extra['value']
+
+        del pkg_dict['extras']
+        pkg_dict['extras'] = []
+        for key,value in temp.iteritems():
+            if key != 'title':
+                pkg_dict[key]=value
+
+        # somehow package is getting added to context. If we dont remove it current dataset gets updated
+        if 'package' in context:
+            del context['package']
+
+        # create new package
+        pkg_dict_new = get_action('package_create')(context, pkg_dict)
+
+        # redirect to draft edit
+        redirect(h.url_for(controller='package', action='edit', id=pkg_dict_new['name']))
 
 
 class CurlController(BaseController):
