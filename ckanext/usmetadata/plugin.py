@@ -1001,7 +1001,7 @@ class CloneController(BaseController):
         pkg_dict['title'] = pkg_dict['title']+ "-" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         pkg_dict['name'] = pkg_dict['name'] + "-" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         pkg_dict['state'] = 'draft'
-        pkg_dict['tag_string'] = [{""}]
+        pkg_dict['tag_string'] = ['']
         # remove id from original dataset
         if 'id' in pkg_dict:
             del pkg_dict['id']
