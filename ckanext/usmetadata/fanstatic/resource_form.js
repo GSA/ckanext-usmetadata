@@ -128,7 +128,7 @@ function verify_media_type() {
                         resourceFormValid = false;
                     }
                     if (prepopulateMediaType) {
-                        typeMatchPrint = '<br /><span class="red">Detected type <strong>' + ct + '</strong> ' +
+                        typeMatchPrint = '<br /><span class="weird">Detected type <strong>' + ct + '</strong> ' +
                         'does not match ' + 'currently selected type <strong>' + currentMediaType + '</strong></span>';
                     }
                 }
@@ -138,12 +138,15 @@ function verify_media_type() {
                 );
             } else {
                 var errorPrint = '';
-                var errorClass = 'red';
+                var errorClass = 'weird';
                 if ("undefined" != typeof(result.ResultSet.Error)) {
                     errorPrint = result.ResultSet.Error;
                 } else if ("undefined" != typeof(result.ResultSet.ProtocolError)) {
                     errorPrint = result.ResultSet.ProtocolError;
                     errorClass = "weird";
+                }
+                if ("undefined" != typeof(result.ResultSet.Red)) {
+                    errorClass = "red";
                 }
                 $('#field-image-url').next('p').replaceWith(
                     '<p class="' + errorClass + '">Could not reach given url: ' + errorPrint + '</p>'

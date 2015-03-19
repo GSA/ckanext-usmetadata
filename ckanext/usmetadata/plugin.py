@@ -13,10 +13,12 @@ import ckan.lib.navl.dictization_functions as dict_fns
 import ckan.model as model
 import ckan.plugins as p
 import requests
-import db_utils
 from ckan.lib.base import BaseController
 from pylons import config
 from ckan.common import _, json, request, c, g, response
+
+import db_utils
+
 
 render = base.render
 abort = base.abort
@@ -270,7 +272,7 @@ accrual_periodicity = [u"", u"Decennial", u"Quadrennial", u"Annual", u"Bimonthly
 
 access_levels = ['public', 'restricted public', 'non-public']
 
-publishing_status_options = ['Published','Draft']
+publishing_status_options = ['Published', 'Draft']
 
 license_options = {'': '',
                    'https://creativecommons.org/licenses/by/4.0': 'https://creativecommons.org/licenses/by/4.0',
@@ -845,7 +847,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
                 'is_parent_options': is_parent_options,
                 'load_data_into_dict': self.load_data_into_dict,
                 'accrual_periodicity': accrual_periodicity,
-                'publishing_status_options' : publishing_status_options,
+                'publishing_status_options': publishing_status_options,
                 'always_private': True}
 
 
@@ -931,7 +933,7 @@ class DatasetValidator(BaseController):
         # r = requests.head(url, verify=False)
         # if r.status_code > 399:
         # r = requests.get(url, verify=False)
-        #             if r.status_code > 399:
+        # if r.status_code > 399:
         #                 warnings[error_key] = 'URL returns status ' + str(r.status_code) + ' (' + str(r.reason) + ')'
         #     except Exception as ex:
         #         log.error('check_url exception: %s ', ex)
@@ -994,13 +996,12 @@ class ResourceValidator(BaseController):
                 warnings[error_key] = 'Could not check url'
 
 
-
 class CloneController(BaseController):
     """Controller to clone dataset metadata"""
 
     def clone_dataset_metadata(self, id):
         context = {'model': model, 'session': model.Session,
-                       'user': c.user or c.author, 'auth_user_obj': c.userobj}
+                   'user': c.user or c.author, 'auth_user_obj': c.userobj}
         pkg_dict = get_action('package_show')(context, {'id': id})
 
         # udpate name and title
@@ -1023,9 +1024,9 @@ class CloneController(BaseController):
 
         del pkg_dict['extras']
         pkg_dict['extras'] = []
-        for key,value in temp.iteritems():
+        for key, value in temp.iteritems():
             if key != 'title':
-                pkg_dict[key]=value
+                pkg_dict[key] = value
 
         # somehow package is getting added to context. If we dont remove it current dataset gets updated
         if 'package' in context:
@@ -1047,7 +1048,7 @@ class CurlController(BaseController):
             url = request.params.get('url', '')
 
             if not URL_REGEX.match(url):
-                return json.dumps({'ResultSet': {'Error': 'Invalid URL', 'InvalidFormat': 'True'}})
+                return json.dumps({'ResultSet': {'Error': 'Invalid URL', 'InvalidFormat': 'True', 'Red': 'True'}})
 
             r = requests.head(url, verify=False)
             method = 'HEAD'
@@ -1070,7 +1071,7 @@ class CurlController(BaseController):
                 'Method': method}})
         except Exception as ex:
             log.error('get_content_type exception: %s ', ex)
-            return json.dumps({'ResultSet': {'Error': 'unknown error (please report to devs)'}})
+            return json.dumps({'ResultSet': {'Error': 'unknown error'}})
             # return json.dumps({'ResultSet': {'Error': type(e).__name__}})
 
 
