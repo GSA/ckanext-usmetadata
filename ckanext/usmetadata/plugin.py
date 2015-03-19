@@ -174,6 +174,7 @@ expanded_metadata = (
         r'|zh-min-nan|zh-xiang)))$'
     )]},
     {'id': 'data_quality', 'validators': [v.String(max=1000)]},
+    {'id': 'publishing_status', 'validators': [v.String(max=1000)]},
     {'id': 'is_parent', 'validators': [v.String(max=1000)]},
     {'id': 'parent_dataset', 'validators': [v.String(max=1000)]},
     # theme
@@ -228,6 +229,7 @@ expanded_metadata_by_pass_validation = (
     {'id': 'accrual_periodicity', 'validators': [v.String(max=2100)]},
     {'id': 'language', 'validators': [v.String(max=2100)]},
     {'id': 'data_quality', 'validators': [v.String(max=1000)]},
+    {'id': 'publishing_status', 'validators': [v.String(max=1000)]},
     {'id': 'is_parent', 'validators': [v.String(max=1000)]},
     {'id': 'parent_dataset', 'validators': [v.String(max=1000)]},
     # theme
@@ -267,6 +269,8 @@ accrual_periodicity = [u"", u"Decennial", u"Quadrennial", u"Annual", u"Bimonthly
                        u"Three times a year", u"Weekly"]
 
 access_levels = ['public', 'restricted public', 'non-public']
+
+publishing_status_options = ['Published','Draft']
 
 license_options = {'': '',
                    'https://creativecommons.org/licenses/by/4.0': 'https://creativecommons.org/licenses/by/4.0',
@@ -631,6 +635,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             ('data_dictionary', 'Data Dictionary'),
             ('data_dictionary_type', 'Data Dictionary Type'),
             ('data_quality', 'Meets the agency Information Quality Guidelines'),
+            ('publishing_status', 'Publishing Status'),
             ('accrual_periodicity', 'Accrual Periodicity (Frequency)'),
             ('conforms_to', 'Conforms To (Data Standard) '),
             ('homepage_url', 'Homepage Url'),
@@ -840,6 +845,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
                 'is_parent_options': is_parent_options,
                 'load_data_into_dict': self.load_data_into_dict,
                 'accrual_periodicity': accrual_periodicity,
+                'publishing_status_options' : publishing_status_options,
                 'always_private': True}
 
 

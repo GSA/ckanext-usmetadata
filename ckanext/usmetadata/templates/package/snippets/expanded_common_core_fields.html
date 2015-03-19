@@ -80,5 +80,21 @@
   </div>
 </div>
 
+<div class="control-group control-medium">
+  <label class="control-label" for="field-publishing_status">
+      {{ _("Publishing Status") }}</label>
+  <div class="controls" title="Draft datasets will not be included in EDL and PDL json">
+    <select id="field-publishing_status" name="publishing_status" title="Publishing Status (Draft datasets will not be included in EDL and PDL)">
+
+        {% for publishing_status_id in h.publishing_status_options %}
+            <option value="{{ publishing_status_id }}" {% if publishing_status_id == data.common_core.publishing_status %} selected {% endif %} >
+                {{ publishing_status_id }}
+            </option>
+        {% endfor %}
+    </select>
+    <div>Draft datasets will not be included in EDL and PDL</div>
+  </div>
+</div>
+
 {% endblock package_expanded_metadata %}
 
