@@ -1008,8 +1008,7 @@ class CloneController(BaseController):
         pkg_dict['title'] = "Clone of " + pkg_dict['title']
 
         #name can not be more than 100 characters
-        if len(pkg_dict['name'])>= 85:
-            pkg_dict['name'] = pkg_dict['name'][:85]+ "-" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        pkg_dict['name'] = pkg_dict['name'][:85]+ "-" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
         pkg_dict['state'] = 'draft'
         pkg_dict['tag_string'] = ['']
