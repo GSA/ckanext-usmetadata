@@ -1007,11 +1007,10 @@ class CloneController(BaseController):
         # udpate name and title
         pkg_dict['title'] = "Clone of " + pkg_dict['title']
 
-        # title can be maximum 100 characters long
-        if len(pkg_dict['title']) > 100:
-            pkg_dict['title'] = pkg_dict['title'][:97] + '...'
+        #name can not be more than 100 characters
+        if len(pkg_dict['name'])>= 85:
+            pkg_dict['name'] = pkg_dict['name'][:85]+ "-" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
-        pkg_dict['name'] = pkg_dict['name'] + "-" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         pkg_dict['state'] = 'draft'
         pkg_dict['tag_string'] = ['']
         # remove id from original dataset
