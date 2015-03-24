@@ -11,6 +11,10 @@
     {% set domain = h.url_for(controller='package', action='read', id='', qualified=true) %}
     {% set domain = domain|replace("http://", "")|replace("https://", "") %}
     {% set attrs = {'data-module': 'usmetadata-slug-preview-slug', 'data-module-prefix': domain, 'data-module-placeholder': '<dataset>'} %}
+    {% set dataset_is_draft = data.get('state', 'draft').startswith('draft') or data.get('state', 'none') ==  'none' %}
+    {% if dataset_is_draft %}
+        <input type="hidden" id="dataset_status_id" name="dataset_status" value="draft"/>
+    {% endif %}
 
     {{ form.prepend('name', id='field-name', label=_('URL (Name)'), prepend=prefix, placeholder=_('e.g. my-dataset'), value=data.name, error=errors.name, attrs=attrs, is_required=true) }}
 {% endblock %}

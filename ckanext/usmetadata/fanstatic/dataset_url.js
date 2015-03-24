@@ -65,7 +65,9 @@ this.ckan.module('usmetadata-slug-preview-slug', function (jQuery, _) {
         slug.val(value).trigger('change');
       });
       //Hiding preview - Issue # 71
-      preview.hide();
+      if (jQuery("#dataset_status_id").val() != 'draft') {
+          preview.hide();
+      }
     }
   };
 });
