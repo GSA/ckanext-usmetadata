@@ -108,7 +108,9 @@ function verify_media_type() {
                 var ctypePrint = '<br />Media Type was detected as <strong>' + ct + '</strong>';
                 var typeMatchPrint = '';
 
-                if (200 != status) {
+                if (typeof(result.ResultSet.Redacted) != "undefined") {
+                    typeMatchPrint = statusPrint = ctypePrint = '';
+                } else if (200 != status) {
                     ctypePrint = '';
                 } else if ('' == currentMediaType) {
                     if (prepopulateMediaType) {
