@@ -155,7 +155,7 @@ expanded_metadata = (
         r'(-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed'
         r'|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu'
         r'|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min'
-        r'|zh-min-nan|zh-xiang)))|(\[\[REDACTED).*?(\]\])$'
+        r'|zh-min-nan|zh-xiang)))$'
     )]},
     {'id': 'data_quality', 'validators': [v.String(max=1000)]},
     {'id': 'publishing_status', 'validators': [v.String(max=1000)]},
@@ -878,7 +878,7 @@ class DatasetValidator(BaseController):
                         and not TEMPORAL_REGEX_3.match(temporal):
                     errors['temporal'] = 'Invalid Temporal Format'
 
-            if language and not REDACTED_REGEX.match(language):
+            if language:  # and not REDACTED_REGEX.match(language):
                 language = language.split(',')
                 for s in language:
                     s = s.strip()
@@ -945,8 +945,9 @@ class ResourceValidator(BaseController):
             errors = {}
             warnings = {}
 
-            if media_type and not REDACTED_REGEX.match(media_type) \
-                    and not IANA_MIME_REGEX.match(media_type):
+            # if media_type and not REDACTED_REGEX.match(media_type) \
+            #         and not IANA_MIME_REGEX.match(media_type):
+            if media_type and not IANA_MIME_REGEX.match(media_type):
                 errors['format'] = 'The value is not valid IANA MIME Media type'
             elif not media_type and resource_type in ['file', 'upload']:
                 if url or resource_type == 'upload':
@@ -955,14 +956,10 @@ class ResourceValidator(BaseController):
             self.check_url(described_by, errors, warnings, 'describedBy', True, True)
             self.check_url(conforms_to, errors, warnings, 'conformsTo', True, True)
 
-            # if url and not URL_REGEX.match(url):
-            # errors['image-url'] = 'Invalid URL format'
-
             if described_by_type and not REDACTED_REGEX.match(described_by_type.strip()) \
                     and not IANA_MIME_REGEX.match(described_by_type.strip()):
                 errors['describedByType'] = 'The value is not valid IANA MIME Media type'
 
-            # url = request.params.get('url', '')
             if errors:
                 return json.dumps({'ResultSet': {'Invalid': errors, 'Warnings': warnings}})
             return json.dumps({'ResultSet': {'Success': errors, 'Warnings': warnings}})
