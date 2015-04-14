@@ -87,7 +87,7 @@ function verify_media_type() {
 
     var resource_type = $('input[name="resource_type"]:checked').val()
     var prepopulateMediaType = (resource_type == "file");
-    if (resource_type == "upload") {
+    if (resource_type == "upload" || resource_type == "api") {
         return
     }
 
@@ -161,6 +161,7 @@ function verify_media_type() {
 function resource_type_change(val) {
     if (!val) return;
     $('.image-upload').show();
+    $('#field-format').parents('.control-group').show();
     switch (val) {
         case 'upload':
             $('.resource-upload').show();
@@ -175,6 +176,7 @@ function resource_type_change(val) {
             if (!$('#field-format-readable').val()) {
                 $('#field-format-readable').val('API');
             }
+            $('#field-format').parents('.control-group').hide();
         default:
             $('.resource-upload').hide();
             $('.resource-upload .btn').first().hide();
