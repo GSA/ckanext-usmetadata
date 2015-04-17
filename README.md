@@ -6,7 +6,7 @@ Installation
 To install this package, activate CKAN virtualenv (e.g. "source /path/to/virtenv/bin/activate"), then run
 
   (virtenv) 'pip install -e git+https://github.com/gsa/usmetadata#egg=ckanext-usmetadata'
-
+  (virtenv) 'python setup.py develop'
 Then activate it by adding "usmetadata" to "ckan.plugins" in your main "ini"-file.
 
 Development
