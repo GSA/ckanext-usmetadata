@@ -257,6 +257,7 @@ access_levels = ['public', 'restricted public', 'non-public']
 publishing_status_options = ['Published', 'Draft']
 
 license_options = {'': '',
+                   'http://www.usa.gov/publicdomain/label/1.0/': 'http://www.usa.gov/publicdomain/label/1.0/',
                    'https://creativecommons.org/licenses/by/4.0': 'https://creativecommons.org/licenses/by/4.0',
                    'https://creativecommons.org/licenses/by-sa/4.0': 'https://creativecommons.org/licenses/by-sa/4.0',
                    'http://creativecommons.org/publicdomain/zero/1.0/': 'http://creativecommons.org/publicdomain/zero/1.0/',
