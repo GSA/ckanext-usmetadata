@@ -32,9 +32,9 @@ for why a “non-public” or “restricted public” data assetis not “public
 </div>
 
 {% set url_format_attrs = {'data-module-title':'URL','data-module': 'autocomplete', 'data-module-source': '/api/2/util/resource/license_url_autocomplete?incomplete=?'} %}
-
-{% call form.input('license_new', id='field-license-new', title="License url of the dataset. For example http://creativecommons.org/publicdomain/zero/1.0/", label=_('License URL'), placeholder=_('e.g. https://creativecommons.org/licenses/by/4.0'),
+<div title="License url of the dataset. For example http://creativecommons.org/publicdomain/zero/1.0/">
+{% call form.input('license_new', id='field-license-new', label=_('License URL'), placeholder=_('e.g. https://creativecommons.org/licenses/by/4.0'),
     value=data.common_core.license_new, error=errors.license_new, classes=['control-full'], attrs=url_format_attrs) %}
 {% endcall %}
-
+</div>
 {% endblock package_required_if_applicable_metadata %}

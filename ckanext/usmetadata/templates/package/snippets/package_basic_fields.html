@@ -36,7 +36,7 @@
 {% endblock package_basic_fields_tags %}
 
 {% block package_basic_fields_org %}
-    <div title="The publishing entity.">
+    <div>
         {# if we have a default group then this wants remembering #}
         {% if data.group_id %}
             <input type="hidden" name="groups__0__id" value="{{ data.group_id }}"/>
@@ -61,7 +61,7 @@
             <div class="control-group">
                 <label for="field-organizations" class="control-label">{{ _('Organization') }}</label>
 
-                <div class="controls">
+                <div class="controls" title="The publishing entity">
                     <select id="field-organizations" name="owner_org" data-module="autocomplete">
                         {% if h.check_config_permission('create_unowned_dataset') %}
                             <option value="" {% if not selected_org and data.id %}
