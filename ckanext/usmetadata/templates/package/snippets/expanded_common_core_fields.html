@@ -13,9 +13,11 @@
 
 {% set format_attrs = {'data-module': 'autocomplete', 'data-module-source': '/api/2/util/resource/media_autocomplete?incomplete=?'} %}
 
+<div title="The machine-readable file format (IANA Media Type or MIME Type) of the distribution’s Described By URL.">
 {% call form.input('data_dictionary_type', id='field-data_dictionary_type', label=_('Described By Type (Data Dictionary Type)'), placeholder=_('e.g. text/csv, application/xml, or application/json'),
     value=data.common_core.data_dictionary_type, error=errors.data_dictionary_type, classes=['control-medium'], attrs=format_attrs) %}
 {% endcall %}
+</div>
 
 <div class="control-group control-medium">
   <label class="control-label" for="field-accrual_periodicity">
@@ -32,7 +34,8 @@
   </div>
 </div>
 
-{{ form.input('conforms_to', label=_('Conforms To (Data Standard)'), id='field-conforms_to', placeholder=_('http://www.agency.gov/widget-data-standard/'), value=data.common_core.conforms_to, error=errors.conforms_to, classes=['control-full'], is_required=false) }}
+
+{{ form.input('conforms_to', label=_('Conforms To (Data Standard)'), id='field-conforms_to', placeholder=_('http://www.agency.gov/widget-data-standard/'), value=data.common_core.conforms_to, error=errors.conforms_to, classes=['control-full'], is_required=false, attrs={'title': 'This is used to identify the schema version using a URI. The URI for version 1.1 of the schema is https://project-open-data.cio.gov/v1.1/schema'}) }}
 
 {{ form.input('homepage_url', label=_('Landing Page (Homepage URL)'), id='field-homepage_url', placeholder=_('http://www.agency.gov/vegetables'), value=data.common_core.homepage_url, error=errors.homepage_url, classes=['control-full'], attrs={'title': 'Alternative landing page used to redirect user to a contextual, Agency-hosted homepage for the Dataset or API when selecting this resource from the Data.gov user interface.his field is not intended for an agency homepage (e.g. www.agency.gov), but rather if a dataset has a human-friendly hub or landing page that users should be directed to for all resources tied to the dataset. This allows agencies to better specify what a visitor receives after selecting one of the agency datasets on Data.gov or in third-party mashups.'} )}}
 
