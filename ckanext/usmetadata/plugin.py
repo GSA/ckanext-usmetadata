@@ -11,6 +11,7 @@ import ckan.logic as logic
 import ckan.lib.base as base
 import ckan.lib.navl.dictization_functions as dict_fns
 import ckan.model as model
+import ckan.lib.dictization.model_dictize as model_dictize
 import ckan.plugins as p
 import requests
 from ckan.lib.base import BaseController
@@ -840,8 +841,48 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 class DatasetValidator(BaseController):
     """Controller to validate resource"""
 
+    @staticmethod
+    def check_if_unique(unique_id, owner_org, pkg_name):
+        packages = DatasetValidator.get_packages(owner_org)
+        for package in packages:
+            for extra in package['extras']:
+                if extra['key'] == 'unique_id'and extra['value'] == unique_id and pkg_name != package['id']:
+                    return package['name']
+        return False
+
+    @staticmethod
+    def get_packages(owner_org):
+        # Build the data.json file.
+        packages = DatasetValidator.get_all_group_packages(group_id=owner_org)
+        # get packages for sub-agencies.
+        sub_agency = model.Group.get(owner_org)
+        if 'sub-agencies' in sub_agency.extras.col.target \
+                and sub_agency.extras.col.target['sub-agencies'].state == 'active':
+            sub_agencies = sub_agency.extras.col.target['sub-agencies'].value
+            sub_agencies_list = sub_agencies.split(",")
+            for sub in sub_agencies_list:
+                sub_packages = DatasetValidator.get_all_group_packages(group_id=sub)
+                for sub_package in sub_packages:
+                    packages.append(sub_package)
+
+        return packages
+
+    @staticmethod
+    def get_all_group_packages(group_id):
+        """
+        Gets all of the group packages, public or private, returning them as a list of CKAN's dictized packages.
+        """
+        result = []
+        for pkg_rev in model.Group.get(group_id).packages(with_private=True, context={'user_is_admin': True}):
+            result.append(model_dictize.package_dictize(pkg_rev, {'model': model}))
+
+        return result
+
     def validate_dataset(self):
         try:
+            pkg_name = request.params.get('pkg_name', False)
+            owner_org = request.params.get('owner_org', False)
+            unique_id = request.params.get('unique_id', False)
             rights = request.params.get('rights', False)
             license_url = request.params.get('license_url', False)
             temporal = request.params.get('temporal', False)
@@ -857,6 +898,11 @@ class DatasetValidator(BaseController):
 
             errors = {}
             warnings = {}
+
+            matching_package = self.check_if_unique(unique_id, owner_org, pkg_name)
+            if unique_id and matching_package:
+                errors['unique_id'] = 'Already being used by ' + request.application_url + '/dataset/' \
+                                      + matching_package
 
             if rights and len(rights) > 255:
                 errors['access-level-comment'] = 'The length of the string exceeds limit of 255 chars'
