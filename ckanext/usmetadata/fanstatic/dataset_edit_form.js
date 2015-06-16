@@ -21,7 +21,8 @@ $(document).ready(function () {
 
         datasetFormValid = true;
 
-        $('#field-unique_id')
+        $('#field-organizations')
+            .add('#field-unique_id')
             .add('#field-access-level-comment')
             .add('#field-license-new')
             .add('#field-temporal')
