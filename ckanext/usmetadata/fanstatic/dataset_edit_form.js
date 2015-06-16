@@ -21,7 +21,9 @@ $(document).ready(function () {
 
         datasetFormValid = true;
 
-        $('#field-access-level-comment')
+        $('#field-organizations')
+            .add('#field-unique_id')
+            .add('#field-access-level-comment')
             .add('#field-license-new')
             .add('#field-temporal')
             .add('#field-data_dictionary')
@@ -47,6 +49,9 @@ function validate_dataset(){
     $.getJSON(
         '/api/2/util/resource/validate_dataset',
         {
+            'pkg_name': $('[name="pkg_name"]').val(),
+            'owner_org': $('#field-organizations').val(),
+            'unique_id': $('#field-unique_id').val(),
             'rights': $('#field-access-level-comment').val(),
             'license_url': $('#field-license-new').val(),
             'temporal': $('#field-temporal').val(),
