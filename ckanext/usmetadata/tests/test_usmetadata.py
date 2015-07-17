@@ -14,6 +14,7 @@ class TestUsmetadataPlugin(object):
     '''Tests for the usmetadata.plugin module.
 
     '''
+
     @classmethod
     def setup_class(cls):
         '''Nose runs this method once to setup our test class.'''
@@ -81,11 +82,12 @@ class TestUsmetadataPlugin(object):
 
         return (noncurator, curator, curators_group)
 
+    #test is dataset is getting created successfully
     def test_package_creation(self):
         package_dict = tests.call_action_api(self.app, 'package_create', apikey=self.sysadmin.apikey,
-                                             name = 'my_package',
-                                             title = 'my package',
-                                             notes = 'my package notes',
-                                             tag_string = 'my_package',
+                                             name='my_package',
+                                             title='my package',
+                                             notes='my package notes',
+                                             tag_string='my_package',
                                              )
         assert package_dict['name'] == 'my_package'
