@@ -2,7 +2,6 @@ language: python
 python:
     - "2.7"
 env:
-    - CKANVERSION=master
     - CKANVERSION=inventory
 install:
     - bash bin/travis-build.bash
