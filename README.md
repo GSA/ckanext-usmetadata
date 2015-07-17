@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/GSA/USMetadata.svg?branch=develop)](https://travis-ci.org/GSA/USMetadata)
+
 This CKAN Extension expands CKAN to offer a number of custom fields related to the [US Common Core Schema](http://project-open-data.github.io/schema/)
 
 Installation
