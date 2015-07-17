@@ -25,7 +25,7 @@ class TestUsmetadataPlugin(object):
 
         # Test code should use CKAN's plugins.load() function to load plugins
         # to be tested.
-        plugins.load('usmetadata')
+        #plugins.load('usmetadata')
 
     def setup(self):
         '''Nose runs this method before each test method in our test class.'''
