@@ -91,3 +91,20 @@ class TestUsmetadataPlugin(object):
                                              tag_string='my_package',
                                              )
         assert package_dict['name'] == 'my_package'
+
+    #test package update
+    def test_package_update(self):
+        package_dict = tests.call_action_api(self.app, 'package_create', apikey=self.sysadmin.apikey,
+                                             name='my_package',
+                                             title='my package',
+                                             notes='my package notes',
+                                             tag_string='my_package',
+                                             )
+        assert package_dict['name'] == 'my_package'
+        package_dict_update = tests.call_action_api(self.app, 'package_update', apikey=self.sysadmin.apikey,
+                                             name='my_package',
+                                             title='my package update',
+                                             notes='my package notes update',
+                                             tag_string='my_package',
+                                             )
+        assert package_dict_update['title'] == 'my package update'
