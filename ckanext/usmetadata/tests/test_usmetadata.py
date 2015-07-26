@@ -54,34 +54,6 @@ class TestUsmetadataPlugin(object):
         # tests that run after ours.
         plugins.unload('usmetadata')
 
-    def _make_curators_group(self):
-        '''This is a helper method for test methods to call when they want
-        the 'curators' group to be created.
-
-        '''
-        # Create a user who will *not* be a member of the curators group.
-        noncurator = tests.call_action_api(self.app, 'user_create',
-                                           apikey=self.sysadmin.apikey,
-                                           name='noncurator',
-                                           email='email',
-                                           password='password')
-
-        # Create a user who will be a member of the curators group.
-        curator = tests.call_action_api(self.app, 'user_create',
-                                        apikey=self.sysadmin.apikey,
-                                        name='curator',
-                                        email='email',
-                                        password='password')
-
-        # Create the curators group, with the 'curator' user as a member.
-        users = [{'name': curator['name'], 'capacity': 'member'}]
-        curators_group = tests.call_action_api(self.app, 'group_create',
-                                               apikey=self.sysadmin.apikey,
-                                               name='curators',
-                                               users=users)
-
-        return (noncurator, curator, curators_group)
-
     #test is dataset is getting created successfully
     def test_package_creation(self):
         package_dict = tests.call_action_api(self.app, 'package_create', apikey=self.sysadmin.apikey,
