@@ -61,6 +61,15 @@ class TestUsmetadataPlugin(object):
                                              title='my package',
                                              notes='my package notes',
                                              tag_string='my_package',
+                                             modified='2014-04-04',
+                                             publisher='GSA',
+                                             contact_name='john doe',
+                                             contact_email='john.doe@gsa.com',
+                                             unique_id='001',
+                                             public_access_level='public',
+                                             bureau_code='001:40',
+                                             program_code='015:010',
+                                             access_level_comment='Access level commemnt'
                                              )
         assert package_dict['name'] == 'my_package'
 
@@ -71,6 +80,15 @@ class TestUsmetadataPlugin(object):
                                              title='my package',
                                              notes='my package notes',
                                              tag_string='my_package',
+                                             modified='2014-04-04',
+                                             publisher='GSA',
+                                             contact_name='john doe',
+                                             contact_email='john.doe@gsa.com',
+                                             unique_id='001',
+                                             public_access_level='public',
+                                             bureau_code='001:40',
+                                             program_code='015:010',
+                                             access_level_comment='Access level commemnt'
                                              )
         assert package_dict['name'] == 'my_package'
         package_dict_update = tests.call_action_api(self.app, 'package_update', apikey=self.sysadmin.apikey,
@@ -78,5 +96,24 @@ class TestUsmetadataPlugin(object):
                                              title='my package update',
                                              notes='my package notes update',
                                              tag_string='my_package',
+                                             modified='2014-04-05',
+                                             publisher='GSA',
+                                             contact_name='john doe jr',
+                                             contact_email='john.doe1@gsa.com',
+                                             unique_id='002',
+                                             public_access_level='public',
+                                             bureau_code='001:41',
+                                             program_code='015:011',
+                                             access_level_comment='Access level commemnt update'
                                              )
         assert package_dict_update['title'] == 'my package update'
+
+        assert package_dict_update['extras'][0]['value'] == 'Access level commemnt update'
+        assert package_dict_update['extras'][1]['value'] == '001:41'
+        assert package_dict_update['extras'][2]['value'] == 'john.doe1@gsa.com'
+        assert package_dict_update['extras'][3]['value'] == 'john doe jr'
+        assert package_dict_update['extras'][4]['value'] == '2014-04-05'
+        assert package_dict_update['extras'][5]['value'] == '015:011'
+        assert package_dict_update['extras'][6]['value'] == 'public'
+        assert package_dict_update['extras'][7]['value'] == 'GSA'
+        assert package_dict_update['extras'][8]['value'] == '002'
