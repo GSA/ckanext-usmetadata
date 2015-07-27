@@ -54,34 +54,6 @@ class TestUsmetadataPlugin(object):
         # tests that run after ours.
         plugins.unload('usmetadata')
 
-    def _make_curators_group(self):
-        '''This is a helper method for test methods to call when they want
-        the 'curators' group to be created.
-
-        '''
-        # Create a user who will *not* be a member of the curators group.
-        noncurator = tests.call_action_api(self.app, 'user_create',
-                                           apikey=self.sysadmin.apikey,
-                                           name='noncurator',
-                                           email='email',
-                                           password='password')
-
-        # Create a user who will be a member of the curators group.
-        curator = tests.call_action_api(self.app, 'user_create',
-                                        apikey=self.sysadmin.apikey,
-                                        name='curator',
-                                        email='email',
-                                        password='password')
-
-        # Create the curators group, with the 'curator' user as a member.
-        users = [{'name': curator['name'], 'capacity': 'member'}]
-        curators_group = tests.call_action_api(self.app, 'group_create',
-                                               apikey=self.sysadmin.apikey,
-                                               name='curators',
-                                               users=users)
-
-        return (noncurator, curator, curators_group)
-
     #test is dataset is getting created successfully
     def test_package_creation(self):
         package_dict = tests.call_action_api(self.app, 'package_create', apikey=self.sysadmin.apikey,
@@ -89,8 +61,55 @@ class TestUsmetadataPlugin(object):
                                              title='my package',
                                              notes='my package notes',
                                              tag_string='my_package',
+                                             modified='2014-04-04',
+                                             publisher='GSA',
+                                             contact_name='john doe',
+                                             contact_email='john.doe@gsa.com',
+                                             unique_id='001',
+                                             public_access_level='public',
+                                             bureau_code='001:40',
+                                             program_code='015:010',
+                                             access_level_comment='Access level commemnt'
                                              )
         assert package_dict['name'] == 'my_package'
+
+
+    # test resource creation
+    def test_resource_create(self):
+        package_dict = tests.call_action_api(self.app, 'package_create', apikey=self.sysadmin.apikey,
+                                             name='my_package',
+                                             title='my package',
+                                             notes='my package notes',
+                                             tag_string='my_package',
+                                             modified='2014-04-04',
+                                             publisher='GSA',
+                                             contact_name='john doe',
+                                             contact_email='john.doe@gsa.com',
+                                             unique_id='001',
+                                             public_access_level='public',
+                                             bureau_code='001:40',
+                                             program_code='015:010',
+                                             access_level_comment='Access level commemnt',
+                                             resources=[
+                                                 {
+                                                    'name':'my_resource',
+                                                    'url':'www.google.com',
+                                                    'description':'description'},
+                                                 { 'name':'my_resource_1',
+                                                    'url':'www.google.com',
+                                                    'description':'description_2'},
+                                                ]
+                                             )
+        assert package_dict['name'] == 'my_package'
+        assert package_dict['resources'][0]['name'] == 'my_resource'
+
+        resource_dict = tests.call_action_api(self.app, 'resource_create', apikey=self.sysadmin.apikey,
+                                              package_id = package_dict['id'],
+                                              name='my_resource_2',
+                                              url='www.google.com',
+                                              description='description_3'
+                                             )
+        assert resource_dict['name'] == 'my_resource_2'
 
     #test package update
     def test_package_update(self):
@@ -99,6 +118,15 @@ class TestUsmetadataPlugin(object):
                                              title='my package',
                                              notes='my package notes',
                                              tag_string='my_package',
+                                             modified='2014-04-04',
+                                             publisher='GSA',
+                                             contact_name='john doe',
+                                             contact_email='john.doe@gsa.com',
+                                             unique_id='001',
+                                             public_access_level='public',
+                                             bureau_code='001:40',
+                                             program_code='015:010',
+                                             access_level_comment='Access level commemnt'
                                              )
         assert package_dict['name'] == 'my_package'
         package_dict_update = tests.call_action_api(self.app, 'package_update', apikey=self.sysadmin.apikey,
@@ -106,5 +134,24 @@ class TestUsmetadataPlugin(object):
                                              title='my package update',
                                              notes='my package notes update',
                                              tag_string='my_package',
+                                             modified='2014-04-05',
+                                             publisher='GSA',
+                                             contact_name='john doe jr',
+                                             contact_email='john.doe1@gsa.com',
+                                             unique_id='002',
+                                             public_access_level='public',
+                                             bureau_code='001:41',
+                                             program_code='015:011',
+                                             access_level_comment='Access level commemnt update'
                                              )
         assert package_dict_update['title'] == 'my package update'
+
+        assert package_dict_update['extras'][0]['value'] == 'Access level commemnt update'
+        assert package_dict_update['extras'][1]['value'] == '001:41'
+        assert package_dict_update['extras'][2]['value'] == 'john.doe1@gsa.com'
+        assert package_dict_update['extras'][3]['value'] == 'john doe jr'
+        assert package_dict_update['extras'][4]['value'] == '2014-04-05'
+        assert package_dict_update['extras'][5]['value'] == '015:011'
+        assert package_dict_update['extras'][6]['value'] == 'public'
+        assert package_dict_update['extras'][7]['value'] == 'GSA'
+        assert package_dict_update['extras'][8]['value'] == '002'
