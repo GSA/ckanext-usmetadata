@@ -73,6 +73,44 @@ class TestUsmetadataPlugin(object):
                                              )
         assert package_dict['name'] == 'my_package'
 
+
+    # test resource creation
+    def test_resource_create(self):
+        package_dict = tests.call_action_api(self.app, 'package_create', apikey=self.sysadmin.apikey,
+                                             name='my_package',
+                                             title='my package',
+                                             notes='my package notes',
+                                             tag_string='my_package',
+                                             modified='2014-04-04',
+                                             publisher='GSA',
+                                             contact_name='john doe',
+                                             contact_email='john.doe@gsa.com',
+                                             unique_id='001',
+                                             public_access_level='public',
+                                             bureau_code='001:40',
+                                             program_code='015:010',
+                                             access_level_comment='Access level commemnt',
+                                             resources=[
+                                                 {
+                                                    'name':'my_resource',
+                                                    'url':'www.google.com',
+                                                    'description':'description'},
+                                                 { 'name':'my_resource_1',
+                                                    'url':'www.google.com',
+                                                    'description':'description_2'},
+                                                ]
+                                             )
+        assert package_dict['name'] == 'my_package'
+        assert package_dict['resources'][0]['name'] == 'my_resource'
+
+        resource_dict = tests.call_action_api(self.app, 'resource_create', apikey=self.sysadmin.apikey,
+                                              package_id = package_dict['id'],
+                                              name='my_resource_2',
+                                              url='www.google.com',
+                                              description='description_3'
+                                             )
+        assert resource_dict['name'] == 'my_resource_2'
+
     #test package update
     def test_package_update(self):
         package_dict = tests.call_action_api(self.app, 'package_create', apikey=self.sysadmin.apikey,
