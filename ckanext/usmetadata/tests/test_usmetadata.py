@@ -69,7 +69,8 @@ class TestUsmetadataPlugin(object):
                                              public_access_level='public',
                                              bureau_code='001:40',
                                              program_code='015:010',
-                                             access_level_comment='Access level commemnt'
+                                             access_level_comment='Access level commemnt',
+                                             parent_dataset = 'true'
                                              )
         assert package_dict['name'] == 'my_package'
 

@@ -44,11 +44,3 @@ def get_parent_organizations(c):
         items[result._row[0]] = result._row[1]
 
     return items
-
-def get_table(name):
-    if name not in cached_tables:
-        meta = MetaData()
-        meta.reflect(bind=model.meta.engine)
-        table = meta.tables[name]
-        cached_tables[name] = table
-    return cached_tables[name]
