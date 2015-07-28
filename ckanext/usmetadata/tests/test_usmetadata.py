@@ -156,3 +156,47 @@ class TestUsmetadataPlugin(object):
         assert package_dict_update['extras'][6]['value'] == 'public'
         assert package_dict_update['extras'][7]['value'] == 'GSA'
         assert package_dict_update['extras'][8]['value'] == '002'
+
+    #test parent dataset
+    def test_package_parent_dataset(self):
+        org_dict = tests.call_action_api(self.app, 'organization_create', apikey=self.sysadmin.apikey,
+                                             name='my_org')
+
+        package_dict = tests.call_action_api(self.app, 'package_create', apikey=self.sysadmin.apikey,
+                                             name='my_package',
+                                             title='my package',
+                                             notes='my package notes',
+                                             tag_string='my_package',
+                                             modified='2014-04-04',
+                                             publisher='GSA',
+                                             contact_name='john doe',
+                                             contact_email='john.doe@gsa.com',
+                                             unique_id='001',
+                                             public_access_level='public',
+                                             bureau_code='001:40',
+                                             program_code='015:010',
+                                             access_level_comment='Access level commemnt',
+                                             parent_dataset = 'true',
+                                             ower_org = org_dict['id']
+                                             )
+        assert package_dict['name'] == 'my_package'
+
+        package_dict_2 = tests.call_action_api(self.app, 'package_create', apikey=self.sysadmin.apikey,
+                                             name='my_package_1',
+                                             title='my package 1',
+                                             notes='my package notes 1',
+                                             tag_string='my_package',
+                                             modified='2014-04-04',
+                                             publisher='GSA',
+                                             contact_name='john doe',
+                                             contact_email='john.doe@gsa.com',
+                                             unique_id='001',
+                                             public_access_level='public',
+                                             bureau_code='001:40',
+                                             program_code='015:010',
+                                             access_level_comment='Access level commemnt',
+                                             parent_dataset = 'false',
+                                             ower_org = org_dict['id'],
+                                             parent_dataset_id =  package_dict['id']
+                                             )
+        assert package_dict_2['name'] == 'my_package_1'
