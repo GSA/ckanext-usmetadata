@@ -273,7 +273,6 @@ is_parent_options = {'true': 'Yes', 'false': 'No'}
 # Dictionary of all media types
 media_types = json.loads(open(os.path.join(os.path.dirname(__file__), 'media_types.json'), 'r').read())
 
-
 # all required_metadata should be required
 def get_req_metadata_for_create():
     log.debug('get_req_metadata_for_create')
@@ -283,7 +282,6 @@ def get_req_metadata_for_create():
         meta['validators'].append(validator)
     return new_req_meta
 
-
 # used to bypass validation on create
 def get_req_metadata_for_update():
     log.debug('get_req_metadata_for_update')
@@ -292,7 +290,6 @@ def get_req_metadata_for_update():
     for meta in new_req_meta:
         meta['validators'].append(validator)
     return new_req_meta
-
 
 def get_req_metadata_for_show_update():
     new_req_meta = copy.copy(required_metadata)
@@ -308,7 +305,6 @@ def get_req_metadata_for_api_create():
     for meta in new_req_meta:
         meta['validators'].append(validator)
     return new_req_meta
-
 
 for meta in required_if_applicable_metadata:
     meta['validators'].append(p.toolkit.get_validator('ignore_empty'))

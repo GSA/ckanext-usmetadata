@@ -1,14 +1,14 @@
 '''Tests for the ckanext.example_iauthfunctions extension.
 
 '''
+from ckanext.usmetadata import db_utils
 import paste.fixture
 import pylons.test
 
 import ckan.model as model
 import ckan.tests as tests
 import ckan.plugins as plugins
-import ckan.plugins.toolkit as toolkit
-
+from ckan.common import c
 
 class TestUsmetadataPlugin(object):
     '''Tests for the usmetadata.plugin module.
@@ -181,22 +181,5 @@ class TestUsmetadataPlugin(object):
                                              )
         assert package_dict['name'] == 'my_package'
 
-        package_dict_2 = tests.call_action_api(self.app, 'package_create', apikey=self.sysadmin.apikey,
-                                             name='my_package_1',
-                                             title='my package 1',
-                                             notes='my package notes 1',
-                                             tag_string='my_package',
-                                             modified='2014-04-04',
-                                             publisher='GSA',
-                                             contact_name='john doe',
-                                             contact_email='john.doe@gsa.com',
-                                             unique_id='001',
-                                             public_access_level='public',
-                                             bureau_code='001:40',
-                                             program_code='015:010',
-                                             access_level_comment='Access level commemnt',
-                                             parent_dataset = 'false',
-                                             ower_org = org_dict['id'],
-                                             parent_dataset_id =  package_dict['id']
-                                             )
-        assert package_dict_2['name'] == 'my_package_1'
+        title = db_utils.get_organization_title(package_dict['id'])
+        assert title == 'my package'
