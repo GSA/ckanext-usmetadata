@@ -38,6 +38,26 @@ class TestUsmetadataPlugin(object):
         model.Session.commit()
         model.Session.remove()
 
+        self.org_dict = tests.call_action_api(self.app, 'organization_create', apikey=self.sysadmin.apikey, name='my_org_000')
+
+        self.package_dict = tests.call_action_api(self.app, 'package_create', apikey=self.sysadmin.apikey,
+                                             name='my_package_000',
+                                             title='my package',
+                                             notes='my package notes',
+                                             tag_string='my_package',
+                                             modified='2014-04-04',
+                                             publisher='GSA',
+                                             contact_name='john doe',
+                                             contact_email='john.doe@gsa.com',
+                                             unique_id='000',
+                                             public_access_level='public',
+                                             bureau_code='001:40',
+                                             program_code='015:010',
+                                             access_level_comment='Access level commemnt',
+                                             parent_dataset = 'true',
+                                             ower_org = self.org_dict['id']
+                                             )
+
     def teardown(self):
         '''Nose runs this method after each test method in our test class.'''
 
@@ -203,3 +223,25 @@ class TestUsmetadataPlugin(object):
         config = Config(userobj=Userobj(sysadmin=False))
         items = db_utils.get_parent_organizations(config)
         assert org_dict['id'] not in items
+
+    #TODO:Add assertions for all field validations
+    def test_validate_dataset_action(self):
+        url = '/api/2/util/resource/validate_dataset?pkg_name=&owner_org='+ self.org_dict['id'] +'&unique_id=000&rights=&license_url=&temporal=&described_by=&described_by_type=&conforms_to=&landing_page=&language=&investment_uii=&references=&issued=&system_of_records='
+        res = self.app.get(url)
+        assert 'Success' in res
+
+    def test_validate_resource_action(self):
+        res = self.app.get('/api/2/util/resource/validate_resource?url=badurl&resource_type=file&format=&describedBy=&describedByType=&conformsTo=')
+        assert 'Invalid' in res
+
+    def test_get_content_type_action(self):
+        res = self.app.get('/api/2/util/resource/content_type?url=badulr')
+        assert 'InvalidFormat' in res
+
+    def test_get_media_types_action(self):
+        res = self.app.get('/api/2/util/resource/media_autocomplete')
+        assert 'application/pdf' in res
+
+    def test_license_url_autocomplete_action(self):
+        res = self.app.get('/api/2/util/resource/license_url_autocomplete?incomplete=d')
+        assert 'creativecommons' in res
