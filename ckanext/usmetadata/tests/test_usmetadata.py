@@ -3,6 +3,7 @@
 '''
 from ckanext.usmetadata import db_utils
 import paste.fixture
+from paste.registry import StackedObjectProxy
 import pylons.test
 
 import ckan.model as model
@@ -183,3 +184,22 @@ class TestUsmetadataPlugin(object):
 
         title = db_utils.get_organization_title(package_dict['id'])
         assert title == 'my package'
+
+        class Config:
+            def __init__(self, **kwds):
+                self.__dict__.update(kwds)
+
+        class Userobj:
+            def __init__(self, **kwds):
+                self.__dict__.update(kwds)
+
+            def get_group_ids(self):
+                return [org_dict['id']]
+
+        config = Config(userobj=Userobj(sysadmin=True))
+        items = db_utils.get_parent_organizations(config)
+        assert org_dict['id'] not in items
+
+        config = Config(userobj=Userobj(sysadmin=False))
+        items = db_utils.get_parent_organizations(config)
+        assert org_dict['id'] not in items
