@@ -1,6 +1,3 @@
-/**
- * Created by ykhadilkar
- */
 $(document).ready(function () {
     $("#field-is_parent").change(function () {
         $val = $("#field-is_parent").val();
@@ -35,17 +32,29 @@ $(document).ready(function () {
             .add('#field-related_documents')
             .add('#field-release_date')
             .add('#field-system_of_records')
-            .change(validate_dataset).change();
+            .change(validate_dataset);
+
+        validate_dataset();
 
         $('form.dataset-form').submit(function (event) {
             if (!datasetFormValid) {
                 event.preventDefault();
             }
         });
+
+
+        $('#field-spatial').parents('div.control-group').addClass('exempt-allowed');
+        $('#field-temporal').parents('div.control-group').addClass('exempt-allowed');
+        $('#field-title').parents('div.control-group').addClass('exempt-allowed');
+        $('#field-notes').parents('div.control-group').addClass('exempt-allowed');
+        $('#field-modified').parents('div.control-group').addClass('exempt-allowed');
+        $('#field-tags').parents('div.control-group').addClass('exempt-allowed');
+
+        show_redacted_icons();
     }
 });
 
-function validate_dataset(){
+function validate_dataset() {
     $.getJSON(
         '/api/2/util/resource/validate_dataset',
         {
@@ -92,5 +101,32 @@ function validate_dataset(){
                 datasetFormValid = true;
             }
         }
-    )
+    );
+}
+
+function show_redacted_icons() {
+    var img = $('<img src="/redacted_icon.png" class="redacted-icon" alt="Mark as Redacted" title="Mark as Redacted">');
+    $('.exempt-allowed .controls').before(img);
+
+    $('.redacted-icon').click(redacted_icon_callback);
+}
+
+function redacted_icon_callback() {
+    var controlsDiv = $(this).parent().children('.controls');
+    if (controlsDiv.children('.exemption_reason').length){
+        controlsDiv.children('.exemption_reason').toggle();
+        return;
+    }
+    var id = controlsDiv.children(':first').attr('id').replace('field-','');
+    var s = $('<select name="redacted_'+id+'" class="exemption_reason" />');
+    $("<option />", {value: '', text: '== Select Exemption Reason =='}).appendTo(s);
+    $("<option />", {value: 'B3',
+        text: 'B3 - Specifically exempted from disclosure by statute provided …'}).appendTo(s);
+    $("<option />", {value: 'B4',
+        text: 'B4 - Trade secrets and commercial or financial information obtained from …'}).appendTo(s);
+    $("<option />", {value: 'B5',
+        text: 'B5 - Inter-agency or intra-agency memorandums or letters which …'}).appendTo(s);
+    $("<option />", {value: 'B6',
+        text: 'B6 - Personnel and medical files and similar files the disclosure of which …'}).appendTo(s);
+    controlsDiv.append(s);
 }

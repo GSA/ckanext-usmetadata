@@ -36,3 +36,19 @@
 .warning {
     font-style: italic;
 }
+
+.redacted-icon {
+    width: 20px;
+    margin: 4px;
+    float: left;
+}
+
+.dataset-form.form-horizontal .controls {
+    margin-left: 150px;
+}
+
+.exemption_reason {
+    margin: 3px;
+    background: black;
+    color: white;
+}
