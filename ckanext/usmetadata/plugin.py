@@ -20,7 +20,6 @@ from ckan.common import _, json, request, c, g, response
 
 import db_utils
 
-
 render = base.render
 abort = base.abort
 redirect = base.redirect
@@ -179,6 +178,38 @@ expanded_metadata = (
     {'id': 'publisher_5', 'validators': [v.String(max=300)]}
 )
 
+exempt_allowed = [
+    'title',
+    'notes',
+    'tag_string',
+    'modified',
+    'bureau_code',
+    'program_code',
+    'contact_name',
+    'contact_email',
+    'data_quality',
+    'license_new',
+    'spatial',
+    'temporal',
+    'category',
+    'data_dictionary',
+    'data_dictionary_type',
+    'accrual_periodicity',
+    'conforms_to',
+    'homepage_url',
+    'language',
+    'primary_it_investment_uii',
+    'related_documents',
+    'release_date',
+    'system_of_records',
+    'is_parent',
+    'parent_dataset',
+    'publishing_status'
+]
+
+for field in exempt_allowed:
+    expanded_metadata += ({'id': 'redacted_' + field, 'validators': [v.String(max=300)]},)
+
 # excluded download_url, endpoint, format and license as they may be discoverable
 required_if_applicable_metadata = (
     {'id': 'data_dictionary', 'validators': [v.String(max=2100)]},
@@ -273,6 +304,7 @@ is_parent_options = {'true': 'Yes', 'false': 'No'}
 # Dictionary of all media types
 media_types = json.loads(open(os.path.join(os.path.dirname(__file__), 'media_types.json'), 'r').read())
 
+
 # all required_metadata should be required
 def get_req_metadata_for_create():
     log.debug('get_req_metadata_for_create')
@@ -282,6 +314,7 @@ def get_req_metadata_for_create():
         meta['validators'].append(validator)
     return new_req_meta
 
+
 # used to bypass validation on create
 def get_req_metadata_for_update():
     log.debug('get_req_metadata_for_update')
@@ -290,6 +323,7 @@ def get_req_metadata_for_update():
     for meta in new_req_meta:
         meta['validators'].append(validator)
     return new_req_meta
+
 
 def get_req_metadata_for_show_update():
     new_req_meta = copy.copy(required_metadata)
@@ -305,6 +339,7 @@ def get_req_metadata_for_api_create():
     for meta in new_req_meta:
         meta['validators'].append(validator)
     return new_req_meta
+
 
 for meta in required_if_applicable_metadata:
     meta['validators'].append(p.toolkit.get_validator('ignore_empty'))
@@ -327,7 +362,7 @@ schema_updates_for_show = [{meta['id']: meta['validators'] + [p.toolkit.get_conv
                            (get_req_metadata_for_show_update() + required_if_applicable_metadata + expanded_metadata)]
 schema_api_for_create = [{meta['id']: meta['validators'] + [p.toolkit.get_converter('convert_to_extras')]} for meta
                          in (
-        get_req_metadata_for_api_create() + required_if_applicable_metadata_by_pass_validation + expanded_metadata_by_pass_validation)]
+                             get_req_metadata_for_api_create() + required_if_applicable_metadata_by_pass_validation + expanded_metadata_by_pass_validation)]
 
 
 class UsmetadataController(BaseController):
@@ -690,6 +725,14 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
                 parent_dataset_options[parent_dataset_id] = parent_dataset_title
 
         new_dict['parent_dataset_options'] = parent_dataset_options
+
+        redacted = {}
+        for exempt_field in exempt_allowed:
+            redacted_key = 'redacted_' + exempt_field
+            if redacted_key in new_dict['common_core']:
+                redacted[redacted_key] = new_dict['common_core'][redacted_key]
+        new_dict['redacted_json'] = json.dumps(redacted)
+
         return new_dict
 
         # See ckan.plugins.interfaces.IDatasetForm
@@ -839,7 +882,7 @@ class DatasetValidator(BaseController):
         packages = DatasetValidator.get_packages(owner_org)
         for package in packages:
             for extra in package['extras']:
-                if extra['key'] == 'unique_id'and extra['value'] == unique_id and pkg_name != package['id']:
+                if extra['key'] == 'unique_id' and extra['value'] == unique_id and pkg_name != package['id']:
                     return package['name']
         return False
 

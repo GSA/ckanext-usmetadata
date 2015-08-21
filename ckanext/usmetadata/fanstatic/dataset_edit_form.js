@@ -50,6 +50,7 @@ $(document).ready(function () {
         $('#field-modified').parents('div.control-group').addClass('exempt-allowed');
         $('#field-tags').parents('div.control-group').addClass('exempt-allowed');
 
+        preload_redacted_inputs();
         show_redacted_icons();
     }
 });
@@ -104,6 +105,17 @@ function validate_dataset() {
     );
 }
 
+function preload_redacted_inputs() {
+    if (!$('#redacted_json').length) {
+        return;
+    }
+    var redacted = $.parseJSON($('#redacted_json').val());
+    for (var field in redacted) {
+        render_redacted_input(field.replace('redacted_', ''), redacted[field]);
+        show_redacted_input(field.replace('redacted_', ''));
+    }
+}
+
 function show_redacted_icons() {
     var img = $('<img src="/redacted_icon.png" class="redacted-icon" alt="Mark as Redacted" title="Mark as Redacted">');
     $('.exempt-allowed .controls').before(img);
@@ -111,22 +123,75 @@ function show_redacted_icons() {
     $('.redacted-icon').click(redacted_icon_callback);
 }
 
+var exempt_reasons = [
+    {
+        'value': 'B3',
+        'short': 'B3 - Specifically exempted from disclosure by statute provided …',
+        'full': "Specifically exempted from disclosure by statute (other than FOIA), provided that such " +
+        "statute (A) requires that the matters be withheld from the public in such a manner as to leave no" +
+        " discretion on the issue, or (B) establishes particular criteria for withholding or refers to" +
+        " particular types of matters to be withheld."
+    },
+    {
+        'value': 'B4',
+        'short': 'B4 - Trade secrets and commercial or financial information obtained from …',
+        'full': "Trade secrets and commercial or financial information obtained from a person" +
+        " and privileged or confidential."
+    },
+    {
+        'value': 'B5',
+        'short': 'B5 - Inter-agency or intra-agency memorandums or letters which …',
+        'full': "Inter-agency or intra-agency memorandums or letters which would not be available by law " +
+        "to a party other than an agency in litigation with the agency."
+    },
+    {
+        'value': 'B6',
+        'short': 'B6 - Personnel and medical files and similar files the disclosure of which …',
+        'full': "Personnel and medical files and similar files the disclosure of which would constitute" +
+        " a clearly unwarranted invasion of personal privacy."
+    },
+
+]
+
+function render_redacted_input(key, val) {
+    val = typeof val !== 'undefined' ? val : false;
+
+    var controlsDiv = $('input[name="' + key + '"]').parents('.controls');
+    if (!controlsDiv.length) {
+        return;
+    }
+
+    $('input[name="' + key + '"]').css('background', '#ddd');
+
+    var s = $('<select name="redacted_' + key + '" class="exemption_reason" />');
+
+    $("<option />", {value: '', text: '== Select Exemption Reason =='}).appendTo(s);
+
+    for (var index in exempt_reasons) {
+        reason = exempt_reasons[index];
+        var options = {
+            value: reason.value, alt: reason.full, title: reason.full,
+            text: reason.short
+        };
+        if (reason.value == val) {
+            options['selected'] = 'selected';
+        }
+        $("<option />", options).appendTo(s);
+    }
+    controlsDiv.append(s);
+}
+
+function show_redacted_input(key) {
+    $('input[name="redacted_' + key + '"]').show();
+}
+
 function redacted_icon_callback() {
     var controlsDiv = $(this).parent().children('.controls');
-    if (controlsDiv.children('.exemption_reason').length){
+    if (controlsDiv.children('.exemption_reason').length) {
         controlsDiv.children('.exemption_reason').toggle();
         return;
     }
-    var id = controlsDiv.children(':first').attr('id').replace('field-','');
-    var s = $('<select name="redacted_'+id+'" class="exemption_reason" />');
-    $("<option />", {value: '', text: '== Select Exemption Reason =='}).appendTo(s);
-    $("<option />", {value: 'B3',
-        text: 'B3 - Specifically exempted from disclosure by statute provided …'}).appendTo(s);
-    $("<option />", {value: 'B4',
-        text: 'B4 - Trade secrets and commercial or financial information obtained from …'}).appendTo(s);
-    $("<option />", {value: 'B5',
-        text: 'B5 - Inter-agency or intra-agency memorandums or letters which …'}).appendTo(s);
-    $("<option />", {value: 'B6',
-        text: 'B6 - Personnel and medical files and similar files the disclosure of which …'}).appendTo(s);
-    controlsDiv.append(s);
+    var id = controlsDiv.children(':input').attr('name');
+    render_redacted_input(id);
+    show_redacted_input(id);
 }

@@ -99,5 +99,9 @@
   </div>
 </div>
 
+{% if 'redacted_json' in data %}
+    <input type="hidden" id="redacted_json" name="redacted_json" value="{{ data.redacted_json }}" />
+{% endif %}
+
 {% endblock package_expanded_metadata %}
 
