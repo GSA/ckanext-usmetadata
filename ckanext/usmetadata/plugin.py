@@ -762,10 +762,6 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         # templates.
         p.toolkit.add_resource('fanstatic', 'dataset_url')
 
-        # Add this plugin's public dir to CKAN's extra_public_paths, so
-        # that CKAN will use this plugin's custom static files.
-        p.toolkit.add_public_directory(config, 'public')
-
     # See ckan.plugins.interfaces.IDatasetForm
     def _create_package_schema(self, schema):
         log.debug("_create_package_schema called")

@@ -50,8 +50,23 @@ $(document).ready(function () {
         $('#field-modified').parents('div.control-group').addClass('exempt-allowed');
         $('#field-tags').parents('div.control-group').addClass('exempt-allowed');
 
-        preload_redacted_inputs();
         show_redacted_icons();
+        preload_redacted_inputs();
+        $('.exemption_reason').renderEyes();
+    }
+});
+
+$.fn.extend({
+    renderEyes: function () {
+        console.log($(this).val());
+        if ($(this).val()) {
+            console.log($(this).parents('.control-group').children('.redacted-icon'));
+            $(this).parents('.control-group').children('.redacted-icon').removeClass('icon-eye-open');
+            $(this).parents('.control-group').children('.redacted-icon').addClass('icon-eye-close');
+        } else {
+            $(this).parents('.control-group').children('.redacted-icon').removeClass('icon-eye-close');
+            $(this).parents('.control-group').children('.redacted-icon').addClass('icon-eye-open');
+        }
     }
 });
 
@@ -117,8 +132,12 @@ function preload_redacted_inputs() {
 }
 
 function show_redacted_icons() {
-    var img = $('<img src="/redacted_icon.png" class="redacted-icon" alt="Mark as Redacted" title="Mark as Redacted">');
-    $('.exempt-allowed .controls').before(img);
+    var pencil = $('<i class="icon-eye-open redacted-icon" />', {
+        alt: "Mark as Redacted",
+        title: "Mark as Redacted"
+    })
+    //var img = $('<img src="/redacted_icon.png" class="redacted-icon" alt="Mark as Redacted" title="Mark as Redacted">');
+    $('.exempt-allowed .controls').before(pencil);
 
     $('.redacted-icon').click(redacted_icon_callback);
 }
@@ -156,14 +175,20 @@ var exempt_reasons = [
 function render_redacted_input(key, val) {
     val = typeof val !== 'undefined' ? val : false;
 
-    var controlsDiv = $('input[name="' + key + '"]').parents('.controls');
+    var controlsDiv = $(':input[name="' + key + '"]').parents('.controls');
     if (!controlsDiv.length) {
+        console.debug('controlsDiv not found for ' + key);
         return;
     }
 
-    $('input[name="' + key + '"]').css('background', '#ddd');
+    $(':input[name="' + key + '"]').css('background', '#ddd');
 
-    var s = $('<select name="redacted_' + key + '" class="exemption_reason" />');
+    var s = $('<select />', {
+        name: "redacted_" + key,
+        class: "exemption_reason",
+        rel: key
+    });
+
 
     $("<option />", {value: '', text: '== Select Exemption Reason =='}).appendTo(s);
 
@@ -178,6 +203,7 @@ function render_redacted_input(key, val) {
         }
         $("<option />", options).appendTo(s);
     }
+    s.change(function(){$(this).renderEyes();});
     controlsDiv.append(s);
 }
 
@@ -188,7 +214,9 @@ function show_redacted_input(key) {
 function redacted_icon_callback() {
     var controlsDiv = $(this).parent().children('.controls');
     if (controlsDiv.children('.exemption_reason').length) {
-        controlsDiv.children('.exemption_reason').toggle();
+        if (!controlsDiv.children('.exemption_reason').val()) {
+            controlsDiv.children('.exemption_reason').fadeToggle();
+        }
         return;
     }
     var id = controlsDiv.children(':input').attr('name');
