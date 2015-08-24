@@ -52,23 +52,23 @@ $(document).ready(function () {
 
         show_redacted_icons();
         preload_redacted_inputs();
-        $('.exemption_reason').renderEyes();
+        //$('.exemption_reason').renderEyes();
         redacted_bootstrap();
         $(':input[name="public_access_level"]').change(redacted_bootstrap);
     }
 });
 
-$.fn.extend({
-    renderEyes: function () {
-        if ($(this).val()) {
-            $(this).parents('.control-group').children('.redacted-icon').removeClass('icon-eye-open');
-            $(this).parents('.control-group').children('.redacted-icon').addClass('icon-eye-close');
-        } else {
-            $(this).parents('.control-group').children('.redacted-icon').removeClass('icon-eye-close');
-            $(this).parents('.control-group').children('.redacted-icon').addClass('icon-eye-open');
-        }
-    }
-});
+//$.fn.extend({
+//    renderEyes: function () {
+//        if ($(this).val()) {
+//            $(this).parents('.control-group').children('.redacted-icon').removeClass('icon-eye-open');
+//            $(this).parents('.control-group').children('.redacted-icon').addClass('icon-eye-close');
+//        } else {
+//            $(this).parents('.control-group').children('.redacted-icon').removeClass('icon-eye-close');
+//            $(this).parents('.control-group').children('.redacted-icon').addClass('icon-eye-open');
+//        }
+//    }
+//});
 
 function validate_dataset() {
     $.getJSON(
@@ -132,12 +132,12 @@ function preload_redacted_inputs() {
 }
 
 function show_redacted_icons() {
-    var pencil = $('<i class="icon-eye-open redacted-icon" />', {
-        alt: "Mark as Redacted",
-        title: "Mark as Redacted"
-    })
-    //var img = $('<img src="/redacted_icon.png" class="redacted-icon" alt="Mark as Redacted" title="Mark as Redacted">');
-    $('.exempt-allowed .controls').before(pencil);
+    //var pencil = $('<i class="icon-eye-open redacted-icon" />', {
+    //    alt: "Mark as Redacted",
+    //    title: "Mark as Redacted"
+    //})
+    var img = $('<img src="/redacted_icon.png" class="redacted-icon" alt="Mark as Redacted" title="Mark as Redacted">');
+    $('.exempt-allowed .controls').before(img);
 
     $('.redacted-icon').click(redacted_icon_callback);
 }
@@ -202,7 +202,7 @@ function render_redacted_input(key, val) {
         }
         $("<option />", options).appendTo(s);
     }
-    s.change(function(){$(this).renderEyes();});
+    //s.change(function(){$(this).renderEyes();});
     controlsDiv.append(s);
 }
 
