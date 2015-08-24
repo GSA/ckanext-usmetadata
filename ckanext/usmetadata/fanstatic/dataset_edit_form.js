@@ -53,14 +53,14 @@ $(document).ready(function () {
         show_redacted_icons();
         preload_redacted_inputs();
         $('.exemption_reason').renderEyes();
+        redacted_bootstrap();
+        $(':input[name="public_access_level"]').change(redacted_bootstrap);
     }
 });
 
 $.fn.extend({
     renderEyes: function () {
-        console.log($(this).val());
         if ($(this).val()) {
-            console.log($(this).parents('.control-group').children('.redacted-icon'));
             $(this).parents('.control-group').children('.redacted-icon').removeClass('icon-eye-open');
             $(this).parents('.control-group').children('.redacted-icon').addClass('icon-eye-close');
         } else {
@@ -168,9 +168,8 @@ var exempt_reasons = [
         'short': 'B6 - Personnel and medical files and similar files the disclosure of which …',
         'full': "Personnel and medical files and similar files the disclosure of which would constitute" +
         " a clearly unwarranted invasion of personal privacy."
-    },
-
-]
+    }
+];
 
 function render_redacted_input(key, val) {
     val = typeof val !== 'undefined' ? val : false;
@@ -222,4 +221,14 @@ function redacted_icon_callback() {
     var id = controlsDiv.children(':input').attr('name');
     render_redacted_input(id);
     show_redacted_input(id);
+}
+
+function redacted_bootstrap() {
+    var level = $(':input[name="public_access_level"]').val();
+    if ('public' == level) {
+        $('.redacted-icon').add('.exemption_reason').hide();
+        return;
+    }
+    $('.redacted-icon').show();
+    $('.exemption_reason').filter(function() { return $(this).val() !== ""; }).show();
 }
