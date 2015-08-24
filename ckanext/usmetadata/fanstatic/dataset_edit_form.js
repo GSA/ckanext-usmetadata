@@ -189,7 +189,7 @@ function render_redacted_input(key, val) {
     });
 
 
-    $("<option />", {value: '', text: '== Select Exemption Reason =='}).appendTo(s);
+    $("<option />", {value: '', text: 'Select FOIA Exemption Reason for Redaction'}).appendTo(s);
 
     for (var index in exempt_reasons) {
         reason = exempt_reasons[index];
