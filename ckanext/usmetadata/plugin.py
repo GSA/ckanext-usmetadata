@@ -203,8 +203,7 @@ exempt_allowed = [
     'release_date',
     'system_of_records',
     'is_parent',
-    'parent_dataset',
-    'publishing_status'
+    'parent_dataset'
 ]
 
 for field in exempt_allowed:
