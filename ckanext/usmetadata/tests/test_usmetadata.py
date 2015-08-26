@@ -1,14 +1,15 @@
 '''Tests for the ckanext.example_iauthfunctions extension.
 
 '''
+from ckanext.usmetadata import db_utils
 import paste.fixture
+from paste.registry import StackedObjectProxy
 import pylons.test
 
 import ckan.model as model
 import ckan.tests as tests
 import ckan.plugins as plugins
-import ckan.plugins.toolkit as toolkit
-
+from ckan.common import c
 
 class TestUsmetadataPlugin(object):
     '''Tests for the usmetadata.plugin module.
@@ -36,6 +37,26 @@ class TestUsmetadataPlugin(object):
         model.Session.add(self.sysadmin)
         model.Session.commit()
         model.Session.remove()
+
+        self.org_dict = tests.call_action_api(self.app, 'organization_create', apikey=self.sysadmin.apikey, name='my_org_000')
+
+        self.package_dict = tests.call_action_api(self.app, 'package_create', apikey=self.sysadmin.apikey,
+                                             name='my_package_000',
+                                             title='my package',
+                                             notes='my package notes',
+                                             tag_string='my_package',
+                                             modified='2014-04-04',
+                                             publisher='GSA',
+                                             contact_name='john doe',
+                                             contact_email='john.doe@gsa.com',
+                                             unique_id='000',
+                                             public_access_level='public',
+                                             bureau_code='001:40',
+                                             program_code='015:010',
+                                             access_level_comment='Access level commemnt',
+                                             parent_dataset = 'true',
+                                             ower_org = self.org_dict['id']
+                                             )
 
     def teardown(self):
         '''Nose runs this method after each test method in our test class.'''
@@ -69,7 +90,8 @@ class TestUsmetadataPlugin(object):
                                              public_access_level='public',
                                              bureau_code='001:40',
                                              program_code='015:010',
-                                             access_level_comment='Access level commemnt'
+                                             access_level_comment='Access level commemnt',
+                                             parent_dataset = 'true'
                                              )
         assert package_dict['name'] == 'my_package'
 
@@ -155,3 +177,71 @@ class TestUsmetadataPlugin(object):
         assert package_dict_update['extras'][6]['value'] == 'public'
         assert package_dict_update['extras'][7]['value'] == 'GSA'
         assert package_dict_update['extras'][8]['value'] == '002'
+
+    #test parent dataset
+    def test_package_parent_dataset(self):
+        org_dict = tests.call_action_api(self.app, 'organization_create', apikey=self.sysadmin.apikey,
+                                             name='my_org')
+
+        package_dict = tests.call_action_api(self.app, 'package_create', apikey=self.sysadmin.apikey,
+                                             name='my_package',
+                                             title='my package',
+                                             notes='my package notes',
+                                             tag_string='my_package',
+                                             modified='2014-04-04',
+                                             publisher='GSA',
+                                             contact_name='john doe',
+                                             contact_email='john.doe@gsa.com',
+                                             unique_id='001',
+                                             public_access_level='public',
+                                             bureau_code='001:40',
+                                             program_code='015:010',
+                                             access_level_comment='Access level commemnt',
+                                             parent_dataset = 'true',
+                                             ower_org = org_dict['id']
+                                             )
+        assert package_dict['name'] == 'my_package'
+
+        title = db_utils.get_organization_title(package_dict['id'])
+        assert title == 'my package'
+
+        class Config:
+            def __init__(self, **kwds):
+                self.__dict__.update(kwds)
+
+        class Userobj:
+            def __init__(self, **kwds):
+                self.__dict__.update(kwds)
+
+            def get_group_ids(self):
+                return [org_dict['id']]
+
+        config = Config(userobj=Userobj(sysadmin=True))
+        items = db_utils.get_parent_organizations(config)
+        assert org_dict['id'] not in items
+
+        config = Config(userobj=Userobj(sysadmin=False))
+        items = db_utils.get_parent_organizations(config)
+        assert org_dict['id'] not in items
+
+    #TODO:Add assertions for all field validations
+    def test_validate_dataset_action(self):
+        url = '/api/2/util/resource/validate_dataset?pkg_name=&owner_org='+ self.org_dict['id'] +'&unique_id=000&rights=&license_url=&temporal=&described_by=&described_by_type=&conforms_to=&landing_page=&language=&investment_uii=&references=&issued=&system_of_records='
+        res = self.app.get(url)
+        assert 'Success' in res
+
+    def test_validate_resource_action(self):
+        res = self.app.get('/api/2/util/resource/validate_resource?url=badurl&resource_type=file&format=&describedBy=&describedByType=&conformsTo=')
+        assert 'Invalid' in res
+
+    def test_get_content_type_action(self):
+        res = self.app.get('/api/2/util/resource/content_type?url=badulr')
+        assert 'InvalidFormat' in res
+
+    def test_get_media_types_action(self):
+        res = self.app.get('/api/2/util/resource/media_autocomplete')
+        assert 'application/pdf' in res
+
+    def test_license_url_autocomplete_action(self):
+        res = self.app.get('/api/2/util/resource/license_url_autocomplete?incomplete=d')
+        assert 'creativecommons' in res
