@@ -9,7 +9,7 @@
     {{ form.input('modified', id='field-modified', label=_('Modified (Last Update)'), placeholder=_('2014-01-15'), value=data.common_core.modified, error=errors.modified, classes=['control-medium'], attrs={'title': 'Most recent date on which the dataset was changed, updated or modified. Dates should be formatted as YYYY-MM-DD. Specify "01" as the day if unknown.'}, is_required=true) }}
 {#    {{ form.input('publisher', id='field-publisher', label=_('Publishing Agency'), placeholder=_('Federal Bureau of Investigation'), value=data.common_core.publisher, error=errors.publisher, classes=['control-full', 'control-medium'], attrs={'title': 'The publishing agency.'}, is_required=true) }}#}
 
-    <div class="control-group control-full control-medium {{ "error" if error }}">
+    <div class="exempt-allowed control-group control-full control-medium {{ "error" if error }}">
         <label class="control-label" for="field-publisher"><span title="This field is required" class="control-required">*</span> Publisher</label>
         <div class="controls ">
             <input id="field-publisher" type="text" name="publisher" value="{{ data.common_core.publisher }}" placeholder="Federal Bureau of Investigation"  title="The publishing agency." />

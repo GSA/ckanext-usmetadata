@@ -198,6 +198,7 @@ exempt_allowed = [
     'conforms_to',
     'homepage_url',
     'language',
+    'publisher',
     'primary_it_investment_uii',
     'related_documents',
     'release_date',
