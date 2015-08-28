@@ -49,7 +49,7 @@
 
 {{ form.input('system_of_records', label=_('System of Records'), id='field-system_of_records', placeholder=_('http://www.my.gov/systemofrecords'), value=data.common_core.system_of_records, error=errors.system_of_records, classes=['exempt-allowed', 'control-full'], attrs={'title': 'If the systems is designated as a system of records under the Privacy Act of 1974, provide the URL to the System of Records Notice related to this dataset.'} )}}
 
-<div class="exempt-allowed control-group">
+<div class="control-group">
     <label class="control-label" for="field-is_parent">
       {{ _("Is parent") }}
     </label>
@@ -67,7 +67,7 @@
     </div>
 </div>
 
-<div class="exempt-allowed control-group control-group-dataset-parent control-full">
+<div class="control-group control-group-dataset-parent control-full">
   <label class="control-label" for="field-parent_dataset">
       {{ _("Parent dataset (for isPartOf)") }}</label>
   <div class="controls" title="Parent Dataset.">

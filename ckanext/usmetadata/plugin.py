@@ -202,9 +202,7 @@ exempt_allowed = [
     'primary_it_investment_uii',
     'related_documents',
     'release_date',
-    'system_of_records',
-    'is_parent',
-    'parent_dataset'
+    'system_of_records'
 ]
 
 for field in exempt_allowed:
