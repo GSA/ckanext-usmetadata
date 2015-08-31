@@ -105,6 +105,7 @@ class TestUsmetadataPlugin(object):
                                              tag_string='my_package',
                                              modified='2014-04-04',
                                              publisher='GSA',
+                                             publisher_1='OCSIT',
                                              contact_name='john doe',
                                              contact_email='john.doe@gsa.com',
                                              unique_id='001',
@@ -112,6 +113,28 @@ class TestUsmetadataPlugin(object):
                                              bureau_code='001:40',
                                              program_code='015:010',
                                              access_level_comment='Access level commemnt',
+                                             license_id='http://creativecommons.org/publicdomain/zero/1.0/',
+                                             license_new='http://creativecommons.org/publicdomain/zero/1.0/',
+                                             spatial='Lincoln, Nebraska',
+                                             temporal='2000-01-15T00:45:00Z/2010-01-15T00:06:00Z',
+                                             category=["vegetables","produce"],
+                                             data_dictionary='www.google.com',
+                                             data_dictionary_type='tex/csv',
+                                             data_quality='true',
+                                             publishing_status='open',
+                                             accrual_periodicity='annual',
+                                             conforms_to='www.google.com',
+                                             homepage_url='www.google.com',
+                                             language='us-EN',
+                                             primary_it_investment_uii='021-123456789',
+                                             related_documents='www.google.com',
+                                             release_date='2014-01-02',
+                                             system_of_records='www.google.com',
+                                             is_parent='true',
+                                             accessURL='www.google.com',
+                                             webService='www.gooogle.com',
+                                             format='text/csv',
+                                             formatReadable='text/csv',
                                              resources=[
                                                  {
                                                     'name':'my_resource',
@@ -122,6 +145,7 @@ class TestUsmetadataPlugin(object):
                                                     'description':'description_2'},
                                                 ]
                                              )
+
         assert package_dict['name'] == 'my_package'
         assert package_dict['resources'][0]['name'] == 'my_resource'
 
