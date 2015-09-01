@@ -397,8 +397,9 @@ class UsmetadataController(BaseController):
         return error_summary
 
     def new_resource_usmetadata(self, id, data=None, errors=None, error_summary=None):
-        ''' FIXME: This is a temporary action to allow styling of the
-        forms. '''
+        """
+        TODO: FIXME: This is a temporary action to allow styling of the forms.
+        """
         if request.method == 'POST' and not data:
             save_action = request.params.get('save')
             data = data or clean_dict(dict_fns.unflatten(tuplize_dict(parse_params(
@@ -509,9 +510,10 @@ class UsmetadataController(BaseController):
 
 
 class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
-    '''This plugin adds fields for the metadata (known as the Common Core) defined at
+    """
+    This plugin adds fields for the metadata (known as the Common Core) defined at
     https://github.com/project-open-data/project-open-data.github.io/blob/master/schema.md
-    '''
+    """
     p.implements(p.ITemplateHelpers, inherit=False)
     p.implements(p.IConfigurer, inherit=False)
     p.implements(p.IDatasetForm, inherit=False)
@@ -551,6 +553,17 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         labels["created"] = "Created"
 
         resource_dict['labels'] = labels
+
+        # if 'redacted' not in resource_dict:
+        #     resource_dict['redacted'] = {}
+        #
+        # for resource_field in resource_dict:
+        #     if 'redacted_' in resource_field:
+        #         resource_dict['redacted'][resource_field.replace('redacted_', '')] = resource_dict[resource_field]
+        #         resource_dict[resource_field] = ''
+        # resource_dict['redacted'] = resource_field
+        # resource_dict['extras']['redacted_json'] = json.dumps(redacted)
+
         return resource_dict
 
     def edit(self, entity):
