@@ -85,14 +85,17 @@ var RedactionControl = new function () {
     };
 
     this.preload_redacted_inputs = function () {
-        if ('undefined' != typeof redacted_json_raw) {
+        if ('undefined' != typeof redacted_json_raw) {  //  dataset resource (or distribution) way
             var redacted = redacted_json_raw;
-        } else if($('#redacted_json').size()) {
+        } else if($('#redacted_json').size()) {     // dataset way
             var redactedJson = $('#redacted_json');
             var redacted = $.parseJSON(redactedJson.val());
         }
 
         for (var field in redacted) {
+            if (!redacted[field]) {
+                continue;
+            }
             obj.render_redacted_input(field.replace('redacted_', ''), redacted[field]);
             obj.show_redacted_input(field.replace('redacted_', ''));
         }
