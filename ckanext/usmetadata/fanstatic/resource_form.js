@@ -58,6 +58,9 @@ var DatasetResourceForm = new function () {
 
         try {
             var dataset_id = window.location.pathname.split('/')[2];
+            if ('new_resource' == dataset_id) {
+                dataset_id = window.location.pathname.split('/')[3];
+            }
             var access_level = 'public';
             $.getJSON('/api/3/action/package_show?id=' + dataset_id).done(function (data) {
                 access_level = data.result.extras.filter(function (obj) {
