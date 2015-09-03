@@ -202,9 +202,7 @@ exempt_allowed = [
     'primary_it_investment_uii',
     'related_documents',
     'release_date',
-    'system_of_records',
-    'is_parent',
-    'parent_dataset'
+    'system_of_records'
 ]
 
 for field in exempt_allowed:
@@ -399,8 +397,9 @@ class UsmetadataController(BaseController):
         return error_summary
 
     def new_resource_usmetadata(self, id, data=None, errors=None, error_summary=None):
-        ''' FIXME: This is a temporary action to allow styling of the
-        forms. '''
+        """
+        TODO: FIXME: This is a temporary action to allow styling of the forms.
+        """
         if request.method == 'POST' and not data:
             save_action = request.params.get('save')
             data = data or clean_dict(dict_fns.unflatten(tuplize_dict(parse_params(
@@ -511,9 +510,10 @@ class UsmetadataController(BaseController):
 
 
 class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
-    '''This plugin adds fields for the metadata (known as the Common Core) defined at
+    """
+    This plugin adds fields for the metadata (known as the Common Core) defined at
     https://github.com/project-open-data/project-open-data.github.io/blob/master/schema.md
-    '''
+    """
     p.implements(p.ITemplateHelpers, inherit=False)
     p.implements(p.IConfigurer, inherit=False)
     p.implements(p.IDatasetForm, inherit=False)
@@ -553,6 +553,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         labels["created"] = "Created"
 
         resource_dict['labels'] = labels
+
         return resource_dict
 
     def edit(self, entity):
