@@ -95,7 +95,7 @@ var DatasetForm = new function () {
 
         $('form.dataset-form').submit(function (event) {
             if (!obj.form_is_valid) {
-                console.debug('invalid????');
+                //console.debug('invalid????');
                 event.preventDefault();
             }
         });
