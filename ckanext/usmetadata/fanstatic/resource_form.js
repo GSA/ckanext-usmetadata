@@ -51,10 +51,27 @@ var DatasetResourceForm = new function () {
             }
         });
 
+        //  REDACTIONS
         $('#field-description').parents('div.control-group').addClass('exempt-allowed');
 
-        RedactionControl.show_redacted_icons();
-        RedactionControl.preload_redacted_inputs();
+        //data.extras.filter(function( obj ) { return obj.key == 'public_access_level'; })[0].value
+
+        try {
+            var dataset_id = window.location.pathname.split('/')[2];
+            var access_level = 'public';
+            $.getJSON('/api/3/action/package_show?id=' + dataset_id).done(function (data) {
+                access_level = data.result.extras.filter(function (obj) {
+                    return obj.key == 'public_access_level';
+                })[0].value;
+                if ('public' !== access_level) {
+                    console.debug('nice');
+                    RedactionControl.show_redacted_icons();
+                    RedactionControl.preload_redacted_inputs();
+                }
+            });
+        } catch (err) {
+            //  sad
+        }
     };
 
     this.validate_resource = function () {

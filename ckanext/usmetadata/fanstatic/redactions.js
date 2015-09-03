@@ -37,7 +37,6 @@ var RedactionControl = new function () {
         var currentInput = $(':input[name="' + key + '"]');
         var controlsDiv = currentInput.parents('.controls');
         if (!controlsDiv.length) {
-            console.debug('controlsDiv not found for ' + key);
             return;
         }
 

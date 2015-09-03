@@ -554,16 +554,6 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
         resource_dict['labels'] = labels
 
-        # if 'redacted' not in resource_dict:
-        #     resource_dict['redacted'] = {}
-        #
-        # for resource_field in resource_dict:
-        #     if 'redacted_' in resource_field:
-        #         resource_dict['redacted'][resource_field.replace('redacted_', '')] = resource_dict[resource_field]
-        #         resource_dict[resource_field] = ''
-        # resource_dict['redacted'] = resource_field
-        # resource_dict['extras']['redacted_json'] = json.dumps(redacted)
-
         return resource_dict
 
     def edit(self, entity):
