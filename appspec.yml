@@ -17,5 +17,5 @@ permissions:
       - file
 hooks:
    AfterInstall:
-   - location: scripts/post-aws-deployment.sh
+   - location: bin/post-aws-deployment.sh
      runas: root
