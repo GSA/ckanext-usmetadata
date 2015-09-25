@@ -7,7 +7,6 @@ $(document).ready(function () {
 });
 
 
-
 var DatasetForm = new function () {
     var obj = this;
     this.form_is_valid = true;
@@ -95,7 +94,6 @@ var DatasetForm = new function () {
 
         $('form.dataset-form').submit(function (event) {
             if (!obj.form_is_valid) {
-                //console.debug('invalid????');
                 event.preventDefault();
             }
         });
@@ -107,7 +105,7 @@ var DatasetForm = new function () {
         $('#field-modified').parents('div.control-group').addClass('exempt-allowed');
         $('#field-tags').parents('div.control-group').addClass('exempt-allowed');
 
-        RedactionControl.show_redacted_icons();
+        RedactionControl.append_redacted_icons();
         RedactionControl.preload_redacted_inputs();
         //$('.exemption_reason').renderEyes();
         this.reload_redacted_controls();
@@ -115,15 +113,13 @@ var DatasetForm = new function () {
     };
 
     this.reload_redacted_controls = function () {
+        //  https://project-open-data.cio.gov/redactions/
         var level = $(':input[name="public_access_level"]').val();
         if ('public' == level) {
-            $('.redacted-icon').add('.exemption_reason').hide();
+            $('.redacted-icon').add('.redacted-marker').add('.exemption_reason').hide();
             return;
         }
-        $('.redacted-icon').show();
-        $('.exemption_reason').filter(function () {
-            return $(this).val() !== "";
-        }).show();
+        RedactionControl.show_redacted_controls;
     };
 }();
 

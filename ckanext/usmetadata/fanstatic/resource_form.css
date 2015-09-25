@@ -60,3 +60,9 @@
     background: black;
     color: white;
 }
+
+.redacted-marker {
+    float:left;
+    padding:1px 1px 0 5px;
+    margin:4px 0 0 2px;
+}

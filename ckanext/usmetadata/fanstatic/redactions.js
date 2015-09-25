@@ -1,7 +1,9 @@
 "use strict";
 
+//  https://project-open-data.cio.gov/redactions/
 var RedactionControl = new function () {
     var obj = this;
+
     this.exempt_reasons = [
         {
             'value': 'B3',
@@ -42,14 +44,14 @@ var RedactionControl = new function () {
 
         currentInput.css('background', '#ddd');
 
-        var s = $('<select />', {
+        var reason_select = $('<select />', {
             name: "redacted_" + key,
             class: "exemption_reason",
             rel: key
         });
 
 
-        $("<option />", {value: '', text: 'Select FOIA Exemption Reason for Redaction'}).appendTo(s);
+        $("<option />", {value: '', text: 'Select FOIA Exemption Reason for Redaction'}).appendTo(reason_select);
 
         for (var index in this.exempt_reasons) {
             var reason = this.exempt_reasons[index];
@@ -60,15 +62,36 @@ var RedactionControl = new function () {
             if (reason.value == val) {
                 options['selected'] = 'selected';
             }
-            $("<option />", options).appendTo(s);
+            $("<option />", options).appendTo(reason_select);
         }
-        //s.change(function(){$(this).renderEyes();});
-        controlsDiv.append(s);
+
+        controlsDiv.append(reason_select);
+        reason_select.change(partial_redactor).trigger('change');
     };
 
-    this.show_redacted_input = function (key) {
-        $('input[name="redacted_' + key + '"]').show();
-    };
+    function partial_redactor() {
+        try {
+            if (!$(this).val()) {
+                $(this).parents('.control-group').find('.redacted-marker').hide();
+                RedactionControl.show_redacted_controls();
+                return;
+            }
+        } catch (e) {
+            return;
+        }
+
+        var redacted_icon = $(this).parents('.control-group').children('.redacted-icon');
+        if (!$(this).parents('.control-group').find('.redacted-marker').length) {
+            var partial_marker = $('<a class="btn redacted-marker btn-inverse"><i class="icon-ban-circle" /></a>', {
+                alt: "Partial Redaction",
+                title: "Partial Redaction"
+            });
+            redacted_icon.after(partial_marker);
+        } else {
+            $(this).parents('.control-group').find('.redacted-marker').show();
+        }
+        redacted_icon.hide();
+    }
 
     this.redacted_icon_callback = function () {
         var controlsDiv = $(this).parent().children('.controls');
@@ -80,13 +103,12 @@ var RedactionControl = new function () {
         }
         var id = controlsDiv.children(':input').attr('name');
         obj.render_redacted_input(id);
-        obj.show_redacted_input(id);
     };
 
     this.preload_redacted_inputs = function () {
         if ('undefined' != typeof redacted_json_raw) {  //  dataset resource (or distribution) way
             var redacted = redacted_json_raw;
-        } else if($('#redacted_json').size()) {     // dataset way
+        } else if ($('#redacted_json').size()) {     // dataset way
             var redactedJson = $('#redacted_json');
             var redacted = $.parseJSON(redactedJson.val());
         }
@@ -96,15 +118,19 @@ var RedactionControl = new function () {
                 continue;
             }
             obj.render_redacted_input(field.replace('redacted_', ''), redacted[field]);
-            obj.show_redacted_input(field.replace('redacted_', ''));
         }
     };
 
-    this.show_redacted_icons = function () {
-        //var pencil = $('<i class="icon-eye-open redacted-icon" />', {
-        //    alt: "Mark as Redacted",
-        //    title: "Mark as Redacted"
-        //})
+    this.show_redacted_controls = function () {
+        $('.redacted-icon').filter(function () {
+            return !$(this).siblings('.redacted-marker:visible').length;
+        }).show();
+        $('.exemption_reason').filter(function () {
+            return $(this).val() !== "";
+        }).show();
+    };
+
+    this.append_redacted_icons = function () {
         var img = $('<img src="/redacted_icon.png" class="redacted-icon" alt="Mark as Redacted" title="Mark as Redacted">');
         $('.exempt-allowed .controls').before(img);
 
