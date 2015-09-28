@@ -121,7 +121,7 @@ var RedactionControl = new function () {
         var redacted_text = input.val().substring(selectionStart, selectionEnd);
         var strLeft = input.val().substring(0, selectionStart);
         var strRight = input.val().substring(selectionEnd, input.val().length);
-        redacted_text = '[[REDACTED EX-' + reason + ']]' + redacted_text + '[[/REDACTED]]';
+        redacted_text = '[[REDACTED-EX ' + reason + ']]' + redacted_text + '[[/REDACTED]]';
         input.val(strLeft + redacted_text + strRight);
     }
 
