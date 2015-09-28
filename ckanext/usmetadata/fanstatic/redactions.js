@@ -50,7 +50,7 @@ var RedactionControl = new function () {
 
         $(document.createElement('option'))
             .attr('value','')
-            .attr('text','Select FOIA Exemption Reason for Redaction')
+            .text('Select FOIA Exemption Reason for Redaction')
             .appendTo(reason_select);
 
         for (var index in this.exempt_reasons) {
