@@ -42,16 +42,16 @@ var RedactionControl = new function () {
             return;
         }
 
-        currentInput.css('background', '#ddd');
-
-        var reason_select = $('<select />', {
-            name: "redacted_" + key,
-            class: "exemption_reason",
-            rel: key
-        });
+        var reason_select = $(document.createElement('select'))
+            .attr('name', "redacted_" + key)
+            .attr('rel', key)
+            .addClass('exemption_reason');
 
 
-        $("<option />", {value: '', text: 'Select FOIA Exemption Reason for Redaction'}).appendTo(reason_select);
+        $(document.createElement('option'))
+            .attr('value','')
+            .attr('text','Select FOIA Exemption Reason for Redaction')
+            .appendTo(reason_select);
 
         for (var index in this.exempt_reasons) {
             var reason = this.exempt_reasons[index];
@@ -66,10 +66,14 @@ var RedactionControl = new function () {
         }
 
         controlsDiv.append(reason_select);
-        reason_select.change(partial_redactor).trigger('change');
+        reason_select.change(toggle_partial_redactor).trigger('change');
     };
 
-    function partial_redactor() {
+    function toggle_partial_redactor() {
+        var input = $(this).parents('.control-group').find(':input[type=text],textarea');
+        if (!input.length || input.length>1) {
+            return;
+        }
         try {
             if (!$(this).val()) {
                 $(this).parents('.control-group').find('.redacted-marker').hide();
@@ -82,15 +86,43 @@ var RedactionControl = new function () {
 
         var redacted_icon = $(this).parents('.control-group').children('.redacted-icon');
         if (!$(this).parents('.control-group').find('.redacted-marker').length) {
-            var partial_marker = $('<a class="btn redacted-marker btn-inverse"><i class="icon-ban-circle" /></a>', {
-                alt: "Partial Redaction",
-                title: "Partial Redaction"
-            });
+            var partial_marker = $(document.createElement('a'))
+                .addClass('btn redacted-marker btn-inverse')
+                .attr('alt',"Select text and click me for partial redaction")
+                .attr('title',"Select text and click me for partial redaction")
+                .append(
+                    $(document.createElement('i')).addClass('icon-ban-circle')
+            );
+            partial_marker.click(partial_redact);
             redacted_icon.after(partial_marker);
         } else {
             $(this).parents('.control-group').find('.redacted-marker').show();
         }
         redacted_icon.hide();
+    }
+
+    function partial_redact() {
+        var input = $(this).parents('.control-group').find(':input[type=text],textarea');
+        if (!input.length || input.length > 1) {
+            return;
+        }
+
+        var reason = input.siblings('.exemption_reason').val();
+        if (!reason) {
+            return;
+        }
+
+        var selectionStart = input[0].selectionStart;
+        var selectionEnd = input[0].selectionEnd;
+        if (!selectionEnd || selectionStart == selectionEnd) {
+            return;
+        }
+
+        var redacted_text = input.val().substring(selectionStart, selectionEnd);
+        var strLeft = input.val().substring(0, selectionStart);
+        var strRight = input.val().substring(selectionEnd, input.val().length);
+        redacted_text = '[[REDACTED EX-' + reason + ']]' + redacted_text + '[[/REDACTED]]';
+        input.val(strLeft + redacted_text + strRight);
     }
 
     this.redacted_icon_callback = function () {
