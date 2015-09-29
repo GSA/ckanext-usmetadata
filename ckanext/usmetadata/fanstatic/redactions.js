@@ -4,6 +4,28 @@
 var RedactionControl = new function () {
     var obj = this;
 
+    this.excluded_partial_redactions = [
+        'bureau_code',
+        'conformsTo',
+        'conforms_to',
+        'data_dictionary',
+        'data_dictionary_type',
+        'describedBy',
+        'homepage_url',
+        'language',
+        'license_new',
+        'modified',
+        'primary_it_investment_uii',
+        'program_code',
+        'publisher',
+        'related_documents',
+        'release_date',
+        'system_of_records',
+        'tag_string',
+        'temporal',
+        'url'
+    ];
+
     this.exempt_reasons = [
         {
             'value': 'B3',
@@ -49,7 +71,7 @@ var RedactionControl = new function () {
 
 
         $(document.createElement('option'))
-            .attr('value','')
+            .attr('value', '')
             .text('Select FOIA Exemption Reason for Redaction')
             .appendTo(reason_select);
 
@@ -71,9 +93,13 @@ var RedactionControl = new function () {
 
     function toggle_partial_redactor() {
         var input = $(this).parents('.control-group').find(':input[type=text],textarea');
-        if (!input.length || input.length>1) {
+        if (!input.length || input.length > 1) {
             return;
         }
+        if ($.inArray(input.attr('name'), obj.excluded_partial_redactions) > -1) {
+            return;
+        }
+        console.log(input.attr('name'));
         try {
             if (!$(this).val()) {
                 $(this).parents('.control-group').find('.redacted-marker').hide();
@@ -88,10 +114,10 @@ var RedactionControl = new function () {
         if (!$(this).parents('.control-group').find('.redacted-marker').length) {
             var partial_marker = $(document.createElement('a'))
                 .addClass('btn redacted-marker btn-inverse')
-                .attr('alt',"Select text and click me for partial redaction")
-                .attr('title',"Select text and click me for partial redaction")
+                .attr('alt', "Select text and click me for partial redaction")
+                .attr('title', "Select text and click me for partial redaction")
                 .append(
-                    $(document.createElement('i')).addClass('icon-ban-circle')
+                $(document.createElement('i')).addClass('icon-ban-circle')
             );
             partial_marker.click(partial_redact);
             redacted_icon.after(partial_marker);
