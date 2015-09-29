@@ -6,8 +6,10 @@ var RedactionControl = new function () {
 
     this.excluded_partial_redactions = [
         'bureau_code',
+        'category',
         'conformsTo',
         'conforms_to',
+        'contact_email',
         'data_dictionary',
         'data_dictionary_type',
         'describedBy',
