@@ -119,7 +119,7 @@ var DatasetForm = new function () {
             $('.redacted-icon').add('.redacted-marker').add('.exemption_reason').hide();
             return;
         }
-        RedactionControl.show_redacted_controls;
+        RedactionControl.show_redacted_controls();
     };
 }();
 
