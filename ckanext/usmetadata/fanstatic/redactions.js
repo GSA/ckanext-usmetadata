@@ -119,8 +119,8 @@ var RedactionControl = new function () {
             var partial_marker = $(document.createElement('img'))
                 .attr('src', '/partial_redaction.jpg')
                 .addClass('redacted-marker')
-                .attr('alt', "Select text and click me for partial redaction")
-                .attr('title', "Select text and click me for partial redaction");
+                .attr('alt', "Select text and click the icon for partial redaction")
+                .attr('title', "Select text and click the icon for partial redaction");
 
             var redaction_clear = $(document.createElement('img'))
                 .attr('src', '/redaction_clear.png')
