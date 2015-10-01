@@ -261,7 +261,11 @@ var RedactionControl = new function () {
                 .append(legend_text_1)
                 .append(legend_text_2)
                 .append(legend_text_3);
-            $('div.context-info').append(redactions_legend);
+            if ($('div.context-info').length) {
+                $('div.context-info').append(redactions_legend);
+            }else if ($('div.module-content').length) {
+                $('div.module-content').after(redactions_legend);
+            }
         }
     };
 }();
