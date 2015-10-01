@@ -63,7 +63,7 @@
 }
 
 .partial-redaction-buttons {
-    float: left;
+    float: right;
 }
 
 .redacted-marker, .redacted-clear {

@@ -188,7 +188,7 @@ var RedactionControl = new function () {
             }
             return;
         }
-        var id = controlsDiv.find(':input').attr('name');
+        var id = controlsDiv.find(':input[type=text],textarea,select').last().attr('name');
         obj.render_redacted_input(id);
     };
 
