@@ -43,12 +43,13 @@
     float: left;
     width: 20px;
 }
-.icon-eye-open{
-    color:#005d7a;
+
+.icon-eye-open {
+    color: #005d7a;
 }
 
-.icon-eye-close{
-    color:#005d7a;
+.icon-eye-close {
+    color: #005d7a;
 }
 
 .dataset-form.form-horizontal .controls {
@@ -61,19 +62,27 @@
     color: white;
 }
 
-.partial-redaction-buttons{
-    float:right;
+.partial-redaction-buttons {
+    float: right;
 }
 
-.redacted-marker{
-    width:26px;
+.redacted-marker {
+    width: 26px;
 }
+
 .redacted-clear {
-    width:23px;
+    width: 23px;
 }
 
-.controls .exemption_reason{
+.controls .exemption_reason {
     width: -moz-calc(100% - 60px);
     width: -webkit-calc(100% - 60px);
     width: calc(100% - 60px);
+}
+
+.redactions-legend .legend-redacted-icon {
+    width: 20px;
+}
+.redactions-legend .legend-redacted-icon3 {
+    width: 18px;
 }

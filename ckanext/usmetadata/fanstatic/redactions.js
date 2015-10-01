@@ -91,10 +91,10 @@ var RedactionControl = new function () {
         }
 
         controlsDiv.append(reason_select);
-        reason_select.change(toggle_partial_redactor_buttons).trigger('change');
+        reason_select.change(toggle_redactions_buttons).trigger('change');
     };
 
-    function toggle_partial_redactor_buttons() {
+    function toggle_redactions_buttons() {
         var input = $(this).parents('.control-group').find(':input[type=text],textarea');
         if (!input.length || input.length > 1) {
             return;
@@ -106,7 +106,6 @@ var RedactionControl = new function () {
             if (!$(this).val()) {
                 $(this).parents('.control-group').find('.redacted-marker').hide();
                 $(this).parents('.control-group').find('.redacted-clear').hide();
-                RedactionControl.show_redacted_controls();
                 return;
             }
         } catch (e) {
@@ -223,5 +222,46 @@ var RedactionControl = new function () {
         $('.exempt-allowed .controls').before(img);
 
         $('.redacted-icon').click(obj.redacted_icon_callback);
+        this.show_redaction_legend();
+    };
+
+    this.show_redaction_legend = function() {
+        if (!$('.redactions-legend').length) {
+            var legend_head = $(document.createElement('h3'))
+                .text('Redaction Legend');
+            var legend_text_1 = $(document.createElement('div'))
+                .append($(document.createElement('img'))
+                    .attr('src','/redacted_icon.png')
+                    .addClass('legend-redacted-icon')
+            ).append(
+                $(document.createElement('i'))
+                    .text('- Redaction Icon')
+            );
+            var legend_text_2 = $(document.createElement('div'))
+                .append($(document.createElement('img'))
+                    .attr('src','/partial_redaction.png')
+                    .addClass('legend-redacted-icon')
+            ).append(
+                $(document.createElement('i'))
+                    .text('- Partial Redaction Icon')
+            );
+            var legend_text_3 = $(document.createElement('div'))
+                .append($(document.createElement('img'))
+                    .attr('src','/redaction_clear.png')
+                    .addClass('legend-redacted-icon3')
+            ).append(
+                $(document.createElement('i'))
+                    .text(' - Clear Redaction Icon')
+            );
+
+            var redactions_legend = $(document.createElement('div'))
+                .addClass('module-content redactions-legend')
+                .append($(document.createElement('hr')))
+                .append(legend_head)
+                .append(legend_text_1)
+                .append(legend_text_2)
+                .append(legend_text_3);
+            $('div.context-info').append(redactions_legend);
+        }
     };
 }();
