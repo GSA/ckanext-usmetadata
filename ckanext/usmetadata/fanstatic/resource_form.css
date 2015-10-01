@@ -79,3 +79,7 @@
 .redactions-legend .legend-redacted-icon {
     width: 20px;
 }
+
+.redactions-legend-read-more {
+    float:right;
+}

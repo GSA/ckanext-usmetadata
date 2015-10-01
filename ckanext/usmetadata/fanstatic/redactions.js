@@ -254,13 +254,20 @@ var RedactionControl = new function () {
                     .text('- Clear Redaction Icon')
             );
 
+            var legend_link = $(document.createElement('a'))
+                .attr('href','/redactions-legend.html')
+                .attr('target','_blank')
+                .text('read more')
+                .addClass('redactions-legend-read-more');
+
             var redactions_legend = $(document.createElement('div'))
                 .addClass('module-content redactions-legend')
                 .append($(document.createElement('hr')))
                 .append(legend_head)
                 .append(legend_text_1)
                 .append(legend_text_2)
-                .append(legend_text_3);
+                .append(legend_text_3)
+                .append(legend_link);
             if ($('aside.secondary').length) {
                 $('aside.secondary').append(redactions_legend);
             }
