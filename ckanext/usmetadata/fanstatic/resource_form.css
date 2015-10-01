@@ -61,8 +61,19 @@
     color: white;
 }
 
-.redacted-marker {
-    float:left;
-    padding:1px 1px 0 5px;
-    margin:4px 0 0 2px;
+.partial-redaction-buttons{
+    float:right;
+}
+
+.redacted-marker{
+    width:26px;
+}
+.redacted-clear {
+    width:23px;
+}
+
+.controls .exemption_reason{
+    width: -moz-calc(100% - 60px);
+    width: -webkit-calc(100% - 60px);
+    width: calc(100% - 60px);
 }

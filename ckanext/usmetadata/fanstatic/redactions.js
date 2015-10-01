@@ -4,6 +4,7 @@
 var RedactionControl = new function () {
     var obj = this;
 
+    // excluding these fields from partial redactions since they are not supported yet by POD schema v1.1
     this.excluded_partial_redactions = [
         'bureau_code',
         'category',
@@ -90,10 +91,10 @@ var RedactionControl = new function () {
         }
 
         controlsDiv.append(reason_select);
-        reason_select.change(toggle_partial_redactor).trigger('change');
+        reason_select.change(toggle_partial_redactor_buttons).trigger('change');
     };
 
-    function toggle_partial_redactor() {
+    function toggle_partial_redactor_buttons() {
         var input = $(this).parents('.control-group').find(':input[type=text],textarea');
         if (!input.length || input.length > 1) {
             return;
@@ -105,6 +106,7 @@ var RedactionControl = new function () {
         try {
             if (!$(this).val()) {
                 $(this).parents('.control-group').find('.redacted-marker').hide();
+                $(this).parents('.control-group').find('.redacted-clear').hide();
                 RedactionControl.show_redacted_controls();
                 return;
             }
@@ -112,24 +114,38 @@ var RedactionControl = new function () {
             return;
         }
 
-        var redacted_icon = $(this).parents('.control-group').children('.redacted-icon');
+        //var redacted_icon = $(this).parents('.control-group').find('.redacted-icon');
+        var redacted_reason = $(this).parents('.control-group').find('.exemption_reason');
         if (!$(this).parents('.control-group').find('.redacted-marker').length) {
-            var partial_marker = $(document.createElement('a'))
-                .addClass('btn redacted-marker btn-inverse')
+            var partial_redactions_div = $(document.createElement('div'))
+                .addClass('partial-redaction-buttons');
+            var partial_marker = $(document.createElement('img'))
+                .attr('src', '/partial_redaction.png')
+                .addClass('redacted-marker')
                 .attr('alt', "Select text and click me for partial redaction")
-                .attr('title', "Select text and click me for partial redaction")
-                .append(
-                $(document.createElement('i')).addClass('icon-ban-circle')
-            );
-            partial_marker.click(partial_redact);
-            redacted_icon.after(partial_marker);
+                .attr('title', "Select text and click me for partial redaction");
+
+            var redaction_clear = $(document.createElement('img'))
+                .attr('src', '/redaction_clear.png')
+                .addClass('redacted-clear')
+                .attr('alt', "Clear redactions")
+                .attr('title', "Clear redactions");
+
+            partial_redactions_div.append(partial_marker);
+            partial_redactions_div.append(redaction_clear);
+
+            partial_marker.click(apply_partial_redaction);
+            redaction_clear.click(clear_partial_redaction);
+            redacted_reason.after(partial_redactions_div);
+            partial_redactions_div.toggle().toggle();
         } else {
             $(this).parents('.control-group').find('.redacted-marker').show();
+            $(this).parents('.control-group').find('.redacted-clear').show();
         }
-        redacted_icon.hide();
+        //redacted_icon.hide();
     }
 
-    function partial_redact() {
+    function apply_partial_redaction() {
         var input = $(this).parents('.control-group').find(':input[type=text],textarea');
         if (!input.length || input.length > 1) {
             return;
@@ -153,15 +169,30 @@ var RedactionControl = new function () {
         input.val(strLeft + redacted_text + strRight);
     }
 
+    function clear_partial_redaction() {
+        var input = $(this).parents('.control-group').find(':input[type=text],textarea');
+        if (!input.length || input.length > 1) {
+            return;
+        }
+
+        var reason = input.siblings('.exemption_reason').val();
+        if (!reason) {
+            return;
+        }
+
+        var redacted_text = input.val();
+        input.val(redacted_text.replace(/\[\[\/?REDACTED(-EX\sB\d)?\]\]/ig, ''));
+    }
+
     this.redacted_icon_callback = function () {
-        var controlsDiv = $(this).parent().children('.controls');
-        if (controlsDiv.children('.exemption_reason').length) {
-            if (!controlsDiv.children('.exemption_reason').val()) {
-                controlsDiv.children('.exemption_reason').fadeToggle();
+        var controlsDiv = $(this).parent().find('.controls');
+        if (controlsDiv.find('.exemption_reason').length) {
+            if (!controlsDiv.find('.exemption_reason').val()) {
+                controlsDiv.find('.exemption_reason').fadeToggle();
             }
             return;
         }
-        var id = controlsDiv.children(':input').attr('name');
+        var id = controlsDiv.find(':input').attr('name');
         obj.render_redacted_input(id);
     };
 
