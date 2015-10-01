@@ -102,7 +102,6 @@ var RedactionControl = new function () {
         if ($.inArray(input.attr('name'), obj.excluded_partial_redactions) > -1) {
             return;
         }
-        console.log(input.attr('name'));
         try {
             if (!$(this).val()) {
                 $(this).parents('.control-group').find('.redacted-marker').hide();
@@ -114,7 +113,6 @@ var RedactionControl = new function () {
             return;
         }
 
-        //var redacted_icon = $(this).parents('.control-group').find('.redacted-icon');
         var redacted_reason = $(this).parents('.control-group').find('.exemption_reason');
         if (!$(this).parents('.control-group').find('.redacted-marker').length) {
             var partial_redactions_div = $(document.createElement('div'))
@@ -142,7 +140,6 @@ var RedactionControl = new function () {
             $(this).parents('.control-group').find('.redacted-marker').show();
             $(this).parents('.control-group').find('.redacted-clear').show();
         }
-        //redacted_icon.hide();
     }
 
     function apply_partial_redaction() {
