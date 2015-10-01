@@ -261,10 +261,8 @@ var RedactionControl = new function () {
                 .append(legend_text_1)
                 .append(legend_text_2)
                 .append(legend_text_3);
-            if ($('div.context-info').length) {
-                $('div.context-info').append(redactions_legend);
-            }else if ($('div.module-content').length) {
-                $('div.module-content').after(redactions_legend);
+            if ($('aside.secondary').length) {
+                $('aside.secondary').append(redactions_legend);
             }
         }
     };
