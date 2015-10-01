@@ -117,7 +117,7 @@ var RedactionControl = new function () {
             var partial_redactions_div = $(document.createElement('div'))
                 .addClass('partial-redaction-buttons');
             var partial_marker = $(document.createElement('img'))
-                .attr('src', '/partial_redaction.png')
+                .attr('src', '/partial_redaction.jpg')
                 .addClass('redacted-marker')
                 .attr('alt', "Select text and click me for partial redaction")
                 .attr('title', "Select text and click me for partial redaction");
@@ -239,7 +239,7 @@ var RedactionControl = new function () {
             );
             var legend_text_2 = $(document.createElement('div'))
                 .append($(document.createElement('img'))
-                    .attr('src','/partial_redaction.png')
+                    .attr('src','/partial_redaction.jpg')
                     .addClass('legend-redacted-icon')
             ).append(
                 $(document.createElement('i'))
@@ -248,10 +248,10 @@ var RedactionControl = new function () {
             var legend_text_3 = $(document.createElement('div'))
                 .append($(document.createElement('img'))
                     .attr('src','/redaction_clear.png')
-                    .addClass('legend-redacted-icon3')
+                    .addClass('legend-redacted-icon')
             ).append(
                 $(document.createElement('i'))
-                    .text(' - Clear Redaction Icon')
+                    .text('- Clear Redaction Icon')
             );
 
             var redactions_legend = $(document.createElement('div'))

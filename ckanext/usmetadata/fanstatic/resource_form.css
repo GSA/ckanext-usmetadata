@@ -66,12 +66,8 @@
     float: right;
 }
 
-.redacted-marker {
+.redacted-marker, .redacted-clear {
     width: 26px;
-}
-
-.redacted-clear {
-    width: 23px;
 }
 
 .controls .exemption_reason {
@@ -82,7 +78,4 @@
 
 .redactions-legend .legend-redacted-icon {
     width: 20px;
-}
-.redactions-legend .legend-redacted-icon3 {
-    width: 18px;
 }
