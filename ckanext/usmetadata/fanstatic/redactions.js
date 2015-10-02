@@ -255,7 +255,7 @@ var RedactionControl = new function () {
             );
 
             var legend_link = $(document.createElement('a'))
-                .attr('href', '/redactions-legend.html')
+                .attr('href', 'https://github.com/GSA/data.gov/wiki/Intentory.data.gov-User-Guide-for-Redaction-and-Partial-Redaction-Feature')
                 .attr('target', '_blank')
                 .text('read more')
                 .addClass('redactions-legend-read-more');
