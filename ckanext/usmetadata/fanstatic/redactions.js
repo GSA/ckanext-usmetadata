@@ -225,13 +225,13 @@ var RedactionControl = new function () {
         this.show_redaction_legend();
     };
 
-    this.show_redaction_legend = function() {
+    this.show_redaction_legend = function () {
         if (!$('.redactions-legend').length) {
             var legend_head = $(document.createElement('h3'))
                 .text('Redaction Legend');
             var legend_text_1 = $(document.createElement('div'))
                 .append($(document.createElement('img'))
-                    .attr('src','/redacted_icon.png')
+                    .attr('src', '/redacted_icon.png')
                     .addClass('legend-redacted-icon')
             ).append(
                 $(document.createElement('i'))
@@ -239,7 +239,7 @@ var RedactionControl = new function () {
             );
             var legend_text_2 = $(document.createElement('div'))
                 .append($(document.createElement('img'))
-                    .attr('src','/partial_redaction.jpg')
+                    .attr('src', '/partial_redaction.jpg')
                     .addClass('legend-redacted-icon')
             ).append(
                 $(document.createElement('i'))
@@ -247,7 +247,7 @@ var RedactionControl = new function () {
             );
             var legend_text_3 = $(document.createElement('div'))
                 .append($(document.createElement('img'))
-                    .attr('src','/redaction_clear.png')
+                    .attr('src', '/redaction_clear.png')
                     .addClass('legend-redacted-icon')
             ).append(
                 $(document.createElement('i'))
@@ -255,8 +255,8 @@ var RedactionControl = new function () {
             );
 
             var legend_link = $(document.createElement('a'))
-                .attr('href','/redactions-legend.html')
-                .attr('target','_blank')
+                .attr('href', '/redactions-legend.html')
+                .attr('target', '_blank')
                 .text('read more')
                 .addClass('redactions-legend-read-more');
 
