@@ -68,7 +68,7 @@ var DatasetResourceForm = new function () {
                 })[0].value;
                 if ('public' !== access_level) {
                     //console.debug('nice');
-                    RedactionControl.show_redacted_icons();
+                    RedactionControl.append_redacted_icons();
                     RedactionControl.preload_redacted_inputs();
                 }
             });
