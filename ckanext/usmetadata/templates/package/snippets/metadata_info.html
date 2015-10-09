@@ -26,7 +26,12 @@
             {% elif meta == "data_quality" and  pkg_dict.common_core[meta] == "false" %}
                 <td class="dataset-details" property="rdf:value">No</td>
             {% else %}
-                <td class="dataset-details" property="rdf:value">{{ pkg_dict.common_core[meta] }}</td>
+                <td class="dataset-details" property="rdf:value">
+                    {{ h.redacted_icon(pkg_dict, meta)|safe }}
+                    <div class="redacted-md">
+                        {{ h.usmetadata_filter(pkg_dict.common_core[meta]) }}
+                    </div>
+                </td>
             {% endif %}
         </tr>
         {% endfor %}

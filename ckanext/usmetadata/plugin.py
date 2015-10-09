@@ -97,6 +97,10 @@ REDACTED_REGEX = re.compile(
     r'^(\[\[REDACTED).*?(\]\])$'
 )
 
+REDACTION_STROKE_REGEX = re.compile(
+    r'(\[\[REDACTED-EX B[\d]\]\])'
+)
+
 # excluded title, description, tags and last update as they're part of the default ckan dataset metadata
 required_metadata = (
     {'id': 'title', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
@@ -522,6 +526,42 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     p.implements(p.interfaces.IPackageController, inherit=True)
     p.implements(p.IFacets, inherit=True)
 
+    @classmethod
+    def usmetadata_filter(cls, data=None):
+        for redact in re.findall(REDACTION_STROKE_REGEX, data):
+            data = data.replace(redact, '~~')
+        data = data.replace('[[/REDACTED]]', '~~')
+        # render our custom snippet
+        return data
+
+    @classmethod
+    def usmetadata_shorten(cls, plain=None, extract_length=180):
+        if not extract_length or len(plain) < extract_length:
+            return plain
+        return unicode(h.truncate(plain, length=extract_length, indicator='...', whole_word=True))
+
+    @classmethod
+    def redacted_icon(cls, package, field):
+        redacted_key = 'redacted_' + field
+        if 'common_core' in package and 'public_access_level' in package['common_core']:
+            core = package['common_core']
+            pal = core['public_access_level']
+            if pal not in ['non-public', 'restricted public']:
+                return ''
+            if redacted_key not in core or not core[redacted_key]:
+                return ''
+            return '<img src="/redacted_icon.png" class="redacted-icon" />'
+        elif 'extras' in package:
+            extras = dict([(x['key'], x['value']) for x in package['extras']])
+            if 'public_access_level' not in extras:
+                return ''
+            if extras['public_access_level'] not in ['non-public', 'restricted public']:
+                return ''
+            if redacted_key not in extras or not extras[redacted_key]:
+                return ''
+            return '<img src="/redacted_icon.png" class="redacted-icon" />'
+        return ''
+
     # Add access level facet on dataset page
     def dataset_facets(self, facets_dict, package_type):
         if package_type <> 'dataset':
@@ -863,15 +903,20 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     # always_private hides Visibility selector, essentially meaning that all datasets are private to an organization
     def get_helpers(self):
         log.debug('get_helpers() called')
-        return {'public_access_levels': access_levels,
-                'required_metadata': required_metadata,
-                'data_quality_options': data_quality_options,
-                'license_options': license_options,
-                'is_parent_options': is_parent_options,
-                'load_data_into_dict': self.load_data_into_dict,
-                'accrual_periodicity': accrual_periodicity,
-                'publishing_status_options': publishing_status_options,
-                'always_private': True}
+        return {
+            'public_access_levels': access_levels,
+            'required_metadata': required_metadata,
+            'data_quality_options': data_quality_options,
+            'license_options': license_options,
+            'is_parent_options': is_parent_options,
+            'load_data_into_dict': self.load_data_into_dict,
+            'accrual_periodicity': accrual_periodicity,
+            'publishing_status_options': publishing_status_options,
+            'always_private': True,
+            'usmetadata_filter': self.usmetadata_filter,
+            'usmetadata_shorten': self.usmetadata_shorten,
+            'redacted_icon': self.redacted_icon
+        }
 
 
 # AJAX validator
