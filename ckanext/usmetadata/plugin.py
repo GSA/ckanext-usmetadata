@@ -527,10 +527,10 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     p.implements(p.IFacets, inherit=True)
 
     @classmethod
-    def usmetadata_filter(cls, data=None):
+    def usmetadata_filter(cls, data=None, mask='~~'):
         for redact in re.findall(REDACTION_STROKE_REGEX, data):
-            data = data.replace(redact, '~~')
-        data = data.replace('[[/REDACTED]]', '~~')
+            data = data.replace(redact, mask)
+        data = data.replace('[[/REDACTED]]', mask)
         # render our custom snippet
         return data
 
