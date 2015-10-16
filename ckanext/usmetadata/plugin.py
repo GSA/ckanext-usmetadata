@@ -541,6 +541,20 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         return unicode(h.truncate(plain, length=extract_length, indicator='...', whole_word=True))
 
     @classmethod
+    def resource_redacted_icon(cls, package, resource, field):
+        redacted_key = 'redacted_' + field
+        if 'extras' in package:
+            extras = dict([(x['key'], x['value']) for x in package['extras']])
+            if 'public_access_level' not in extras:
+                return ''
+            if extras['public_access_level'] not in ['non-public', 'restricted public']:
+                return ''
+            if redacted_key not in resource or not resource[redacted_key]:
+                return ''
+            return '<img src="/redacted_icon.png" class="redacted-icon" />'
+        return ''
+
+    @classmethod
     def redacted_icon(cls, package, field):
         redacted_key = 'redacted_' + field
         if 'common_core' in package and 'public_access_level' in package['common_core']:
@@ -915,7 +929,8 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             'always_private': True,
             'usmetadata_filter': self.usmetadata_filter,
             'usmetadata_shorten': self.usmetadata_shorten,
-            'redacted_icon': self.redacted_icon
+            'redacted_icon': self.redacted_icon,
+            'resource_redacted_icon': self.resource_redacted_icon
         }
 
 

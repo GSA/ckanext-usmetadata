@@ -16,7 +16,7 @@
 {% block breadcrumb_content %}
   {% if c.userobj %}
     {{ super() }}
-    <li class="active"><a href="">{{ h.resource_display_name(res)|truncate(30) }}</a></li>
+    <li class="active"><a href="">{{ h.usmetadata_filter(h.resource_display_name(res),'')|truncate(30) }}</a></li>
   {% endif %}
 {% endblock %}
 
@@ -54,15 +54,27 @@
           {% endblock %}
         </div>
         {% block resource_content %}
-          {% block resource_read_title %}<h1 class="page-heading">{{ h.resource_display_name(res) | truncate(50) }}</h1>{% endblock %}
+          {% block resource_read_title %}
+              {{ h.resource_redacted_icon(c.package,res,'name')|safe }}
+              <h1 class="page-heading redacted-md">
+                {{ h.usmetadata_filter(h.resource_display_name(res)) | truncate(50) }}
+              </h1>
+          {% endblock %}
           {% block resource_read_url %}
             {% if res.url %}
-              <p class="muted ellipsis">{{ _('URL:') }} <a href="{{ res.url }}" title="{{ res.url }}">{{ res.url }}</a></p>
+              <p class="muted ellipsis">
+                  {{ h.resource_redacted_icon(c.package,res,'url')|safe }}
+                  {{ _('URL:') }}
+                  <a class="redacted-md" href="{{ h.usmetadata_filter(res.url,'') }}" title="{{ h.usmetadata_filter(res.url,'') }}">
+                    {{ h.usmetadata_filter(res.url) }}
+                  </a>
+              </p>
             {% endif %}
           {% endblock %}
           <div class="prose notes" property="rdfs:label">
             {% if res.description %}
-              {{ h.render_markdown(res.description) }}
+                {{ h.resource_redacted_icon(c.package,res,'description')|safe }}
+                <span class="redacted-md">{{ h.usmetadata_filter(h.render_markdown(res.description)) }}</span>
             {% endif %}
             {% if not res.description and c.package.notes %}
               <h3>{{ _('From the dataset abstract') }}</h3>
@@ -105,7 +117,10 @@
               </tr>
               <tr>
                 <th scope="row">{{ _('Format') }}</th>
-                <td>{{ res.mimetype_inner or res.mimetype or res.format or _('unknown') }}</td>
+                <td>
+                    {{ h.resource_redacted_icon(c.package,res,'format')|safe }}
+                    <span class="redacted-md">{{ h.usmetadata_filter(res.mimetype_inner or res.mimetype or res.format or _('unknown')) }}</span>
+                </td>
               </tr>
               <tr>
                 <th scope="row">{{ _('License') }}</th>
@@ -113,11 +128,18 @@
               </tr>
 
               {% for key, value in h.format_resource_items(res.items()) %}
-                {% if key != 'labels' %}
+                {% if key != 'labels' and 'redacted ' not in key %}
                   {% if res['labels'][key] %}
                     <tr class="toggle-more"><th scope="row">{{ res['labels'][key] }}</th><td>{{ value }}</td></tr>
                   {% else %}
-                    <tr class="toggle-more"><th scope="row">{{ key }}</th><td>{{ value }}</td></tr>
+                    <tr class="toggle-more">
+                        <th scope="row">{{ key }}</th>
+                        <td>
+                            {{ h.resource_redacted_icon(c.package,res,key)|safe }}
+                            {{ key }}
+                            <span class="redacted-md">{{ value }}</span>
+                        </td>
+                    </tr>
                   {% endif %}
                 {% endif %}
               {% endfor %}
