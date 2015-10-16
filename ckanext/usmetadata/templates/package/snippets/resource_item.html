@@ -5,8 +5,8 @@
 <li class="resource-item" data-id="{{ res.id }}">
   {% block resource_item_title %}
   <a class="heading" href="{{ url }}" title="{{ res.name or res.description }}">
-    {{ h.resource_redacted_icon(pkg,res,'name')|safe }}
       <div>
+          {{ h.resource_redacted_icon(pkg,res,'name')|safe }}
           <span class="redacted-md">
               {{ h.usmetadata_filter(h.resource_display_name(res)) | truncate(50) }}
           </span>
