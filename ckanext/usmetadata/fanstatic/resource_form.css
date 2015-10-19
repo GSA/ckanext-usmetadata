@@ -84,3 +84,9 @@
 .redactions-legend-read-more {
     float: right;
 }
+.ie8 .controls .exemption_reason {
+  width:85%;
+}
+.ie8 .partial-redaction-buttons{
+width:65px;
+}
