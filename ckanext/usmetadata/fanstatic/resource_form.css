@@ -64,6 +64,7 @@
 
 .partial-redaction-buttons {
     float: right;
+    margin-top: 5px;
 }
 
 .redacted-marker, .redacted-clear {

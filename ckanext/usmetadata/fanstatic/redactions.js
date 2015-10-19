@@ -274,3 +274,19 @@ var RedactionControl = new function () {
         }
     };
 }();
+
+$(document).ready(function () {
+    if ($('.redacted-md').length) {
+        $('.redacted-md')
+            .each(function () {
+                if ($(this).siblings('img.redacted-icon').length) {
+                    $(this).html($(this).html().replace(/\~\~(.*?)\~\~/g,'<del>$1</del>'));
+                } else {
+                    $(this).html($(this).html().replace(/\~/g, ''));
+                }
+            })
+    }
+});
+
+
+
