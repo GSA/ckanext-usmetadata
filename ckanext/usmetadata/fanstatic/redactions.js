@@ -191,6 +191,7 @@ var RedactionControl = new function () {
                     }
                 }
             }
+            document.selection.empty();
         }
 
         var selectionStart = start;
