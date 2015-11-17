@@ -9,7 +9,7 @@
   <meta property="og:description" content="{{ description|forceescape }}">
 {% endblock -%}
 
-{% block subtitle %}{{ h.dataset_display_name(c.package) }} - {{ h.resource_display_name(res) }}{% endblock %}
+{% block subtitle %}{{ h.usmetadata_filter(h.dataset_display_name(c.package), '') }} - {{ h.usmetadata_filter(h.resource_display_name(res), '') }}{% endblock %}
 
 {% block breadcrumb_content_selected %}{% endblock %}
 
@@ -130,14 +130,21 @@
               {% for key, value in h.format_resource_items(res.items()) %}
                 {% if key != 'labels' and 'redacted ' not in key %}
                   {% if res['labels'][key] %}
-                    <tr class="toggle-more"><th scope="row">{{ res['labels'][key] }}</th><td>{{ value }}</td></tr>
+                    <tr class="toggle-more">
+                        <th scope="row">
+                            {{ res['labels'][key] }}
+                        </th>
+                        <td>
+                            {{ h.resource_redacted_icon(c.package,res,key)|safe }}
+                            <span class="redacted-md">{{ h.usmetadata_filter(value) }}</span>
+                        </td>
+                    </tr>
                   {% else %}
                     <tr class="toggle-more">
                         <th scope="row">{{ key }}</th>
                         <td>
                             {{ h.resource_redacted_icon(c.package,res,key)|safe }}
-                            {{ key }}
-                            <span class="redacted-md">{{ value }}</span>
+                            <span class="redacted-md">{{ h.usmetadata_filter(value) }}</span>
                         </td>
                     </tr>
                   {% endif %}
