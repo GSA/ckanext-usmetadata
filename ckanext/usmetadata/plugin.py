@@ -20,11 +20,6 @@ import ckan.plugins as p
 import db_utils
 from ckan.common import _, json, request, c, g, response
 from ckan.lib.base import BaseController
-from ckan.lib.navl.validators import (ignore_missing,
-                                      not_empty,
-                                      ignore,
-                                      not_missing
-                                      )
 
 render = base.render
 abort = base.abort
@@ -868,13 +863,13 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
     def _default_extras_schema(self):
         schema = {
-            'id': [ignore],
-            'key': [not_empty, unicode],
-            'value': [not_missing],
-            'state': [ignore],
-            'deleted': [ignore_missing],
-            'revision_timestamp': [ignore],
-            '__extras': [ignore],
+            'id': [p.toolkit.get_validator('ignore')],
+            'key': [p.toolkit.get_validator('not_empty'), unicode],
+            'value': [p.toolkit.get_validator('not_missing')],
+            'state': [p.toolkit.get_validator('ignore')],
+            'deleted': [p.toolkit.get_validator('ignore_missing')],
+            'revision_timestamp': [p.toolkit.get_validator('ignore')],
+            '__extras': [p.toolkit.get_validator('ignore')],
         }
         return schema
 
@@ -898,6 +893,9 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             # 'format': [p.toolkit.get_validator('not_empty')],
             # }
         })
+        schema['resources'].update({
+            'format': [p.toolkit.get_validator('ignore_missing'), unicode]
+        })
         return schema
 
     def _modify_package_schema_update(self, schema):
@@ -910,6 +908,9 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             'tag_string': [p.toolkit.get_validator('ignore_empty'),
                            p.toolkit.get_converter('convert_to_tags')],
             'extras': self._default_extras_schema()
+        })
+        schema['resources'].update({
+            'format': [p.toolkit.get_validator('ignore_missing'), unicode]
         })
         return schema
 
