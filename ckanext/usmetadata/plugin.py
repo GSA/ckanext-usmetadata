@@ -1,30 +1,30 @@
-import copy
 import cgi
 import collections
-from logging import getLogger
+import copy
 import datetime
-
 import os
 import re
+from logging import getLogger
+
 import formencode.validators as v
-import ckan.logic as logic
-import ckan.lib.base as base
-import ckan.lib.navl.dictization_functions as dict_fns
-import ckan.model as model
-import ckan.lib.dictization.model_dictize as model_dictize
-import ckan.plugins as p
 import requests
+from pylons import config
+
+import ckan.lib.base as base
+import ckan.lib.dictization.model_dictize as model_dictize
+import ckan.lib.navl.dictization_functions as dict_fns
+import ckan.lib.plugins
+import ckan.logic as logic
+import ckan.model as model
+import ckan.plugins as p
+import db_utils
+from ckan.common import _, json, request, c, g, response
+from ckan.lib.base import BaseController
 from ckan.lib.navl.validators import (ignore_missing,
                                       not_empty,
                                       ignore,
                                       not_missing
-                                     )
-from ckan.lib.base import BaseController
-from pylons import config
-from ckan.common import _, json, request, c, g, response
-import ckan.lib.plugins
-
-import db_utils
+                                      )
 
 render = base.render
 abort = base.abort
@@ -42,6 +42,7 @@ flatten_to_string_key = logic.flatten_to_string_key
 lookup_package_plugin = ckan.lib.plugins.lookup_package_plugin
 
 import ckan.lib.helpers as h
+
 # from ckan.plugins import implements, SingletonPlugin, toolkit, IConfigurer,
 # ITemplateHelpers, IDatasetForm, IPackageController
 # from formencode.validators import validators
@@ -230,7 +231,6 @@ required_if_applicable_metadata = (
     {'id': 'access_level_comment', 'validators': [v.String(max=255)]},
     {'id': 'license_new', 'validators': [v.String(max=2100)]}
 )
-
 
 # used for by passing API validation
 required_metadata_by_pass_validation = (
@@ -423,8 +423,8 @@ class UsmetadataController(BaseController):
         if request.method == 'POST' and not data:
             save_action = request.params.get('save')
             data = data or \
-                clean_dict(dict_fns.unflatten(tuplize_dict(parse_params(
-                                                           request.POST))))
+                   clean_dict(dict_fns.unflatten(tuplize_dict(parse_params(
+                       request.POST))))
             # we don't want to include save as it is part of the form
             del data['save']
             resource_id = data['id']
@@ -437,7 +437,7 @@ class UsmetadataController(BaseController):
             data_provided = False
             for key, value in data.iteritems():
                 if ((value or isinstance(value, cgi.FieldStorage))
-                        and key != 'resource_type'):
+                    and key != 'resource_type'):
                     data_provided = True
                     break
 
@@ -453,8 +453,9 @@ class UsmetadataController(BaseController):
                     abort(401, _('Unauthorized to update dataset'))
                 except NotFound:
                     abort(404,
-                      _('The dataset {id} could not be found.').format(id=id))
-                if str.lower(config.get('ckan.package.resource_required', 'true')) == 'true' and not len(data_dict['resources']):
+                          _('The dataset {id} could not be found.').format(id=id))
+                if str.lower(config.get('ckan.package.resource_required', 'true')) == 'true' and not len(
+                        data_dict['resources']):
                     # no data so keep on page
                     msg = _('You must add at least one data resource')
                     # On new templates do not use flash message
@@ -565,13 +566,10 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     p.implements(p.ITemplateHelpers, inherit=False)
     p.implements(p.IConfigurer, inherit=False)
     p.implements(p.IDatasetForm, inherit=False)
-    p.implements(p.IResourceController, inherit=False)
+    p.implements(p.IResourceController, inherit=True)
     p.implements(p.interfaces.IRoutes, inherit=True)
     p.implements(p.interfaces.IPackageController, inherit=True)
     p.implements(p.IFacets, inherit=True)
-
-    def before_create(self, context, resource):
-        pass
 
     @classmethod
     def usmetadata_filter(cls, data=None, mask='~~'):
