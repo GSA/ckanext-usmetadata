@@ -1,24 +1,25 @@
-import copy
 import cgi
 import collections
-from logging import getLogger
+import copy
 import datetime
-
 import os
 import re
-import formencode.validators as v
-import ckan.logic as logic
-import ckan.lib.base as base
-import ckan.lib.navl.dictization_functions as dict_fns
-import ckan.model as model
-import ckan.lib.dictization.model_dictize as model_dictize
-import ckan.plugins as p
-import requests
-from ckan.lib.base import BaseController
-from pylons import config
-from ckan.common import _, json, request, c, g, response
+from logging import getLogger
 
+import formencode.validators as v
+import requests
+from pylons import config
+
+import ckan.lib.base as base
+import ckan.lib.dictization.model_dictize as model_dictize
+import ckan.lib.navl.dictization_functions as dict_fns
+import ckan.lib.plugins
+import ckan.logic as logic
+import ckan.model as model
+import ckan.plugins as p
 import db_utils
+from ckan.common import _, json, request, c, g, response
+from ckan.lib.base import BaseController
 
 render = base.render
 abort = base.abort
@@ -33,8 +34,10 @@ tuplize_dict = logic.tuplize_dict
 clean_dict = logic.clean_dict
 parse_params = logic.parse_params
 flatten_to_string_key = logic.flatten_to_string_key
+lookup_package_plugin = ckan.lib.plugins.lookup_package_plugin
 
 import ckan.lib.helpers as h
+
 # from ckan.plugins import implements, SingletonPlugin, toolkit, IConfigurer,
 # ITemplateHelpers, IDatasetForm, IPackageController
 # from formencode.validators import validators
@@ -224,7 +227,6 @@ required_if_applicable_metadata = (
     {'id': 'license_new', 'validators': [v.String(max=2100)]}
 )
 
-
 # used for by passing API validation
 required_metadata_by_pass_validation = (
     {'id': 'title', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
@@ -400,26 +402,40 @@ class UsmetadataController(BaseController):
                 del error_summary[old_key]
         return error_summary
 
+    def _resource_form(self, package_type):
+        # backwards compatibility with plugins not inheriting from
+        # DefaultDatasetPlugin and not implmenting resource_form
+        plugin = lookup_package_plugin(package_type)
+        if hasattr(plugin, 'resource_form'):
+            result = plugin.resource_form()
+            if result is not None:
+                return result
+        return lookup_package_plugin().resource_form()
+
     def new_resource_usmetadata(self, id, data=None, errors=None, error_summary=None):
-        """
-        TODO: FIXME: This is a temporary action to allow styling of the forms.
-        """
+        ''' FIXME: This is a temporary action to allow styling of the
+        forms. '''
         if request.method == 'POST' and not data:
             save_action = request.params.get('save')
-            data = data or clean_dict(dict_fns.unflatten(tuplize_dict(parse_params(
-                request.POST))))
+            data = data or \
+                   clean_dict(dict_fns.unflatten(tuplize_dict(parse_params(
+                       request.POST))))
             # we don't want to include save as it is part of the form
             del data['save']
             resource_id = data['id']
             del data['id']
+
             context = {'model': model, 'session': model.Session,
                        'user': c.user or c.author, 'auth_user_obj': c.userobj}
+
             # see if we have any data that we are trying to save
             data_provided = False
             for key, value in data.iteritems():
-                if value or isinstance(value, cgi.FieldStorage) and key != 'resource_type':
+                if ((value or isinstance(value, cgi.FieldStorage))
+                    and key != 'resource_type'):
                     data_provided = True
                     break
+
             if not data_provided and save_action != "go-dataset-complete":
                 if save_action == 'go-dataset':
                     # go to final stage of adddataset
@@ -431,7 +447,8 @@ class UsmetadataController(BaseController):
                 except NotAuthorized:
                     abort(401, _('Unauthorized to update dataset'))
                 except NotFound:
-                    abort(404, _('The dataset {id} could not be found.').format(id=id))
+                    abort(404,
+                          _('The dataset {id} could not be found.').format(id=id))
                 if str.lower(config.get('ckan.package.resource_required', 'true')) == 'true' and not len(
                         data_dict['resources']):
                     # no data so keep on page
@@ -444,14 +461,15 @@ class UsmetadataController(BaseController):
                     else:
                         errors = {}
                         error_summary = {_('Error'): msg}
-                        return self.new_resource_usmetadata(id, data, errors, error_summary)
+                        return self.new_resource_usmetadata(id, data, errors,
+                                                            error_summary)
                 # we have a resource so let them add metadata
                 # redirect(h.url_for(controller='package',
                 # action='new_metadata', id=id))
-                variables = self.get_package_info_usmetadata(id, context, errors, error_summary)
+                vars = self.get_package_info_usmetadata(id, context, errors, error_summary)
                 package_type = self._get_package_type(id)
                 self._setup_template_variables(context, {}, package_type=package_type)
-                return render('package/new_package_metadata.html', extra_vars=variables)
+                return render('package/new_package_metadata.html', extra_vars=vars)
 
             data['package_id'] = id
             try:
@@ -462,22 +480,25 @@ class UsmetadataController(BaseController):
                     get_action('resource_create')(context, data)
             except ValidationError, e:
                 errors = e.error_dict
+                # error_summary = e.error_summary
                 error_summary = self.map_old_keys(e.error_summary)
+                # return self.new_resource(id, data, errors, error_summary)
                 return self.new_resource_usmetadata(id, data, errors, error_summary)
+
             except NotAuthorized:
                 abort(401, _('Unauthorized to create a resource'))
             except NotFound:
-                abort(404,
-                      _('The dataset {id} could not be found.').format(id=id))
+                abort(404, _('The dataset {id} could not be found.'
+                             ).format(id=id))
             if save_action == 'go-metadata':
                 # go to final stage of add dataset
                 # redirect(h.url_for(controller='package',
                 # action='new_metadata', id=id))
                 # Github Issue # 129. Removing last stage of dataset creation.
-                variables = self.get_package_info_usmetadata(id, context, errors, error_summary)
+                vars = self.get_package_info_usmetadata(id, context, errors, error_summary)
                 package_type = self._get_package_type(id)
                 self._setup_template_variables(context, {}, package_type=package_type)
-                return render('package/new_package_metadata.html', extra_vars=variables)
+                return render('package/new_package_metadata.html', extra_vars=vars)
             elif save_action == 'go-dataset':
                 # go to first stage of add dataset
                 redirect(h.url_for(controller='package',
@@ -490,10 +511,29 @@ class UsmetadataController(BaseController):
                 # add more resources
                 redirect(h.url_for(controller='package',
                                    action='new_resource', id=id))
+
+        # get resources for sidebar
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user or c.author, 'auth_user_obj': c.userobj}
+        try:
+            pkg_dict = get_action('package_show')(context, {'id': id})
+        except NotFound:
+            abort(404, _('The dataset {id} could not be found.').format(id=id))
+        try:
+            check_access(
+                'resource_create', context, {"package_id": pkg_dict["id"]})
+        except NotAuthorized:
+            abort(401, _('Unauthorized to create a resource for this package'))
+
+        package_type = pkg_dict['type'] or 'dataset'
+
         errors = errors or {}
         error_summary = error_summary or {}
-        variables = {'data': data, 'errors': errors, 'error_summary': error_summary, 'action': 'new'}
-        variables['pkg_name'] = id
+        vars = {'data': data, 'errors': errors,
+                'error_summary': error_summary, 'action': 'new',
+                'resource_form_snippet': self._resource_form(package_type),
+                'dataset_type': package_type}
+        vars['pkg_name'] = id
         # get resources for sidebar
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author, 'auth_user_obj': c.userobj}
@@ -502,15 +542,15 @@ class UsmetadataController(BaseController):
         except NotFound:
             abort(404, _('The dataset {id} could not be found.').format(id=id))
         # required for nav menu
-        variables['pkg_dict'] = pkg_dict
+        vars['pkg_dict'] = pkg_dict
         template = 'package/new_resource_not_draft.html'
         if pkg_dict['state'] == 'draft':
-            variables['stage'] = ['complete', 'active']
+            vars['stage'] = ['complete', 'active']
             template = 'package/new_resource.html'
         elif pkg_dict['state'] == 'draft-complete':
-            variables['stage'] = ['complete', 'active', 'complete']
+            vars['stage'] = ['complete', 'active', 'complete']
             template = 'package/new_resource.html'
-        return render(template, extra_vars=variables)
+        return render(template, extra_vars=vars)
 
 
 class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
@@ -521,7 +561,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     p.implements(p.ITemplateHelpers, inherit=False)
     p.implements(p.IConfigurer, inherit=False)
     p.implements(p.IDatasetForm, inherit=False)
-    p.implements(p.IResourceController, inherit=False)
+    p.implements(p.IResourceController, inherit=True)
     p.implements(p.interfaces.IRoutes, inherit=True)
     p.implements(p.interfaces.IPackageController, inherit=True)
     p.implements(p.IFacets, inherit=True)
@@ -821,6 +861,18 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         # that CKAN will use this plugin's custom static files.
         p.toolkit.add_public_directory(config, 'public')
 
+    def _default_extras_schema(self):
+        schema = {
+            'id': [p.toolkit.get_validator('ignore')],
+            'key': [p.toolkit.get_validator('not_empty'), unicode],
+            'value': [p.toolkit.get_validator('not_missing')],
+            'state': [p.toolkit.get_validator('ignore')],
+            'deleted': [p.toolkit.get_validator('ignore_missing')],
+            'revision_timestamp': [p.toolkit.get_validator('ignore')],
+            '__extras': [p.toolkit.get_validator('ignore')],
+        }
+        return schema
+
     # See ckan.plugins.interfaces.IDatasetForm
     def _create_package_schema(self, schema):
         log.debug("_create_package_schema called")
@@ -835,10 +887,14 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         schema.update({
             'tag_string': [p.toolkit.get_validator('not_empty'),
                            p.toolkit.get_converter('convert_to_tags')],
+            'extras': self._default_extras_schema()
             # 'resources': {
             # 'name': [p.toolkit.get_validator('not_empty')],
             # 'format': [p.toolkit.get_validator('not_empty')],
             # }
+        })
+        schema['resources'].update({
+            'format': [p.toolkit.get_validator('ignore_missing'), unicode]
         })
         return schema
 
@@ -851,12 +907,10 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         schema.update({
             'tag_string': [p.toolkit.get_validator('ignore_empty'),
                            p.toolkit.get_converter('convert_to_tags')],
-            # 'resources': {
-            # 'name': [p.toolkit.get_validator('not_empty'),
-            # p.toolkit.get_converter('convert_to_extras')],
-            # 'format': [p.toolkit.get_validator('not_empty'),
-            # p.toolkit.get_converter('convert_to_extras')],
-            # }
+            'extras': self._default_extras_schema()
+        })
+        schema['resources'].update({
+            'format': [p.toolkit.get_validator('ignore_missing'), unicode]
         })
         return schema
 
@@ -890,11 +944,10 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         # if action == 'new_resource' and controller == 'package':
         # schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
         # schema = self._create_resource_schema(schema)
+        schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
         if action == 'edit' and controller == 'package':
-            schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
             schema = self._create_package_schema(schema)
         else:
-            schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
             schema = self._modify_package_schema_update(schema)
 
         return schema
