@@ -1,6 +1,4 @@
-{% extends "package/base.html" %}
-
-{% set res = c.resource %}
+{% ckan_extends %}
 
 {% block head_extras -%}
   {{ super() }}
@@ -12,13 +10,6 @@
 {% block subtitle %}{{ h.usmetadata_filter(h.dataset_display_name(c.package), '') }} - {{ h.usmetadata_filter(h.resource_display_name(res), '') }}{% endblock %}
 
 {% block breadcrumb_content_selected %}{% endblock %}
-
-{% block breadcrumb_content %}
-  {% if c.userobj %}
-    {{ super() }}
-    <li class="active"><a href="">{{ h.usmetadata_filter(h.resource_display_name(res),'')|truncate(30) }}</a></li>
-  {% endif %}
-{% endblock %}
 
 {% block pre_primary %}
   {% block resource %}
@@ -87,7 +78,7 @@
         </div>
       </div>
       {% block data_preview %}
-        {{ h.resource_preview(c.resource, c.package) }}
+        {{ super() }}
       {% endblock %}
     </section>
   {% endblock %}
