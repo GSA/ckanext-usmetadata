@@ -919,6 +919,10 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         for update in schema_updates_for_show:
             schema.update(update)
 
+        schema['resources'].update({
+            'format': [p.toolkit.get_validator('ignore_missing'), unicode]
+        })
+
         return schema
 
     # See ckan.plugins.interfaces.IDatasetForm
@@ -960,6 +964,10 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         # Don't show vocab tags mixed in with normal 'free' tags
         # (e.g. on dataset pages, or on the search page)
         schema['tags']['__extras'].append(p.toolkit.get_converter('free_tags_only'))
+
+        schema['resources'].update({
+            'format': [p.toolkit.get_validator('ignore_missing'), unicode]
+        })
 
         # BELOW LINE MAY BE CAUSING SOLR INDEXING ISSUES.
         # schema = self._modify_package_schema_show(schema)
