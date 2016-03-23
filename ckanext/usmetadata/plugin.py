@@ -893,9 +893,6 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             # 'format': [p.toolkit.get_validator('not_empty')],
             # }
         })
-        schema['resources'].update({
-            'format': [p.toolkit.get_validator('ignore_missing'), unicode]
-        })
         return schema
 
     def _modify_package_schema_update(self, schema):
@@ -909,19 +906,12 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
                            p.toolkit.get_converter('convert_to_tags')],
             'extras': self._default_extras_schema()
         })
-        schema['resources'].update({
-            'format': [p.toolkit.get_validator('ignore_missing'), unicode]
-        })
         return schema
 
     def _modify_package_schema_show(self, schema):
         log.debug("_modify_package_schema_update_show called")
         for update in schema_updates_for_show:
             schema.update(update)
-
-        schema['resources'].update({
-            'format': [p.toolkit.get_validator('ignore_missing'), unicode]
-        })
 
         return schema
 
@@ -964,10 +954,6 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         # Don't show vocab tags mixed in with normal 'free' tags
         # (e.g. on dataset pages, or on the search page)
         schema['tags']['__extras'].append(p.toolkit.get_converter('free_tags_only'))
-
-        schema['resources'].update({
-            'format': [p.toolkit.get_validator('ignore_missing'), unicode]
-        })
 
         # BELOW LINE MAY BE CAUSING SOLR INDEXING ISSUES.
         # schema = self._modify_package_schema_show(schema)
