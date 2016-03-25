@@ -15,6 +15,10 @@ def get_organization_title(id):
 
 def get_parent_organizations(c):
     items = {}
+
+    if not c.userobj:
+        return items
+
     if c.userobj.sysadmin:
         query = "select package_id, title from package_extra , package " \
                 "where package_extra.key = 'is_parent' and package_extra.value = 'true' " \
