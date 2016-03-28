@@ -564,7 +564,17 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     p.implements(p.IResourceController, inherit=True)
     p.implements(p.interfaces.IRoutes, inherit=True)
     p.implements(p.interfaces.IPackageController, inherit=True)
+    p.implements(p.interfaces.IOrganizationController, inherit=True)
     p.implements(p.IFacets, inherit=True)
+
+    def read(self, entity):
+        """
+        IPackageController.read && IOrganizationController.read
+        page must not be accessible by visitors
+        """
+        if not c.user:
+            abort(401, _('Not authorized to see this page'))
+        pass
 
     @classmethod
     def usmetadata_filter(cls, data=None, mask='~~'):
