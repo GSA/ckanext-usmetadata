@@ -572,8 +572,13 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         IPackageController.read && IOrganizationController.read
         page must not be accessible by visitors
         """
-        if not c.user:
+        visitor_allowed_actions = [
+            'resource_download'
+        ]
+
+        if not c.user and c.action not in visitor_allowed_actions:
             abort(401, _('Not authorized to see this page'))
+
         pass
 
     @classmethod
