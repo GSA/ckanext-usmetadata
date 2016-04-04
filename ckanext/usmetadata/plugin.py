@@ -573,7 +573,9 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         page must not be accessible by visitors
         """
         visitor_allowed_actions = [
-            'resource_download'
+            'resource_download',    # download resource file
+            'resource_read',    # resource read page
+            'resource_view'     # resource view (data explorer)
         ]
 
         if not c.user and c.action not in visitor_allowed_actions:
