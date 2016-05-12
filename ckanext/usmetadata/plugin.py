@@ -306,8 +306,11 @@ data_quality_options = {'': '', 'true': 'Yes', 'false': 'No'}
 is_parent_options = {'true': 'Yes', 'false': 'No'}
 
 # Dictionary of all media types
-media_types = json.loads(open(os.path.join(os.path.dirname(__file__), 'media_types.json'), 'r').read())
+# media_types = json.loads(open(os.path.join(os.path.dirname(__file__), 'media_types.json'), 'r').read())
 
+# list(set(x)) returns list with unique values
+media_types_dict = h.resource_formats()
+media_types = list(set([row[1] for row in h.resource_formats().values()]))
 
 # all required_metadata should be required
 def get_req_metadata_for_create():
@@ -1145,18 +1148,25 @@ class ResourceValidator(BaseController):
         try:
             url = request.params.get('url', False)
             resource_type = request.params.get('resource_type', False)
-            media_type = request.params.get('format', False)
             described_by = request.params.get('describedBy', False)
             described_by_type = request.params.get('describedByType', False)
             conforms_to = request.params.get('conformsTo', False)
+            media_type = request.params.get('format', False)
 
             errors = {}
             warnings = {}
 
             # if media_type and not REDACTED_REGEX.match(media_type) \
             #         and not IANA_MIME_REGEX.match(media_type):
-            if media_type and not IANA_MIME_REGEX.match(media_type):
-                errors['format'] = 'The value is not valid IANA MIME Media type'
+            # if media_type and not IANA_MIME_REGEX.match(media_type):
+            #     errors['format'] = 'The value is not valid IANA MIME Media type'
+            # elif not media_type and resource_type in ['file', 'upload']:
+            #     if url or resource_type == 'upload':
+            #         errors['format'] = 'The value is required for this type of resource'
+
+            lower_types = [mtype.lower() for mtype in media_types]
+            if media_type and media_type.lower() not in lower_types:
+                errors['format'] = 'The value is not valid format'
             elif not media_type and resource_type in ['file', 'upload']:
                 if url or resource_type == 'upload':
                     errors['format'] = 'The value is required for this type of resource'
@@ -1275,8 +1285,9 @@ class CurlController(BaseController):
                         'Method': method}})
             content_type = r.headers.get('content-type')
             content_type = content_type.split(';', 1)
+            unified_format = h.unified_resource_format(content_type[0])
             return json.dumps({'ResultSet': {
-                'CType': content_type[0],
+                'CType': unified_format,
                 'Status': r.status_code,
                 'Reason': r.reason,
                 'Method': method}})
@@ -1291,17 +1302,29 @@ class MediaController(BaseController):
 
     def get_media_types(self):
         # set content type (charset required or pylons throws an error)
-        q = request.params.get('incomplete', '')
+        q = request.params.get('incomplete', '').lower()
 
         response.content_type = 'application/json; charset=UTF-8'
 
         retval = []
 
-        for dict in media_types:
-            if q in dict['media_type'] or q in dict['name'] or q in dict['ext']:
-                retval.append(dict['media_type'])
+        # for dict in media_types:
+        #     if q in dict['media_type'] or q in dict['name'] or q in dict['ext']:
+        #         retval.append(dict['media_type'])
+        #     if len(retval) >= 50:
+        #         break
+
+        if q in media_types_dict:
+            retval.append(media_types_dict[q][1])
+
+        media_keys = media_types_dict.keys()
+        for media_type in media_keys:
+            if q in media_type.lower():
+                retval.append(media_types_dict[media_type][1])
             if len(retval) >= 50:
                 break
+        # unique
+        # retval = list(set(retval))
 
         return json.dumps({'ResultSet': {'Result': retval}})
 

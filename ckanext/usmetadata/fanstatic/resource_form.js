@@ -156,7 +156,7 @@ var DatasetResourceForm = new function () {
                             typeMatchPrint = '<br /><span class="good">Detected type matches ' +
                                 'currently selected type <strong>' + ct + '</strong></span>';
                         }
-                    } else if (ct == currentMediaType) {
+                    } else if (ct && ct.toLowerCase() == currentMediaType.toLowerCase()) {
                         if (prepopulateMediaType) {
                             typeMatchPrint = '<br /><span class="good">Detected type matches ' +
                                 'currently selected type <strong>' + ct + '</strong></span>';
@@ -167,7 +167,7 @@ var DatasetResourceForm = new function () {
                         }
                         if (prepopulateMediaType) {
                             typeMatchPrint = '<br /><span class="weird">Detected type <strong>' + ct + '</strong> ' +
-                                'does not match ' + 'currently selected type <strong>' + currentMediaType + '</strong></span>';
+                                'does not match currently selected type <strong>' + currentMediaType + '</strong></span>';
                         }
                     }
 
