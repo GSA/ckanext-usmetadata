@@ -262,7 +262,11 @@ class TestUsmetadataPlugin(object):
 
     def test_get_media_types_action(self):
         res = self.app.get('/api/2/util/resource/media_autocomplete')
-        assert 'application/pdf' in res
+        assert 'CSV' in res
+
+    def test_get_media_types_autocomplete_action(self):
+        res = self.app.get('/api/2/util/resource/media_autocomplete?incomplete=Excel')
+        assert 'XLS' in res
 
     def test_license_url_autocomplete_action(self):
         res = self.app.get('/api/2/util/resource/license_url_autocomplete?incomplete=d')
