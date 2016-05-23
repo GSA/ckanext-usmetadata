@@ -586,6 +586,16 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
         pass
 
+    def before_search(self, search_params):
+        """
+        IPackageController.search
+        page must not be accessible by visitors
+        """
+        if not c.user:
+            abort(401, _('Not authorized to see this page'))
+
+        return search_params
+
     @classmethod
     def usmetadata_filter(cls, data=None, mask='~~'):
         for redact in re.findall(REDACTION_STROKE_REGEX, data):
