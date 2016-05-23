@@ -1318,23 +1318,15 @@ class MediaController(BaseController):
 
         retval = []
 
-        # for dict in media_types:
-        #     if q in dict['media_type'] or q in dict['name'] or q in dict['ext']:
-        #         retval.append(dict['media_type'])
-        #     if len(retval) >= 50:
-        #         break
-
         if q in media_types_dict:
             retval.append(media_types_dict[q][1])
 
         media_keys = media_types_dict.keys()
         for media_type in media_keys:
-            if q in media_type.lower():
+            if q in media_type.lower() and media_types_dict[media_type][1] not in retval:
                 retval.append(media_types_dict[media_type][1])
             if len(retval) >= 50:
                 break
-        # unique
-        # retval = list(set(retval))
 
         return json.dumps({'ResultSet': {'Result': retval}})
 
