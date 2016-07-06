@@ -2,7 +2,6 @@ import cgi
 import collections
 import copy
 import datetime
-import os
 import re
 from logging import getLogger
 
@@ -569,6 +568,21 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     p.implements(p.interfaces.IPackageController, inherit=True)
     p.implements(p.interfaces.IOrganizationController, inherit=True)
     p.implements(p.IFacets, inherit=True)
+
+    def validate(self, context, data_dict, schema, action):
+        """
+        Disabling validation during cloning process
+
+        :param context:
+        :param data_dict:
+        :param schema:
+        :param action:
+        :return:
+        """
+        if context.get('cloning', False):
+            return data_dict, None
+
+        return None
 
     def read(self, entity):
         """
@@ -1254,6 +1268,9 @@ class CloneController(BaseController):
         # somehow package is getting added to context. If we dont remove it current dataset gets updated
         if 'package' in context:
             del context['package']
+
+        # disabling validation
+        context['cloning'] = True
 
         # create new package
         pkg_dict_new = get_action('package_create')(context, pkg_dict)
