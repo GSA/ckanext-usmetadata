@@ -390,9 +390,7 @@ class UsmetadataController(BaseController):
                            action='read', id=id))
         errors = errors or {}
         error_summary = error_summary or {}
-        vars = {'data': data, 'errors': errors, 'error_summary': error_summary}
-        vars['pkg_name'] = id
-        return vars
+        return {'data': data, 'errors': errors, 'error_summary': error_summary, 'pkg_name': id}
 
     def map_old_keys(self, error_summary):
         replace = {
@@ -468,10 +466,10 @@ class UsmetadataController(BaseController):
                 # we have a resource so let them add metadata
                 # redirect(h.url_for(controller='package',
                 # action='new_metadata', id=id))
-                vars = self.get_package_info_usmetadata(id, context, errors, error_summary)
+                extra_vars = self.get_package_info_usmetadata(id, context, errors, error_summary)
                 package_type = self._get_package_type(id)
                 self._setup_template_variables(context, {}, package_type=package_type)
-                return render('package/new_package_metadata.html', extra_vars=vars)
+                return render('package/new_package_metadata.html', extra_vars=extra_vars)
 
             data['package_id'] = id
             try:
@@ -497,10 +495,10 @@ class UsmetadataController(BaseController):
                 # redirect(h.url_for(controller='package',
                 # action='new_metadata', id=id))
                 # Github Issue # 129. Removing last stage of dataset creation.
-                vars = self.get_package_info_usmetadata(id, context, errors, error_summary)
+                extra_vars = self.get_package_info_usmetadata(id, context, errors, error_summary)
                 package_type = self._get_package_type(id)
                 self._setup_template_variables(context, {}, package_type=package_type)
-                return render('package/new_package_metadata.html', extra_vars=vars)
+                return render('package/new_package_metadata.html', extra_vars=extra_vars)
             elif save_action == 'go-dataset':
                 # go to first stage of add dataset
                 redirect(h.url_for(controller='package',
@@ -531,11 +529,9 @@ class UsmetadataController(BaseController):
 
         errors = errors or {}
         error_summary = error_summary or {}
-        vars = {'data': data, 'errors': errors,
-                'error_summary': error_summary, 'action': 'new',
-                'resource_form_snippet': self._resource_form(package_type),
-                'dataset_type': package_type}
-        vars['pkg_name'] = id
+        extra_vars = {'data': data, 'errors': errors, 'error_summary': error_summary, 'action': 'new',
+                'resource_form_snippet': self._resource_form(package_type), 'dataset_type': package_type,
+                'pkg_name': id}
         # get resources for sidebar
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author, 'auth_user_obj': c.userobj}
@@ -544,15 +540,15 @@ class UsmetadataController(BaseController):
         except NotFound:
             abort(404, _('The dataset {id} could not be found.').format(id=id))
         # required for nav menu
-        vars['pkg_dict'] = pkg_dict
+        extra_vars['pkg_dict'] = pkg_dict
         template = 'package/new_resource_not_draft.html'
         if pkg_dict['state'] == 'draft':
-            vars['stage'] = ['complete', 'active']
+            extra_vars['stage'] = ['complete', 'active']
             template = 'package/new_resource.html'
         elif pkg_dict['state'] == 'draft-complete':
-            vars['stage'] = ['complete', 'active', 'complete']
+            extra_vars['stage'] = ['complete', 'active', 'complete']
             template = 'package/new_resource.html'
-        return render(template, extra_vars=vars)
+        return render(template, extra_vars=extra_vars)
 
 
 class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):

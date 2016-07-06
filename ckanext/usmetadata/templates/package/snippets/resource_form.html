@@ -4,7 +4,7 @@
     <p>Disclaimer: Uploading any file will automatically make this dataset public.</p>
     {% set is_upload = (data.url_type == 'upload') %}
     <div style="display: block">
-        <label style="padding-top:0px" class="control-label">Resource</label>
+        <label style="padding-top:0" class="control-label">Resource</label>
 
         <div class="controls"{% if allow_upload %} data-module="resource-upload-field"{% endif %}>
             <input id="field-resource-type-file" type="radio" name="resource_type"

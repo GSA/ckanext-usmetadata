@@ -1,14 +1,5 @@
 "use strict";
 
-$(document).ready(function () {
-    //to be sure we are editing a resource
-    if ($('form.dataset-resource-form').size()) {
-
-        DatasetResourceForm.bootstrap();
-    }
-});
-
-
 var DatasetResourceForm = new function () {
     var obj = this;
 
@@ -54,17 +45,17 @@ var DatasetResourceForm = new function () {
         //  REDACTIONS
         $('#field-description').parents('div.control-group').addClass('exempt-allowed');
 
-        //data.extras.filter(function( obj ) { return obj.key == 'public_access_level'; })[0].value
+        //data.extras.filter(function( obj ) { return obj.key === 'public_access_level'; })[0].value
 
         try {
             var dataset_id = window.location.pathname.split('/')[2];
-            if ('new_resource' == dataset_id) {
+            if ('new_resource' === dataset_id) {
                 dataset_id = window.location.pathname.split('/')[3];
             }
             var access_level = 'public';
             $.getJSON('/api/3/action/package_show?id=' + dataset_id).done(function (data) {
                 access_level = data.result.extras.filter(function (obj) {
-                    return obj.key == 'public_access_level';
+                    return obj.key === 'public_access_level';
                 })[0].value;
                 if ('public' !== access_level) {
                     //console.debug('nice');
@@ -93,7 +84,7 @@ var DatasetResourceForm = new function () {
                 $('input').next('p.warning').remove();
                 $('input').parent().prev('label').removeClass('bad');
 
-                if (typeof(result.ResultSet['Warnings']) != "undefined") {
+                if (typeof(result.ResultSet['Warnings']) !== "undefined") {
                     var WarningObj = result.ResultSet['Warnings'];
                     for (var warningKey in WarningObj) {
                         if (WarningObj.hasOwnProperty(warningKey)) {
@@ -102,7 +93,7 @@ var DatasetResourceForm = new function () {
                     }
                 }
 
-                if (typeof(result.ResultSet['Invalid']) != "undefined") {
+                if (typeof(result.ResultSet['Invalid']) !== "undefined") {
                     var InvalidObj = result.ResultSet['Invalid'];
                     for (var invalidKey in InvalidObj) {
                         if (InvalidObj.hasOwnProperty(invalidKey)) {
@@ -122,8 +113,8 @@ var DatasetResourceForm = new function () {
         $('#field-image-url').next('p').replaceWith('<p></p>');
 
         var resource_type = $('input[name="resource_type"]:checked').val();
-        var prepopulateMediaType = (resource_type == "file");
-        if (resource_type == "upload" || resource_type == "api") {
+        var prepopulateMediaType = (resource_type === "file");
+        if (resource_type === "upload" || resource_type === "api") {
             return
         }
 
@@ -132,11 +123,11 @@ var DatasetResourceForm = new function () {
             '/api/2/util/resource/content_type',
             {'url': $('#field-image-url').val()},
             function (result) {
-                if (typeof(result.ResultSet['CType']) != "undefined") {
+                if (typeof(result.ResultSet['CType']) !== "undefined") {
                     var ct = result.ResultSet['CType'];
                     var status = result.ResultSet['Status'];
                     var reason = result.ResultSet['Reason'];
-                    var sclass = (200 == status ? 'good' : 'bad');
+                    var sclass = (200 === status ? 'good' : 'bad');
                     var currentMediaType = $('#field-format').val();
 
                     var statusPrint = 'URL returned status <strong class="' + sclass + '">'
@@ -144,11 +135,11 @@ var DatasetResourceForm = new function () {
                     var ctypePrint = '<br />Media Type was detected as <strong>' + ct + '</strong>';
                     var typeMatchPrint = '';
 
-                    if (typeof(result.ResultSet['Redacted']) != "undefined") {
+                    if (typeof(result.ResultSet['Redacted']) !== "undefined") {
                         typeMatchPrint = statusPrint = ctypePrint = '';
-                    } else if (200 != status) {
+                    } else if (200 !== status) {
                         ctypePrint = '';
-                    } else if ('' == currentMediaType) {
+                    } else if ('' === currentMediaType) {
                         if (prepopulateMediaType) {
                             $('#field-format').val(ct);
                             $('#s2id_field-format').find('.select2-chosen').text(ct);
@@ -156,13 +147,13 @@ var DatasetResourceForm = new function () {
                             typeMatchPrint = '<br /><span class="good">Detected type matches ' +
                                 'currently selected type <strong>' + ct + '</strong></span>';
                         }
-                    } else if (ct && ct.toLowerCase() == currentMediaType.toLowerCase()) {
+                    } else if (ct && ct.toLowerCase() === currentMediaType.toLowerCase()) {
                         if (prepopulateMediaType) {
                             typeMatchPrint = '<br /><span class="good">Detected type matches ' +
                                 'currently selected type <strong>' + ct + '</strong></span>';
                         }
                     } else {
-                        if (typeof(result.ResultSet['InvalidFormat']) != "undefined") {
+                        if (typeof(result.ResultSet['InvalidFormat']) !== "undefined") {
                             obj.form_is_valid = false;
                         }
                         if (prepopulateMediaType) {
@@ -177,13 +168,13 @@ var DatasetResourceForm = new function () {
                 } else {
                     var errorPrint = '';
                     var errorClass = 'weird';
-                    if ("undefined" != typeof(result.ResultSet['Error'])) {
+                    if ("undefined" !== typeof(result.ResultSet['Error'])) {
                         errorPrint = result.ResultSet['Error'];
-                    } else if ("undefined" != typeof(result.ResultSet['ProtocolError'])) {
+                    } else if ("undefined" !== typeof(result.ResultSet['ProtocolError'])) {
                         errorPrint = result.ResultSet['ProtocolError'];
                         errorClass = "weird";
                     }
-                    if ("undefined" != typeof(result.ResultSet['Red'])) {
+                    if ("undefined" !== typeof(result.ResultSet['Red'])) {
                         errorClass = "red";
                     }
                     $('#field-image-url').next('p').replaceWith(
@@ -196,7 +187,9 @@ var DatasetResourceForm = new function () {
     };
 
     this.resource_type_change = function (val) {
-        if (!val) return;
+        if (!val) {
+            return
+        }
         $('.image-upload').show();
         $('#field-format').parents('.control-group').show();
         switch (val) {
@@ -214,6 +207,10 @@ var DatasetResourceForm = new function () {
                     $('#field-format-readable').val('API');
                 }
                 $('#field-format').parents('.control-group').hide();
+                $('.resource-upload').hide();
+                $('.resource-upload .btn').first().hide();
+                $('.resource-url').show();
+                break;
             default:
                 $('.resource-upload').hide();
                 $('.resource-upload .btn').first().hide();
@@ -221,3 +218,11 @@ var DatasetResourceForm = new function () {
         }
     };
 }();
+
+$().ready(function () {
+    //to be sure we are editing a resource
+    if ($('form.dataset-resource-form').size()) {
+
+        DatasetResourceForm.bootstrap();
+    }
+});

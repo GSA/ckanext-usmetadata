@@ -65,7 +65,7 @@ this.ckan.module('usmetadata-slug-preview-slug', function (jQuery, _) {
                 slug.val(value).trigger('change');
             });
             //Hiding preview - Issue # 71
-            if (jQuery("#dataset_status_id").val() != 'draft') {
+            if (jQuery("#dataset_status_id").val() !== 'draft') {
                 preview.hide();
             }
         }
@@ -76,4 +76,4 @@ this.ckan.module('usmetadata-slug-preview-slug', function (jQuery, _) {
 //Inventory_user is navigated to the Error 404 page_when last breadcrumb is selected on the resource uplaod page in IE.
 window.onload = function () {
     jQuery("#content .toolbar .breadcrumb .active a").prop("href", document.URL)
-}
+};

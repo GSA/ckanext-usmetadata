@@ -1,12 +1,5 @@
 "use strict";
 
-$(document).ready(function () {
-    if ($('form.dataset-form').size() && $(':input[name="pkg_name"]').size()) {
-        DatasetForm.bootstrap();
-    }
-});
-
-
 var DatasetForm = new function () {
     var obj = this;
     this.form_is_valid = true;
@@ -36,7 +29,7 @@ var DatasetForm = new function () {
                 $('input').next('p.warning').remove();
                 $('input').parent().prev('label').removeClass('bad');
 
-                if (typeof(result.ResultSet['Warnings']) != "undefined") {
+                if (typeof(result.ResultSet['Warnings']) !== "undefined") {
                     var WarningObj = result.ResultSet['Warnings'];
                     for (var warningObjKey in WarningObj) {
                         if (WarningObj.hasOwnProperty(warningObjKey)) {
@@ -46,7 +39,7 @@ var DatasetForm = new function () {
                     }
                 }
 
-                if (typeof(result.ResultSet['Invalid']) != "undefined") {
+                if (typeof(result.ResultSet['Invalid']) !== "undefined") {
                     var InvalidObj = result.ResultSet['Invalid'];
                     for (var invalidObjKey in InvalidObj) {
                         if (InvalidObj.hasOwnProperty(invalidObjKey)) {
@@ -65,7 +58,7 @@ var DatasetForm = new function () {
 
     this.bootstrap = function () {
         $("#field-is_parent").change(function () {
-            if ('true' == $("#field-is_parent").val()) {
+            if ('true' === $("#field-is_parent").val()) {
                 $(".control-group-dataset-parent").hide();
                 $("#field-parent_dataset").val("");
             } else {
@@ -115,13 +108,19 @@ var DatasetForm = new function () {
     this.reload_redacted_controls = function () {
         //  https://project-open-data.cio.gov/redactions/
         var level = $(':input[name="public_access_level"]').val();
-        if ('public' == level) {
+        if ('public' === level) {
             $('.redacted-icon').add('.redacted-marker').add('.exemption_reason').hide();
             return;
         }
         RedactionControl.show_redacted_controls();
     };
 }();
+
+$().ready(function () {
+    if ($('form.dataset-form').size() && $(':input[name="pkg_name"]').size()) {
+        DatasetForm.bootstrap();
+    }
+});
 
 //$.fn.extend({
 //    renderEyes: function () {

@@ -3,7 +3,7 @@
  */
 $(document).ready(function(){
     for( i=1; i<6; i++){
-        if($('#field-publisher_'+i).val() == ""){
+        if($('#field-publisher_'+i).val() === ""){
             $('.field-publisher_'+i).hide()
         }
     }

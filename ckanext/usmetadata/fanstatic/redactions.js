@@ -84,7 +84,7 @@ var RedactionControl = new function () {
                 value: reason.value, alt: reason.full, title: reason.full,
                 text: reason.short
             };
-            if (reason.value == val) {
+            if (reason.value === val) {
                 options['selected'] = 'selected';
             }
             $("<option />", options).appendTo(reason_select);
@@ -157,13 +157,13 @@ var RedactionControl = new function () {
 
         var el = input[0];
 
-        if (typeof el.selectionStart == "number" && typeof el.selectionEnd == "number") {
+        if (typeof el.selectionStart === "number" && typeof el.selectionEnd === "number") {
             start = el.selectionStart;
             end = el.selectionEnd;
         } else {
             range = document.selection.createRange();
 
-            if (range && range.parentElement() == el) {
+            if (range && range.parentElement() === el) {
                 len = el.value.length;
                 normalizedValue = el.value.replace(/\r\n/g, "\n");
 
@@ -197,7 +197,7 @@ var RedactionControl = new function () {
         var selectionStart = start;
         var selectionEnd = end;
 
-        if (!selectionEnd || selectionStart == selectionEnd) {
+        if (!selectionEnd || selectionStart === selectionEnd) {
             return;
         }
 
@@ -236,7 +236,7 @@ var RedactionControl = new function () {
     };
 
     this.preload_redacted_inputs = function () {
-        if ('undefined' != typeof redacted_json_raw) {  //  dataset resource (or distribution) way
+        if ('undefined' !== typeof redacted_json_raw) {  //  dataset resource (or distribution) way
             var redacted = redacted_json_raw;
         } else if ($('#redacted_json').size()) {     // dataset way
             var redactedJson = $('#redacted_json');
