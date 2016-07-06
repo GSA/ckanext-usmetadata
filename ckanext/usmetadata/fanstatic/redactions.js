@@ -236,11 +236,12 @@ var RedactionControl = new function () {
     };
 
     this.preload_redacted_inputs = function () {
+        var redacted;
         if ('undefined' !== typeof redacted_json_raw) {  //  dataset resource (or distribution) way
-            var redacted = redacted_json_raw;
+            redacted = redacted_json_raw;
         } else if ($('#redacted_json').size()) {     // dataset way
             var redactedJson = $('#redacted_json');
-            var redacted = $.parseJSON(redactedJson.val());
+            redacted = $.parseJSON(redactedJson.val());
         }
 
         for (var field in redacted) {

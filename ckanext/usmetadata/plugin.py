@@ -594,8 +594,6 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         if not c.user and c.action not in visitor_allowed_actions:
             abort(401, _('Not authorized to see this page'))
 
-        pass
-
     def before_search(self, search_params):
         """
         IPackageController.search
@@ -808,7 +806,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
                 if extra['key'] == 'data_quality' and extra['value'] == 'on':
                     extra['value'] = "true"
                 elif extra['key'] == 'data_quality' and extra['value'] == 'False':
-                    extra['value'] == "false"
+                    extra['value'] = "false"
 
                 if extra['key'] in common_metadata:
                     new_dict['common_core'][extra['key']] = extra['value']
@@ -823,8 +821,8 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         except KeyError as ex:
             log.debug('''Expected key ['%s'] not found, attempting to move common core keys to subdictionary''',
                       ex.message)
-            # this can happen when a form fails validation, as all the data will now be as key,value pairs, not under extras,
-            # so we'll move them to the expected point again to fill in the values
+            # this can happen when a form fails validation, as all the data will now be as key,
+            # value pairs, not under extras, so we'll move them to the expected point again to fill in the values
             # e.g.
             # { 'foo':'bar', 'publisher':'somename'} becomes {'foo':'bar', 'common_core':{'publisher':'somename'}}
 
