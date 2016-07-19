@@ -56,7 +56,12 @@ var DatasetResourceForm = new function () {
             $.getJSON('/api/3/action/package_show?id=' + dataset_id).done(function (data) {
                 access_level = data.result.extras.filter(function (obj) {
                     return obj.key === 'public_access_level';
-                })[0].value;
+                });
+                if (!access_level.length) {
+                    console.debug('public_access_level not found! invalid package!');
+                } else {
+                    access_level = access_level[0].value;
+                }
                 if ('public' !== access_level) {
                     //console.debug('nice');
                     RedactionControl.append_redacted_icons();
