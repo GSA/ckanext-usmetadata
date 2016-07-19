@@ -311,6 +311,7 @@ is_parent_options = {'true': 'Yes', 'false': 'No'}
 media_types_dict = h.resource_formats()
 media_types = list(set([row[1] for row in h.resource_formats().values()]))
 
+
 # all required_metadata should be required
 def get_req_metadata_for_create():
     log.debug('get_req_metadata_for_create')
@@ -530,8 +531,8 @@ class UsmetadataController(BaseController):
         errors = errors or {}
         error_summary = error_summary or {}
         extra_vars = {'data': data, 'errors': errors, 'error_summary': error_summary, 'action': 'new',
-                'resource_form_snippet': self._resource_form(package_type), 'dataset_type': package_type,
-                'pkg_name': id}
+                      'resource_form_snippet': self._resource_form(package_type), 'dataset_type': package_type,
+                      'pkg_name': id}
         # get resources for sidebar
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author, 'auth_user_obj': c.userobj}
@@ -575,7 +576,8 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         :param action:
         :return:
         """
-        if context.get('cloning', False):
+        if context.get('cloning', False) or 'skip_validation' in data_dict.get('title', ''):
+            data_dict, errors = p.toolkit.navl_validate(data_dict, schema, context)
             return data_dict, None
 
         return None
@@ -586,9 +588,9 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         page must not be accessible by visitors
         """
         visitor_allowed_actions = [
-            'resource_download',    # download resource file
-            'resource_read',    # resource read page
-            'resource_view'     # resource view (data explorer)
+            'resource_download',  # download resource file
+            'resource_read',  # resource read page
+            'resource_view'  # resource view (data explorer)
         ]
 
         if not c.user and c.action not in visitor_allowed_actions:
