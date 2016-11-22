@@ -574,11 +574,11 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         :param action:
         :return:
         """
-        if context.get('cloning', False) or 'skip_validation' in data_dict.get('title', ''):
-            data_dict, errors = p.toolkit.navl_validate(data_dict, schema, context)
-            return data_dict, None
+        #if context.get('cloning', False) or 'skip_validation' in data_dict.get('title', ''):
+        #    data_dict, errors = p.toolkit.navl_validate(data_dict, schema, context)
+        #    return data_dict, None
 
-        return None
+        return data_dict, None
 
     def read(self, entity):
         """
