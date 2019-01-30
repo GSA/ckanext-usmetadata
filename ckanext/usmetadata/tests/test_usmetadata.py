@@ -3,14 +3,12 @@
 '''
 from ckanext.usmetadata import db_utils
 import paste.fixture
-from paste.registry import StackedObjectProxy
 import pylons.test
 import ckan.tests.factories as factories
 
 import ckan.model as model
 import ckan.tests as tests
 import ckan.plugins as plugins
-from ckan.common import c
 
 class TestUsmetadataPlugin(object):
     '''Tests for the usmetadata.plugin module.
