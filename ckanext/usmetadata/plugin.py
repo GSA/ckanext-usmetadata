@@ -22,7 +22,7 @@ from ckan.lib.base import BaseController
 
 render = base.render
 abort = base.abort
-redirect = base.redirect
+redirect = p.toolkit.redirect_to
 
 NotFound = logic.NotFound
 NotAuthorized = logic.NotAuthorized
@@ -41,7 +41,6 @@ import ckan.lib.helpers as h
 # ITemplateHelpers, IDatasetForm, IPackageController
 # from formencode.validators import validators
 
-redirect = base.redirect
 log = getLogger(__name__)
 
 URL_REGEX = re.compile(
@@ -591,16 +590,16 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             'resource_view'  # resource view (data explorer)
         ]
 
-        if not c.user and c.action not in visitor_allowed_actions:
-            abort(401, _('Not authorized to see this page'))
+        #if not c.user and c.action not in visitor_allowed_actions:
+        #    abort(401, _('Not authorized to see this page'))
 
     def before_search(self, search_params):
         """
         IPackageController.search
         page must not be accessible by visitors
         """
-        if not c.user:
-            abort(401, _('Not authorized to see this page'))
+        #if not c.user:
+        #    abort(401, _('Not authorized to see this page'))
 
         return search_params
 
