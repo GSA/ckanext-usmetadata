@@ -1347,8 +1347,6 @@ class LicenseURLController(BaseController):
 
     def get_license_url(self):
         # set content type (charset required or pylons throws an error)
-        q = request.params.get('incomplete', '')
-
         response.content_type = 'application/json; charset=UTF-8'
 
         retval = []
