@@ -913,7 +913,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     # See ckan.plugins.interfaces.IDatasetForm
     def _create_package_schema(self, schema):
         log.debug("_create_package_schema called")
-        if request.path_qs == u'/api/action/package_create':
+        if request.path == u'/api/action/package_create':
             for update in schema_api_for_create:
                 schema.update(update)
         else:
