@@ -346,16 +346,16 @@ def get_req_metadata_for_api_create():
 
 
 for meta in required_if_applicable_metadata:
-    meta['validators'].append(p.toolkit.get_validator('ignore_empty'))
+    meta['validators'].insert(0, p.toolkit.get_validator('ignore_empty'))
 
 for meta in expanded_metadata:
-    meta['validators'].append(p.toolkit.get_validator('ignore_empty'))
+    meta['validators'].insert(0, p.toolkit.get_validator('ignore_empty'))
 
 for meta in required_if_applicable_metadata_by_pass_validation:
-    meta['validators'].append(p.toolkit.get_validator('ignore_empty'))
+    meta['validators'].insert(0, p.toolkit.get_validator('ignore_empty'))
 
 for meta in expanded_metadata_by_pass_validation:
-    meta['validators'].append(p.toolkit.get_validator('ignore_empty'))
+    meta['validators'].insert(0, p.toolkit.get_validator('ignore_empty'))
 
 schema_updates_for_create = [{meta['id']: meta['validators'] + [p.toolkit.get_converter('convert_to_extras')]} for meta
                              in (get_req_metadata_for_create() + required_if_applicable_metadata + expanded_metadata)]

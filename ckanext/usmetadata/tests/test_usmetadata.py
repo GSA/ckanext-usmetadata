@@ -5,7 +5,8 @@ from ckanext.usmetadata import db_utils
 import paste.fixture
 import pylons.test
 import ckan.tests.factories as factories
-
+import ckanapi
+from ckanapi import TestAppCKAN
 import ckan.model as model
 import ckan.tests as tests
 import ckan.plugins as plugins
@@ -21,7 +22,8 @@ class TestUsmetadataPlugin(object):
 
         # Make the Paste TestApp that we'll use to simulate HTTP requests to
         # CKAN.
-        cls.app = paste.fixture.TestApp(pylons.test.pylonsapp)
+        #cls.app = paste.fixture.TestApp(pylons.test.pylonsapp)
+        #cls.app = tests.helpers._get_test_app()
 
         # Test code should use CKAN's plugins.load() function to load plugins
         # to be tested.
@@ -34,10 +36,11 @@ class TestUsmetadataPlugin(object):
 
         self.sysadmin = factories.Sysadmin()
 
-        self.org_dict = tests.call_action_api(self.app, 'organization_create', apikey=self.sysadmin.get('apikey'), name='my_org_000')
+        test_app = TestAppCKAN(tests.helpers._get_test_app(), apikey=self.sysadmin['apikey'])
 
-        self.package_dict = tests.call_action_api(self.app, 'package_create', apikey=self.sysadmin.get('apikey'),
-                                             name='my_package_000',
+        self.org_dict = test_app.action.organization_create(name='my_org_000')
+
+        self.package_dict = test_app.action.package_create(name='my_package_000',
                                              title='my package',
                                              notes='my package notes',
                                              tag_string='my_package',
@@ -51,7 +54,7 @@ class TestUsmetadataPlugin(object):
                                              program_code='015:010',
                                              access_level_comment='Access level commemnt',
                                              parent_dataset = 'true',
-                                             ower_org = self.org_dict['id']
+                                             owner_org = "my_org_000"
                                              )
 
     def teardown(self):
