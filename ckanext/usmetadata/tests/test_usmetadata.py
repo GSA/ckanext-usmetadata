@@ -5,10 +5,9 @@ from ckanext.usmetadata import db_utils
 import paste.fixture
 import pylons.test
 import ckan.tests.factories as factories
-import ckanapi
-from ckanapi import TestAppCKAN
+
 import ckan.model as model
-import ckan.tests as tests
+from tests.legacy import call_action_api
 import ckan.plugins as plugins
 
 class TestUsmetadataPlugin(object):
@@ -22,8 +21,7 @@ class TestUsmetadataPlugin(object):
 
         # Make the Paste TestApp that we'll use to simulate HTTP requests to
         # CKAN.
-        #cls.app = paste.fixture.TestApp(pylons.test.pylonsapp)
-        #cls.app = tests.helpers._get_test_app()
+        cls.app = paste.fixture.TestApp(pylons.test.pylonsapp)
 
         # Test code should use CKAN's plugins.load() function to load plugins
         # to be tested.
@@ -36,11 +34,10 @@ class TestUsmetadataPlugin(object):
 
         self.sysadmin = factories.Sysadmin()
 
-        test_app = TestAppCKAN(tests.helpers._get_test_app(), apikey=self.sysadmin['apikey'])
+        self.org_dict = call_action_api(self.app, 'organization_create', apikey=self.sysadmin.get('apikey'), name='my_org_000')
 
-        self.org_dict = test_app.action.organization_create(name='my_org_000')
-
-        self.package_dict = test_app.action.package_create(name='my_package_000',
+        self.package_dict = call_action_api(self.app, 'package_create', apikey=self.sysadmin.get('apikey'),
+                                             name='my_package_000',
                                              title='my package',
                                              notes='my package notes',
                                              tag_string='my_package',
@@ -54,7 +51,7 @@ class TestUsmetadataPlugin(object):
                                              program_code='015:010',
                                              access_level_comment='Access level commemnt',
                                              parent_dataset = 'true',
-                                             owner_org = "my_org_000"
+                                             ower_org = self.org_dict['id']
                                              )
 
     def teardown(self):
@@ -76,7 +73,7 @@ class TestUsmetadataPlugin(object):
 
     #test is dataset is getting created successfully
     def test_package_creation(self):
-        package_dict = tests.call_action_api(self.app, 'package_create', apikey=self.sysadmin.get('apikey'),
+        package_dict = call_action_api(self.app, 'package_create', apikey=self.sysadmin.get('apikey'),
                                              name='my_package',
                                              title='my package',
                                              notes='my package notes',
@@ -97,7 +94,8 @@ class TestUsmetadataPlugin(object):
 
     # test resource creation
     def test_resource_create(self):
-        package_dict = tests.call_action_api(self.app, 'package_create', apikey=self.sysadmin.get('apikey'),
+        print "first"
+        package_dict = call_action_api(self.app, 'package_create', apikey=self.sysadmin.get('apikey'),
                                              name='my_package',
                                              title='my package',
                                              notes='my package notes',
@@ -148,7 +146,8 @@ class TestUsmetadataPlugin(object):
         assert package_dict['name'] == 'my_package'
         assert package_dict['resources'][0]['name'] == 'my_resource'
 
-        resource_dict = tests.call_action_api(self.app, 'resource_create', apikey=self.sysadmin.get('apikey'),
+        print "second"
+        resource_dict = call_action_api(self.app, 'resource_create', apikey=self.sysadmin.get('apikey'),
                                               package_id = package_dict['id'],
                                               name='my_resource_2',
                                               url='www.google.com',
@@ -158,7 +157,7 @@ class TestUsmetadataPlugin(object):
 
     #test package update
     def test_package_update(self):
-        package_dict = tests.call_action_api(self.app, 'package_create', apikey=self.sysadmin.get('apikey'),
+        package_dict = call_action_api(self.app, 'package_create', apikey=self.sysadmin.get('apikey'),
                                              name='my_package',
                                              title='my package',
                                              notes='my package notes',
@@ -174,7 +173,7 @@ class TestUsmetadataPlugin(object):
                                              access_level_comment='Access level commemnt'
                                              )
         assert package_dict['name'] == 'my_package'
-        package_dict_update = tests.call_action_api(self.app, 'package_update', apikey=self.sysadmin.get('apikey'),
+        package_dict_update = call_action_api(self.app, 'package_update', apikey=self.sysadmin.get('apikey'),
                                              name='my_package',
                                              title='my package update',
                                              notes='my package notes update',
@@ -203,10 +202,10 @@ class TestUsmetadataPlugin(object):
 
     #test parent dataset
     def test_package_parent_dataset(self):
-        org_dict = tests.call_action_api(self.app, 'organization_create', apikey=self.sysadmin.get('apikey'),
+        org_dict = call_action_api(self.app, 'organization_create', apikey=self.sysadmin.get('apikey'),
                                              name='my_org')
 
-        package_dict = tests.call_action_api(self.app, 'package_create', apikey=self.sysadmin.get('apikey'),
+        package_dict = call_action_api(self.app, 'package_create', apikey=self.sysadmin.get('apikey'),
                                              name='my_package',
                                              title='my package',
                                              notes='my package notes',
