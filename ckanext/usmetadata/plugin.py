@@ -564,25 +564,6 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
         return None
 
-    def read(self, entity):
-        """
-        IPackageController.read && IOrganizationController.read
-        page must not be accessible by visitors
-        """
-        visitor_allowed_actions = [
-            'resource_download',  # download resource file
-            'resource_read',  # resource read page
-            'resource_view'  # resource view (data explorer)
-        ]
-
-    def before_search(self, search_params):
-        """
-        IPackageController.search
-        page must not be accessible by visitors
-        """
-
-        return search_params
-
     @classmethod
     def usmetadata_filter(cls, data=None, mask='~~'):
         for redact in re.findall(REDACTION_STROKE_REGEX, data):
