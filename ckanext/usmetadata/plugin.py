@@ -324,7 +324,7 @@ def get_req_metadata_for_update():
     new_req_meta = copy.copy(required_metadata_update)
     validator = p.toolkit.get_validator('ignore_missing')
     for meta in new_req_meta:
-        meta['validators'].append(validator)
+        meta['validators'].insert(0, validator)
     return new_req_meta
 
 
@@ -332,7 +332,7 @@ def get_req_metadata_for_show_update():
     new_req_meta = copy.copy(required_metadata)
     validator = p.toolkit.get_validator('ignore_missing')
     for meta in new_req_meta:
-        meta['validators'].append(validator)
+        meta['validators'].insert(0, validator)
     return new_req_meta
 
 
