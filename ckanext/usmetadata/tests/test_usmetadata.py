@@ -25,7 +25,6 @@ class TestUsmetadataPlugin(object):
 
         # Test code should use CKAN's plugins.load() function to load plugins
         # to be tested.
-        #plugins.load('usmetadata')
 
         model.repo.rebuild_db()
 
