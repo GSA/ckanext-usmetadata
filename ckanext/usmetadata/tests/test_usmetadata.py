@@ -2,9 +2,8 @@
 
 '''
 from ckanext.usmetadata import db_utils
-import paste.fixture
-import pylons.test
 import ckan.tests.factories as factories
+from ckan.tests.helpers import _get_test_app
 
 import ckan.model as model
 from tests.legacy import call_action_api
@@ -21,7 +20,7 @@ class TestUsmetadataPlugin(object):
 
         # Make the Paste TestApp that we'll use to simulate HTTP requests to
         # CKAN.
-        cls.app = paste.fixture.TestApp(pylons.test.pylonsapp)
+        cls.app = _get_test_app()
 
         # Test code should use CKAN's plugins.load() function to load plugins
         # to be tested.
