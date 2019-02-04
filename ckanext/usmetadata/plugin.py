@@ -7,7 +7,6 @@ from logging import getLogger
 
 import formencode.validators as v
 import requests
-from pylons import config
 
 import ckan.lib.base as base
 import ckan.lib.dictization.model_dictize as model_dictize
@@ -17,7 +16,7 @@ import ckan.logic as logic
 import ckan.model as model
 import ckan.plugins as p
 import db_utils
-from ckan.common import _, json, request, c, g, response
+from ckan.common import _, json, request, c, g, response, is_flask_request, config
 from ckan.lib.base import BaseController
 
 render = base.render
@@ -965,9 +964,12 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         log.debug('update_package_schema')
 
         # find out action
-        action = request.environ['pylons.routes_dict']['action']
-        controller = request.environ['pylons.routes_dict']['controller']
-
+        if is_flask_request():
+            action = g.action
+            controller = g.controller
+        else:
+            action = request.environ['pylons.routes_dict']['action']
+            controller = request.environ['pylons.routes_dict']['controller']
         # new_resource and package
         # action, api, resource_create
         # action, api, package_update
