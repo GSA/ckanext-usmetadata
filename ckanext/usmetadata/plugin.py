@@ -7,7 +7,6 @@ from logging import getLogger
 
 import formencode.validators as v
 import requests
-from pylons import config
 
 import ckan.lib.base as base
 import ckan.lib.dictization.model_dictize as model_dictize
@@ -17,12 +16,12 @@ import ckan.logic as logic
 import ckan.model as model
 import ckan.plugins as p
 import db_utils
-from ckan.common import _, json, request, c, g, response
+from ckan.common import _, json, request, c, g, response, is_flask_request, config
 from ckan.lib.base import BaseController
 
 render = base.render
 abort = base.abort
-redirect = base.redirect
+redirect = p.toolkit.redirect_to
 
 NotFound = logic.NotFound
 NotAuthorized = logic.NotAuthorized
@@ -37,11 +36,6 @@ lookup_package_plugin = ckan.lib.plugins.lookup_package_plugin
 
 import ckan.lib.helpers as h
 
-# from ckan.plugins import implements, SingletonPlugin, toolkit, IConfigurer,
-# ITemplateHelpers, IDatasetForm, IPackageController
-# from formencode.validators import validators
-
-redirect = base.redirect
 log = getLogger(__name__)
 
 URL_REGEX = re.compile(
@@ -107,7 +101,6 @@ REDACTION_STROKE_REGEX = re.compile(
 required_metadata = (
     {'id': 'title', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
     {'id': 'notes', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
-    # {'id': 'tag_string', 'validators': [v.NotEmpty]},
     {'id': 'public_access_level',
      'validators': [v.Regex(r'^(public)|(restricted public)|(non-public)$')]},
     {'id': 'publisher', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
@@ -302,8 +295,6 @@ license_options = {'': '',
 data_quality_options = {'': '', 'true': 'Yes', 'false': 'No'}
 is_parent_options = {'true': 'Yes', 'false': 'No'}
 
-# Dictionary of all media types
-# media_types = json.loads(open(os.path.join(os.path.dirname(__file__), 'media_types.json'), 'r').read())
 
 # list(set(x)) returns list with unique values
 media_types_dict = h.resource_formats()
@@ -326,7 +317,7 @@ def get_req_metadata_for_update():
     new_req_meta = copy.copy(required_metadata_update)
     validator = p.toolkit.get_validator('ignore_missing')
     for meta in new_req_meta:
-        meta['validators'].append(validator)
+        meta['validators'].insert(0, validator)
     return new_req_meta
 
 
@@ -334,7 +325,7 @@ def get_req_metadata_for_show_update():
     new_req_meta = copy.copy(required_metadata)
     validator = p.toolkit.get_validator('ignore_missing')
     for meta in new_req_meta:
-        meta['validators'].append(validator)
+        meta['validators'].insert(0, validator)
     return new_req_meta
 
 
@@ -347,16 +338,16 @@ def get_req_metadata_for_api_create():
 
 
 for meta in required_if_applicable_metadata:
-    meta['validators'].append(p.toolkit.get_validator('ignore_empty'))
+    meta['validators'].insert(0, p.toolkit.get_validator('ignore_empty'))
 
 for meta in expanded_metadata:
-    meta['validators'].append(p.toolkit.get_validator('ignore_empty'))
+    meta['validators'].insert(0, p.toolkit.get_validator('ignore_empty'))
 
 for meta in required_if_applicable_metadata_by_pass_validation:
-    meta['validators'].append(p.toolkit.get_validator('ignore_empty'))
+    meta['validators'].insert(0, p.toolkit.get_validator('ignore_empty'))
 
 for meta in expanded_metadata_by_pass_validation:
-    meta['validators'].append(p.toolkit.get_validator('ignore_empty'))
+    meta['validators'].insert(0, p.toolkit.get_validator('ignore_empty'))
 
 schema_updates_for_create = [{meta['id']: meta['validators'] + [p.toolkit.get_converter('convert_to_extras')]} for meta
                              in (get_req_metadata_for_create() + required_if_applicable_metadata + expanded_metadata)]
@@ -463,8 +454,6 @@ class UsmetadataController(BaseController):
                         return self.new_resource_usmetadata(id, data, errors,
                                                             error_summary)
                 # we have a resource so let them add metadata
-                # redirect(h.url_for(controller='package',
-                # action='new_metadata', id=id))
                 extra_vars = self.get_package_info_usmetadata(id, context, errors, error_summary)
                 package_type = self._get_package_type(id)
                 self._setup_template_variables(context, {}, package_type=package_type)
@@ -479,9 +468,7 @@ class UsmetadataController(BaseController):
                     get_action('resource_create')(context, data)
             except ValidationError, e:
                 errors = e.error_dict
-                # error_summary = e.error_summary
                 error_summary = self.map_old_keys(e.error_summary)
-                # return self.new_resource(id, data, errors, error_summary)
                 return self.new_resource_usmetadata(id, data, errors, error_summary)
 
             except NotAuthorized:
@@ -491,9 +478,6 @@ class UsmetadataController(BaseController):
                              ).format(id=id))
             if save_action == 'go-metadata':
                 # go to final stage of add dataset
-                # redirect(h.url_for(controller='package',
-                # action='new_metadata', id=id))
-                # Github Issue # 129. Removing last stage of dataset creation.
                 extra_vars = self.get_package_info_usmetadata(id, context, errors, error_summary)
                 package_type = self._get_package_type(id)
                 self._setup_template_variables(context, {}, package_type=package_type)
@@ -580,30 +564,6 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
         return None
 
-    def read(self, entity):
-        """
-        IPackageController.read && IOrganizationController.read
-        page must not be accessible by visitors
-        """
-        visitor_allowed_actions = [
-            'resource_download',  # download resource file
-            'resource_read',  # resource read page
-            'resource_view'  # resource view (data explorer)
-        ]
-
-        if not c.user and c.action not in visitor_allowed_actions:
-            abort(401, _('Not authorized to see this page'))
-
-    def before_search(self, search_params):
-        """
-        IPackageController.search
-        page must not be accessible by visitors
-        """
-        if not c.user:
-            abort(401, _('Not authorized to see this page'))
-
-        return search_params
-
     @classmethod
     def usmetadata_filter(cls, data=None, mask='~~'):
         for redact in re.findall(REDACTION_STROKE_REGEX, data):
@@ -616,7 +576,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     def usmetadata_shorten(cls, plain=None, extract_length=180):
         if not extract_length or len(plain) < extract_length:
             return plain
-        return unicode(h.truncate(plain, length=extract_length, indicator='...', whole_word=True))
+        return unicode(h.whtext.truncate(plain, length=extract_length, indicator='...', whole_word=True))
 
     @classmethod
     def resource_redacted_icon(cls, package, resource, field):
@@ -656,7 +616,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
     # Add access level facet on dataset page
     def dataset_facets(self, facets_dict, package_type):
-        if package_type <> 'dataset':
+        if package_type != 'dataset':
             return facets_dict
         d = collections.OrderedDict()
         d['public_access_level'] = 'Access Level'
@@ -666,7 +626,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
     # Add access level facet on organization page
     def organization_facets(self, facets_dict, organization_type, package_type):
-        if organization_type <> 'organization':
+        if organization_type != 'organization':
             return facets_dict
         d = collections.OrderedDict()
         d['public_access_level'] = 'Access Level'
@@ -793,7 +753,6 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             ('is_parent', 'Is parent dataset'),
             ('parent_dataset', 'Parent dataset'),
             ('accessURL', 'Download URL'),
-            # ('accessURL_new', 'Access URL'),
             ('webService', 'Endpoint'),
             ('format', 'Media type'),
             ('formatReadable', 'Format')
@@ -880,7 +839,6 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         # This plugin doesn't handle any special package types, it just
         # registers itself as the default (above).
         #
-        # return ['dataset', 'package']
         return []
 
     # See ckan.plugins.interfaces.IDatasetForm
@@ -914,7 +872,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     # See ckan.plugins.interfaces.IDatasetForm
     def _create_package_schema(self, schema):
         log.debug("_create_package_schema called")
-        if request.path_qs == u'/api/action/package_create':
+        if request.path == u'/api/action/package_create':
             for update in schema_api_for_create:
                 schema.update(update)
         else:
@@ -926,10 +884,6 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             'tag_string': [p.toolkit.get_validator('not_empty'),
                            p.toolkit.get_converter('convert_to_tags')],
             'extras': self._default_extras_schema()
-            # 'resources': {
-            # 'name': [p.toolkit.get_validator('not_empty')],
-            # 'format': [p.toolkit.get_validator('not_empty')],
-            # }
         })
         return schema
 
@@ -955,8 +909,6 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
     # See ckan.plugins.interfaces.IDatasetForm
     def create_package_schema(self):
-        # action, api, package_create
-        # action=new and controller=package
         schema = super(CommonCoreMetadataFormPlugin, self).create_package_schema()
         schema = self._create_package_schema(schema)
         return schema
@@ -966,16 +918,16 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         log.debug('update_package_schema')
 
         # find out action
-        action = request.environ['pylons.routes_dict']['action']
-        controller = request.environ['pylons.routes_dict']['controller']
-
+        if is_flask_request():
+            action = g.action
+            controller = g.controller
+        else:
+            action = request.environ['pylons.routes_dict']['action']
+            controller = request.environ['pylons.routes_dict']['controller']
         # new_resource and package
         # action, api, resource_create
         # action, api, package_update
 
-        # if action == 'new_resource' and controller == 'package':
-        # schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
-        # schema = self._create_resource_schema(schema)
         schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
         if action == 'edit' and controller == 'package':
             schema = self._create_package_schema(schema)
@@ -992,9 +944,6 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         # Don't show vocab tags mixed in with normal 'free' tags
         # (e.g. on dataset pages, or on the search page)
         schema['tags']['__extras'].append(p.toolkit.get_converter('free_tags_only'))
-
-        # BELOW LINE MAY BE CAUSING SOLR INDEXING ISSUES.
-        # schema = self._modify_package_schema_show(schema)
 
         return schema
 
@@ -1146,16 +1095,6 @@ class DatasetValidator(BaseController):
         if not URL_REGEX.match(url):
             errors[error_key] = 'Invalid URL format'
         return
-        # else:
-        # try:
-        # r = requests.head(url, verify=False)
-        # if r.status_code > 399:
-        # r = requests.get(url, verify=False)
-        # if r.status_code > 399:
-        # warnings[error_key] = 'URL returns status ' + str(r.status_code) + ' (' + str(r.reason) + ')'
-        # except Exception as ex:
-        # log.error('check_url exception: %s ', ex)
-        #         warnings[error_key] = 'Could not check url'
 
 
 # AJAX validator
@@ -1173,14 +1112,6 @@ class ResourceValidator(BaseController):
 
             errors = {}
             warnings = {}
-
-            # if media_type and not REDACTED_REGEX.match(media_type) \
-            #         and not IANA_MIME_REGEX.match(media_type):
-            # if media_type and not IANA_MIME_REGEX.match(media_type):
-            #     errors['format'] = 'The value is not valid IANA MIME Media type'
-            # elif not media_type and resource_type in ['file', 'upload']:
-            #     if url or resource_type == 'upload':
-            #         errors['format'] = 'The value is required for this type of resource'
 
             lower_types = [mtype.lower() for mtype in media_types]
             if media_type and media_type.lower() not in lower_types:
@@ -1298,7 +1229,6 @@ class CurlController(BaseController):
                 r = requests.get(url, verify=False)
                 method = 'GET'
                 if r.status_code > 399 or r.headers.get('content-type') is None:
-                    # return json.dumps({'ResultSet': {'Error': 'Returned status: ' + str(r.status_code)}})
                     return json.dumps({'ResultSet': {
                         'CType': False,
                         'Status': r.status_code,
@@ -1315,7 +1245,6 @@ class CurlController(BaseController):
         except Exception as ex:
             log.error('get_content_type exception: %s ', ex)
             return json.dumps({'ResultSet': {'Error': 'unknown error'}})
-            # return json.dumps({'ResultSet': {'Error': type(e).__name__}})
 
 
 class MediaController(BaseController):
@@ -1347,8 +1276,6 @@ class LicenseURLController(BaseController):
 
     def get_license_url(self):
         # set content type (charset required or pylons throws an error)
-        q = request.params.get('incomplete', '')
-
         response.content_type = 'application/json; charset=UTF-8'
 
         retval = []
