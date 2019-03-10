@@ -910,7 +910,8 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     # See ckan.plugins.interfaces.IDatasetForm
     def create_package_schema(self):
         schema = super(CommonCoreMetadataFormPlugin, self).create_package_schema()
-        schema = self._create_package_schema(schema)
+        if is_flask_request():
+            schema = self._create_package_schema(schema)
         return schema
 
     # See ckan.plugins.interfaces.IDatasetForm
