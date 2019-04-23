@@ -565,7 +565,8 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         return None
 
     @classmethod
-    def usmetadata_filter(cls, data=None, mask='~~'):
+    def usmetadata_filter(cls, data='', mask='~~'):
+        data = data or ''  # get rid of None
         for redact in re.findall(REDACTION_STROKE_REGEX, data):
             data = data.replace(redact, mask)
         data = data.replace('[[/REDACTED]]', mask)
