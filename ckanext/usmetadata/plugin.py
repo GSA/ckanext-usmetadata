@@ -16,7 +16,6 @@ import ckan.logic as logic
 import ckan.model as model
 import ckan.plugins as p
 import db_utils
-
 from ckan.common import _, json, request, c, g, response, is_flask_request, config
 from ckan.lib.base import BaseController
 
