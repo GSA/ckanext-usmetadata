@@ -239,7 +239,7 @@ var RedactionControl = new function () {
         var redacted;
         if ('undefined' !== typeof redacted_json_raw) {  //  dataset resource (or distribution) way
             redacted = redacted_json_raw;
-        } else if ($('#redacted_json').size()) {     // dataset way
+        } else if ($('#redacted_json').length) {     // dataset way
             var redactedJson = $('#redacted_json');
             redacted = $.parseJSON(redactedJson.val());
         }
