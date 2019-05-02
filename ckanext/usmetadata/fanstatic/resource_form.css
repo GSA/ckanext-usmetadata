@@ -2,6 +2,10 @@
     display: none
 }
 
+label.radio.inline {
+    display: inline;
+}
+
 .controls .radio.inline {
     padding-left: 3px;
     padding-top: 0
