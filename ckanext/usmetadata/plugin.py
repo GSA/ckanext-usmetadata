@@ -146,7 +146,8 @@ expanded_metadata = (
     {'id': 'accrual_periodicity', 'validators': [v.Regex(
         r'^([Dd]ecennial)|([Qq]uadrennial)|([Aa]nnual)|([Bb]imonthly)|([Ss]emiweekly)|([Dd]aily)|([Bb]iweekly)'
         r'|([Ss]emiannual)|([Bb]iennial)|([Tt]riennial)|([Tt]hree times a week)|([Tt]hree times a month)'
-        r'|(Continuously updated)|([Mm]onthly)|([Qq]uarterly)|([Ss]emimonthly)|([Tt]hree times a year)'
+        r'|([Ee]very five years)|([Ee]very eight years)'
+        r'|([Cc]ontinuously updated)|([Mm]onthly)|([Qq]uarterly)|([Ss]emimonthly)|([Tt]hree times a year)'
         r'|([Ww]eekly)|([Hh]ourly)|([Cc]ompletely irregular)|([Ii]rregular)|(\[\[REDACTED).*?(\]\])$')]},
     {'id': 'language', 'validators': [v.Regex(
         r'^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?'
@@ -274,8 +275,10 @@ required_if_applicable_metadata_by_pass_validation = (
 )
 
 accrual_periodicity = [u"Decennial", u"Quadrennial", u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biweekly",
-                       u"Semiannual", u"Biennial", u"Triennial",
-                       u"Three times a week", u"Three times a month", u"Continuously updated", u"Monthly", u"Quarterly",
+                       u"Semiannual", u"Biennial", u"Triennial", 
+                       u"Three times a week", u"Three times a month", 
+                       u"Every five years", u"Every eight years",
+                       u"Continuously updated", u"Monthly", u"Quarterly",
                        u"Semimonthly", u"Three times a year", u"Weekly", u"Hourly", u"Irregular"]
 
 access_levels = ['public', 'restricted public', 'non-public']
@@ -872,13 +875,15 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
     # See ckan.plugins.interfaces.IDatasetForm
     def _create_package_schema(self, schema):
-        log.debug("_create_package_schema called")
-        if request.path == u'/api/action/package_create':
-            for update in schema_api_for_create:
-                schema.update(update)
-        else:
-            for update in schema_updates_for_create:
-                schema.update(update)
+        updates = schema_updates_for_create
+        try:
+            if request.path == u'/api/action/package_create':
+                updates = schema_api_for_create
+        except:
+            pass
+
+        for update in updates:
+            schema.update(update)
 
         # use convert_to_tags functions for taxonomy
         schema.update({
@@ -911,8 +916,8 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     # See ckan.plugins.interfaces.IDatasetForm
     def create_package_schema(self):
         schema = super(CommonCoreMetadataFormPlugin, self).create_package_schema()
-        if is_flask_request():
-            schema = self._create_package_schema(schema)
+        # if is_flask_request():
+        schema = self._create_package_schema(schema)
         return schema
 
     # See ckan.plugins.interfaces.IDatasetForm
@@ -952,7 +957,6 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     # Method below allows functions and other methods to be called from the Jinja template using the h variable
     # always_private hides Visibility selector, essentially meaning that all datasets are private to an organization
     def get_helpers(self):
-        log.debug('get_helpers() called')
         return {
             'public_access_levels': access_levels,
             'required_metadata': required_metadata,
