@@ -10,7 +10,7 @@
     {% set prefix = h.url_for(controller='package', action='read', id='') %}
     {% set domain = h.url_for(controller='package', action='read', id='', qualified=true) %}
     {% set domain = domain|replace("http://", "")|replace("https://", "") %}
-    {% set attrs = {'data-module': 'usmetadata-slug-preview-slug', 'data-module-prefix': domain, 'data-module-placeholder': '<dataset>'} %}
+    {% set attrs = {'data-module': 'slug-preview-slug', 'data-module-prefix': domain, 'data-module-placeholder': '<dataset>'} %}
     {% set dataset_is_draft = data.get('state', 'draft').startswith('draft') or data.get('state', 'none') ==  'none' %}
     {% if dataset_is_draft %}
         <input type="hidden" id="dataset_status_id" name="dataset_status" value="draft"/>

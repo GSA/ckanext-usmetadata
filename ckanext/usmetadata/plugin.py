@@ -763,6 +763,8 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         )
 
         new_dict['labels'] = collections.OrderedDict(dataset_labels)
+        # Remove debug
+        # log.debug('''All the labels: %s''', new_dict)
         try:
             for extra in new_dict['extras']:
                 # to take care of legacy On values for data_quality
@@ -801,7 +803,8 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
                     log.debug('adding key: {0}'.format(key))
                     new_dict['common_core'][key] = value
                     keys_to_remove.append(key)
-
+            # Remove debug
+            # log.debug('Keys to be removed: %s', keys_to_remove)
             for key in keys_to_remove:
                 del new_dict[key]
 
