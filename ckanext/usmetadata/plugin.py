@@ -553,7 +553,7 @@ class UsmetadataController(BaseController):
 class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
     """
     This plugin adds fields for the metadata (known as the Common Core) defined at
-    https://github.com/project-open-data/project-open-data.github.io/blob/master/schema.md
+    https://resources.data.gov/schemas/dcat-us/v1.1/
     """
     p.implements(p.ITemplateHelpers, inherit=False)
     p.implements(p.IConfigurer, inherit=False)
