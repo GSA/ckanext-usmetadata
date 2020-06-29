@@ -106,7 +106,7 @@ var DatasetForm = new function () {
     };
 
     this.reload_redacted_controls = function () {
-        //  https://project-open-data.cio.gov/redactions/
+        //  https://resources.data.gov/schemas/dcat-us/v1.1/#accessLevel
         var level = $(':input[name="public_access_level"]').val();
         if ('public' === level) {
             $('.redacted-icon').add('.redacted-marker').add('.exemption_reason').hide();

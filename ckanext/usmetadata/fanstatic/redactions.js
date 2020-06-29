@@ -1,6 +1,6 @@
 "use strict";
 
-//  https://project-open-data.cio.gov/redactions/
+//  https://resources.data.gov/schemas/dcat-us/v1.1/#accessLevel
 var RedactionControl = new function () {
     var obj = this;
 

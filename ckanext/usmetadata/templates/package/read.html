@@ -47,7 +47,7 @@
 
     {% set pkg = h.load_data_into_dict(pkg) %}
 
-    {# display common core metadata #}
+    {# display DCAT-US metadata #}
     {% snippet "package/snippets/metadata_info.html", pkg_dict=pkg %}
 
     {% snippet "package/snippets/additional_info.html", pkg_dict=pkg %}
