@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/GSA/USMetadata.svg?branch=develop)](https://travis-ci.org/GSA/USMetadata)
 [![Coverage Status](https://coveralls.io/repos/GSA/USMetadata/badge.svg?branch=develop&service=github)](https://coveralls.io/github/GSA/USMetadata?branch=develop)
 
-This CKAN Extension expands CKAN to offer a number of custom fields related to the [US Common Core Schema](https://resources.data.gov/schemas/dcat-us/v1.1/)
+This CKAN Extension expands CKAN to offer a number of custom fields related to the [DCAT-US Schema](https://resources.data.gov/schemas/dcat-us/v1.1/)
 
 Installation
 ============

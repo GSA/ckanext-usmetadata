@@ -2,7 +2,7 @@
 {% set always_private = h.always_private %}
 
 {% block package_basic_fields_title %}
-    <h1>Required Common Core Metadata</h1>
+    <h1>Required DCAT-US Metadata</h1>
     {{ form.input('title', id='field-title', label=_('Title'), placeholder=_('e.g. A descriptive title'), value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target', 'title': 'Human-readable name of the asset. Should be in plain English and include sufficient detail to facilitate search and discovery.'}, is_required=true) }}
 {% endblock package_basic_fields_title %}
 
@@ -95,7 +95,7 @@
 
                 {% snippet 'package/snippets/required_common_core_fields.html', data=data, errors=errors %}
 
-                <h1>Required-If-Applicable Common Core Metadata</h1>
+                <h1>Required-If-Applicable DCAT-US Metadata</h1>
                 {% snippet 'package/snippets/required_if_applicable_common_core_fields.html', data=data, errors=errors %}
 
                 {% block license %}
@@ -106,7 +106,7 @@
 
                 {{ form.input('temporal', label=_('Temporal'), id='field-temporal', placeholder=_('2000-01-15/2010-01-15'), value=data.common_core.temporal, error=errors.temporal, classes=['control-medium'], attrs={'title': 'The range of temporal applicability of a dataset (i.e., a start and end date of applicability for the data).'}) }}
 
-                <h1>Expanded Common Core Metadata</h1>
+                <h1>Expanded DCAT-US Metadata</h1>
                 {% snippet 'package/snippets/expanded_common_core_fields.html', data=data, errors=errors %}
 
 

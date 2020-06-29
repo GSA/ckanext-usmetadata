@@ -552,7 +552,7 @@ class UsmetadataController(BaseController):
 
 class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
     """
-    This plugin adds fields for the metadata (known as the Common Core) defined at
+    This plugin adds fields for the metadata (known as the DCAT-US) defined at
     https://resources.data.gov/schemas/dcat-us/v1.1/
     """
     p.implements(p.ITemplateHelpers, inherit=False)
@@ -731,7 +731,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         '''
         a jinja2 template helper function.
         'extras' contains a list of dicts corresponding to the extras used to store arbitrary key value pairs in CKAN.
-        This function moves each entry in 'extras' that is a common core metadata into 'common_core'
+        This function moves each entry in 'extras' that is a DCAT-US metadata into 'common_core'
 
         Example:
         {'hi':'there', 'extras':[{'key': 'publisher', 'value':'USGS'}]}
@@ -819,7 +819,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
             new_dict['extras'] = reduced_extras
         except KeyError as ex:
-            log.debug('''Expected key ['%s'] not found, attempting to move common core keys to subdictionary''',
+            log.debug('''Expected key ['%s'] not found, attempting to move DCAT-US keys to subdictionary''',
                       ex.message)
             # this can happen when a form fails validation, as all the data will now be as key,
             # value pairs, not under extras, so we'll move them to the expected point again to fill in the values
@@ -829,7 +829,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             keys_to_remove = []
 
             # TODO remove debug
-            log.debug('common core metadata: {0}'.format(common_metadata))
+            log.debug('DCAT-US metadata: {0}'.format(common_metadata))
             for key, value in new_dict.iteritems():
                 # TODO remove debug
                 log.debug('checking key: {0}'.format(key))
