@@ -10,19 +10,19 @@
         {% for extra in package.extras -%}
         {%- if extra['key'] == 'public_access_level' and extra['value'] == 'public' -%}
             <span class="dataset-private label label-inverse pull-right">
-                <i class="icon-unlock"></i>
+                <i class="fa fa-unlock"></i>
                 {{ _('Public') }}
             </span>
         {% endif %}
         {%- if extra['key'] == 'public_access_level' and extra['value'] == 'non-public' -%}
             <span class="dataset-private label label-inverse pull-right">
-                <i class="icon-lock"></i>
+                <i class="fa fa-lock"></i>
                 {{ _('Non-public') }}
             </span>
         {% endif %}
         {%- if extra['key'] == 'public_access_level' and extra['value'] == 'restricted public' -%}
             <span class="dataset-private label label-inverse pull-right">
-                <i class="icon-lock"></i>
+                <i class="fa fa-lock"></i>
                 {{ _('restricted public') }}
             </span>
         {% endif %}
