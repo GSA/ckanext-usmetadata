@@ -1,0 +1,37 @@
+version: 2
+jobs:
+  lint:
+    docker:
+      - image: circleci/python:2.7.18
+    steps:
+      - run:
+          name: lint code
+          command: |
+            pip install --upgrade pip
+            pip install flake8
+            flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+  test_inventory:
+    working_directory: ~/usmetadata
+    machine:
+      image: circleci/classic:201708-01
+    environment:
+      CKANVERSION=inventory
+    steps:
+      - checkout
+      - run:
+          name: install
+          command: bin/travis-build.bash
+      - run:
+          name: test
+          command: |
+            pip install coveralls
+            bin/travis-run.sh
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - lint
+      - test_inventory:
+          requires:
+            - lint
