@@ -9,6 +9,7 @@ import formencode.validators as v
 import requests
 from pylons import config
 
+import ckan.lib.helpers as h
 import ckan.lib.base as base
 import ckan.lib.dictization.model_dictize as model_dictize
 import ckan.lib.navl.dictization_functions as dict_fns
@@ -35,7 +36,6 @@ parse_params = logic.parse_params
 flatten_to_string_key = logic.flatten_to_string_key
 lookup_package_plugin = ckan.lib.plugins.lookup_package_plugin
 
-import ckan.lib.helpers as h
 
 # from ckan.plugins import implements, SingletonPlugin, toolkit, IConfigurer,
 # ITemplateHelpers, IDatasetForm, IPackageController
@@ -154,7 +154,7 @@ expanded_metadata = (
         r'^([Dd]ecennial)|([Qq]uadrennial)|([Aa]nnual)|([Bb]imonthly)|([Ss]emiweekly)|([Dd]aily)|([Bb]iweekly)'
         r'|([Ss]emiannual)|([Bb]iennial)|([Tt]riennial)|([Tt]hree times a week)|([Tt]hree times a month)'
         r'|(Continuously updated)|([Mm]onthly)|([Qq]uarterly)|([Ss]emimonthly)|([Tt]hree times a year)'
-        r'|^R\/P(?:(\d+(?:[\.,]\d+)?)Y)?(?:(\d+(?:[\.,]\d+)?)M)?(?:(\d+(?:[\.,]\d+)?)D)?(?:T(?:(\d+(?:[\.,]\d+)?)H)?(?:(\d+(?:[\.,]\d+)?)M)?(?:(\d+(?:[\.,]\d+)?)S)?)?$' # ISO 8601 duration
+        r'|^R\/P(?:(\d+(?:[\.,]\d+)?)Y)?(?:(\d+(?:[\.,]\d+)?)M)?(?:(\d+(?:[\.,]\d+)?)D)?(?:T(?:(\d+(?:[\.,]\d+)?)H)?(?:(\d+(?:[\.,]\d+)?)M)?(?:(\d+(?:[\.,]\d+)?)S)?)?$'  # ISO 8601 duration
         r'|([Ww]eekly)|([Hh]ourly)|([Cc]ompletely irregular)|([Ii]rregular)|(\[\[REDACTED).*?(\]\])$')]},
     {'id': 'language', 'validators': [v.Regex(
         r'^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?'
@@ -380,7 +380,7 @@ class UsmetadataController(BaseController):
         context['allow_state_change'] = True
         try:
             get_action('package_update')(context, data_dict)
-        except ValidationError, e:
+        except ValidationError as e:
             errors = e.error_dict
             error_summary = e.error_summary
             return self.new_metadata(id, data, errors, error_summary)
@@ -417,9 +417,7 @@ class UsmetadataController(BaseController):
         forms. '''
         if request.method == 'POST' and not data:
             save_action = request.params.get('save')
-            data = data or \
-                   clean_dict(dict_fns.unflatten(tuplize_dict(parse_params(
-                       request.POST))))
+            data = data or clean_dict(dict_fns.unflatten(tuplize_dict(parse_params(request.POST))))
             # we don't want to include save as it is part of the form
             del data['save']
             resource_id = data['id']
@@ -431,8 +429,7 @@ class UsmetadataController(BaseController):
             # see if we have any data that we are trying to save
             data_provided = False
             for key, value in data.iteritems():
-                if ((value or isinstance(value, cgi.FieldStorage))
-                    and key != 'resource_type'):
+                if ((value or isinstance(value, cgi.FieldStorage)) and key != 'resource_type'):
                     data_provided = True
                     break
 
@@ -478,7 +475,7 @@ class UsmetadataController(BaseController):
                     get_action('resource_update')(context, data)
                 else:
                     get_action('resource_create')(context, data)
-            except ValidationError, e:
+            except ValidationError as e:
                 errors = e.error_dict
                 # error_summary = e.error_summary
                 error_summary = self.map_old_keys(e.error_summary)
@@ -657,22 +654,22 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
     # Add access level facet on dataset page
     def dataset_facets(self, facets_dict, package_type):
-        if package_type <> 'dataset':
+        if package_type != 'dataset':
             return facets_dict
         d = collections.OrderedDict()
         d['public_access_level'] = 'Access Level'
-        for k, v in facets_dict.items():
-            d[k] = v
+        for k, vv in facets_dict.items():
+            d[k] = vv
         return d
 
     # Add access level facet on organization page
     def organization_facets(self, facets_dict, organization_type, package_type):
-        if organization_type <> 'organization':
+        if organization_type != 'organization':
             return facets_dict
         d = collections.OrderedDict()
         d['public_access_level'] = 'Access Level'
-        for k, v in facets_dict.items():
-            d[k] = v
+        for k, vv in facets_dict.items():
+            d[k] = vv
         return d
 
     def before_show(self, resource_dict):
@@ -1348,7 +1345,6 @@ class LicenseURLController(BaseController):
 
     def get_license_url(self):
         # set content type (charset required or pylons throws an error)
-        q = request.params.get('incomplete', '')
 
         response.content_type = 'application/json; charset=UTF-8'
 
