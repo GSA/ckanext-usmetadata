@@ -578,11 +578,17 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             'cloning',
             False) or 'skip_validation' in data_dict.get(
             'title',
-            '') or data_dict.get(
-            'publishing_status',
-                '') == 'Draft':
+                ''):
             data_dict, errors = p.toolkit.navl_validate(
                 data_dict, schema, context)
+            return data_dict, None
+
+        if data_dict.get('publishing_status', '') == 'Draft':
+            data_dict, errors = p.toolkit.navl_validate(
+                data_dict, schema, context)
+            if 'That URL is already in use.' in errors.get('name', []):
+                # Only return URL in use error
+                return data_dict, {'name': errors.get('name', [])}
             return data_dict, None
 
         return None
