@@ -564,7 +564,9 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
     def validate(self, context, data_dict, schema, action):
         """
-        Disabling validation during cloning process
+        Disabling validation during:
+            - cloning process
+            - draft datasets (when 'publishing_status=Draft')
 
         :param context:
         :param data_dict:
@@ -572,8 +574,15 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         :param action:
         :return:
         """
-        if context.get('cloning', False) or 'skip_validation' in data_dict.get('title', ''):
-            data_dict, errors = p.toolkit.navl_validate(data_dict, schema, context)
+        if context.get(
+            'cloning',
+            False) or 'skip_validation' in data_dict.get(
+            'title',
+            '') or data_dict.get(
+            'publishing_status',
+                '') == 'Draft':
+            data_dict, errors = p.toolkit.navl_validate(
+                data_dict, schema, context)
             return data_dict, None
 
         return None
