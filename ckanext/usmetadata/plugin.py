@@ -18,6 +18,7 @@ import ckan.plugins as p
 import db_utils
 from ckan.common import _, json, request, c, g, response, is_flask_request, config
 from ckan.lib.base import BaseController
+import ckan.lib.helpers as h
 
 render = base.render
 abort = base.abort
@@ -33,8 +34,6 @@ clean_dict = logic.clean_dict
 parse_params = logic.parse_params
 flatten_to_string_key = logic.flatten_to_string_key
 lookup_package_plugin = ckan.lib.plugins.lookup_package_plugin
-
-import ckan.lib.helpers as h
 
 log = getLogger(__name__)
 
@@ -275,8 +274,8 @@ required_if_applicable_metadata_by_pass_validation = (
 )
 
 accrual_periodicity = [u"Decennial", u"Quadrennial", u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biweekly",
-                       u"Semiannual", u"Biennial", u"Triennial", 
-                       u"Three times a week", u"Three times a month", 
+                       u"Semiannual", u"Biennial", u"Triennial",
+                       u"Three times a week", u"Three times a month",
                        u"Every five years", u"Every eight years",
                        u"Continuously updated", u"Monthly", u"Quarterly",
                        u"Semimonthly", u"Three times a year", u"Weekly", u"Hourly", u"Irregular"]
@@ -411,8 +410,8 @@ class UsmetadataController(BaseController):
         if request.method == 'POST' and not data:
             save_action = request.params.get('save')
             data = data or \
-                   clean_dict(dict_fns.unflatten(tuplize_dict(parse_params(
-                       request.POST))))
+                clean_dict(dict_fns.unflatten(tuplize_dict(parse_params(
+                    request.POST))))
             # we don't want to include save as it is part of the form
             del data['save']
             resource_id = data['id']
@@ -424,8 +423,7 @@ class UsmetadataController(BaseController):
             # see if we have any data that we are trying to save
             data_provided = False
             for key, value in data.iteritems():
-                if ((value or isinstance(value, cgi.FieldStorage))
-                    and key != 'resource_type'):
+                if ((value or isinstance(value, cgi.FieldStorage)) and key != 'resource_type'):
                     data_provided = True
                     break
 
@@ -624,8 +622,8 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             return facets_dict
         d = collections.OrderedDict()
         d['public_access_level'] = 'Access Level'
-        for k, v in facets_dict.items():
-            d[k] = v
+        for k, vv in facets_dict.items():
+            d[k] = vv
         return d
 
     # Add access level facet on organization page
@@ -634,8 +632,8 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             return facets_dict
         d = collections.OrderedDict()
         d['public_access_level'] = 'Access Level'
-        for k, v in facets_dict.items():
-            d[k] = v
+        for k, vv in facets_dict.items():
+            d[k] = vv
         return d
 
     def before_show(self, resource_dict):
@@ -879,7 +877,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         try:
             if request.path == u'/api/action/package_create':
                 updates = schema_api_for_create
-        except:
+        except Exception:
             pass
 
         for update in updates:

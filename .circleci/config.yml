@@ -1,0 +1,35 @@
+version: 2
+jobs:
+  lint:
+    docker:
+      - image: circleci/python:2.7.18
+    steps:
+      - checkout
+      - run:
+          name: lint code
+          command: make lint
+  test_inventory:
+    working_directory: ~/usmetadata
+    machine:
+      image: circleci/classic:201708-01
+    environment:
+      CKANVERSION=2.8
+    steps:
+      - checkout
+      - run:
+          name: install
+          command: bin/travis-build.bash
+      - run:
+          name: test
+          command: |
+            pip install coveralls
+            bin/travis-run.sh
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - lint
+      - test_inventory:
+          requires:
+            - lint
