@@ -13,7 +13,7 @@ jobs:
     machine:
       image: circleci/classic:201708-01
     environment:
-      CKANVERSION=inventory
+      CKANVERSION=2.8
     steps:
       - checkout
       - run:
