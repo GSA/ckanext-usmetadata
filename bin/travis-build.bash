@@ -7,7 +7,7 @@ echo "Installing the packages that CKAN requires..."
 sudo apt-get update -qq
 sudo apt-get install postgresql postgresql-contrib solr-jetty libcommons-fileupload-java libpq-dev swig
 
-pip install --upgrade pip
+pip install pip==20.3.3
 pip install testrepository
 
 echo "Installing CKAN and its Python dependencies..."
