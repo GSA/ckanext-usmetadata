@@ -367,9 +367,9 @@ schema_updates_for_show = [{meta['id']: meta['validators'] + [p.toolkit.get_conv
                            in
                            (get_req_metadata_for_show_update() + required_if_applicable_metadata + expanded_metadata)]
 schema_api_for_create = [{meta['id']: meta['validators'] + [p.toolkit.get_converter('convert_to_extras')]} for meta
-                         in ''.join([get_req_metadata_for_api_create(),
-                                     required_if_applicable_metadata_by_pass_validation,
-                                     expanded_metadata_by_pass_validation])]
+                         in (get_req_metadata_for_api_create() +  # NOQA
+                             required_if_applicable_metadata_by_pass_validation +  # NOQA
+                             expanded_metadata_by_pass_validation)]
 
 
 class UsmetadataController(BaseController):
