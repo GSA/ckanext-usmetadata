@@ -105,17 +105,17 @@ REDACTION_STROKE_REGEX = re.compile(
 
 # excluded title, description, tags and last update as they're part of the default ckan dataset metadata
 required_metadata = (
-    {'id': 'title', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
-    {'id': 'notes', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
+    {'id': 'title', 'validators': [p.toolkit.get_validator('not_empty'), str]},
+    {'id': 'notes', 'validators': [p.toolkit.get_validator('not_empty'), str]},
     # {'id': 'tag_string', 'validators': [v.NotEmpty]},
     {'id': 'public_access_level',
      'validators': [v.Regex(r'^(public)|(restricted public)|(non-public)$')]},
-    {'id': 'publisher', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
-    {'id': 'contact_name', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
-    {'id': 'contact_email', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
+    {'id': 'publisher', 'validators': [p.toolkit.get_validator('not_empty'), str]},
+    {'id': 'contact_name', 'validators': [p.toolkit.get_validator('not_empty'), str]},
+    {'id': 'contact_email', 'validators': [p.toolkit.get_validator('not_empty'), str]},
     # TODO should this unique_id be validated against any other unique IDs for this agency?
-    {'id': 'unique_id', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
-    {'id': 'modified', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
+    {'id': 'unique_id', 'validators': [p.toolkit.get_validator('not_empty'), str]},
+    {'id': 'modified', 'validators': [p.toolkit.get_validator('not_empty'), str]},
     {'id': 'bureau_code', 'validators': [v.Regex(
         r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$'
     )]},
@@ -154,7 +154,7 @@ expanded_metadata = (
         r'^([Dd]ecennial)|([Qq]uadrennial)|([Aa]nnual)|([Bb]imonthly)|([Ss]emiweekly)|([Dd]aily)|([Bb]iweekly)'
         r'|([Ss]emiannual)|([Bb]iennial)|([Tt]riennial)|([Tt]hree times a week)|([Tt]hree times a month)'
         r'|(Continuously updated)|([Mm]onthly)|([Qq]uarterly)|([Ss]emimonthly)|([Tt]hree times a year)'
-        r'|R\/P(?:(\d+(?:[\.,]\d+)?)Y)?(?:(\d+(?:[\.,]\d+)?)M)?(?:(\d+(?:[\.,]\d+)?)D)?(?:T(?:(\d+(?:[\.,]\d+)?)H)?(?:(\d+(?:[\.,]\d+)?)M)?(?:(\d+(?:[\.,]\d+)?)S)?)?$'  # ISO 8601 duration
+        r'|R\/P(?:(\d+(?:[\.,]\d+)?)Y)?(?:(\d+(?:[\.,]\d+)?)M)?(?:(\d+(?:[\.,]\d+)?)D)?(?:T(?:(\d+(?:[\.,]\d+)?)H)?(?:(\d+(?:[\.,]\d+)?)M)?(?:(\d+(?:[\.,]\d+)?)S)?)?$'  # NOQA E501  # ISO 8601 duration
         r'|([Ww]eekly)|([Hh]ourly)|([Cc]ompletely irregular)|([Ii]rregular)|(\[\[REDACTED).*?(\]\])$')]},
     {'id': 'language', 'validators': [v.Regex(
         r'^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?'
@@ -229,8 +229,8 @@ required_if_applicable_metadata = (
 
 # used for by passing API validation
 required_metadata_by_pass_validation = (
-    {'id': 'title', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
-    {'id': 'notes', 'validators': [p.toolkit.get_validator('not_empty'), unicode]},
+    {'id': 'title', 'validators': [p.toolkit.get_validator('not_empty'), str]},
+    {'id': 'notes', 'validators': [p.toolkit.get_validator('not_empty'), str]},
     {'id': 'public_access_level', 'validators': [v.String(max=2100)]},
     {'id': 'publisher', 'validators': [v.String(max=300)]},
     {'id': 'contact_name', 'validators': [v.String(max=2100)]},
@@ -367,8 +367,9 @@ schema_updates_for_show = [{meta['id']: meta['validators'] + [p.toolkit.get_conv
                            in
                            (get_req_metadata_for_show_update() + required_if_applicable_metadata + expanded_metadata)]
 schema_api_for_create = [{meta['id']: meta['validators'] + [p.toolkit.get_converter('convert_to_extras')]} for meta
-                         in (
-                             get_req_metadata_for_api_create() + required_if_applicable_metadata_by_pass_validation + expanded_metadata_by_pass_validation)]
+                         in ''.join([get_req_metadata_for_api_create(),
+                                     required_if_applicable_metadata_by_pass_validation,
+                                     expanded_metadata_by_pass_validation])]
 
 
 class UsmetadataController(BaseController):
@@ -629,7 +630,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     def usmetadata_shorten(cls, plain=None, extract_length=180):
         if not extract_length or len(plain) < extract_length:
             return plain
-        return unicode(h.truncate(plain, length=extract_length, indicator='...', whole_word=True))
+        return str(h.truncate(plain, length=extract_length, indicator='...', whole_word=True))
 
     @classmethod
     def resource_redacted_icon(cls, package, resource, field):
@@ -915,7 +916,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     def _default_extras_schema(self):
         schema = {
             'id': [p.toolkit.get_validator('ignore')],
-            'key': [p.toolkit.get_validator('not_empty'), unicode],
+            'key': [p.toolkit.get_validator('not_empty'), str],
             'value': [p.toolkit.get_validator('not_missing')],
             'state': [p.toolkit.get_validator('ignore')],
             'deleted': [p.toolkit.get_validator('ignore_missing')],

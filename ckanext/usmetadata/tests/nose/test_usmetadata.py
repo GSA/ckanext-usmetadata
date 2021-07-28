@@ -35,10 +35,7 @@ class TestUsmetadataPlugin(object):
 
         self.sysadmin = factories.Sysadmin()
 
-        self.org_dict = tests.call_action_api(self.app,
-                                              'organization_create',
-                                              apikey=self.sysadmin.get('apikey'),
-                                              name='my_org_000')
+        self.org_dict = tests.call_action_api(self.app, 'organization_create', apikey=self.sysadmin.get('apikey'), name='my_org_000')
 
         self.package_dict = tests.call_action_api(
             self.app, 'package_create',
@@ -254,15 +251,12 @@ class TestUsmetadataPlugin(object):
 
     # TODO:Add assertions for all field validations
     def test_validate_dataset_action(self):
-        url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + self.org_dict['id'] + '&'
-               'unique_id=000&rights=&license_url=&temporal=&described_by=&described_by_type=&conforms'
-               '_to=&landing_page=&language=&investment_uii=&references=&issued=&system_of_records=')
+        url = '/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + self.org_dict['id'] + '&unique_id=000&rights=&license_url=&temporal=&described_by=&described_by_type=&conforms_to=&landing_page=&language=&investment_uii=&references=&issued=&system_of_records='
         res = self.app.get(url)
         assert 'Success' in res
 
     def test_validate_resource_action(self):
-        res = self.app.get('/api/2/util/resource/validate_resource?url=badurl'
-                           '&resource_type=file&format=&describedBy=&describedByType=&conformsTo=')
+        res = self.app.get('/api/2/util/resource/validate_resource?url=badurl&resource_type=file&format=&describedBy=&describedByType=&conformsTo=')
         assert 'Invalid' in res
 
     def test_get_content_type_action(self):

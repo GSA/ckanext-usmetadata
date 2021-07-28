@@ -14,15 +14,15 @@ def validate(sid, values):
     for test in values:
         for validator in validators:
             # if fails will raise an error
-            print("validating {} for {} at {}".format(test, sid, validator))
+            print "validating {} for {} at {}".format(test, sid, validator)
             try:
                 validator.to_python(test)
-                print(" - OK {} for {} at {}".format(test, sid, validator))
+                print " - OK {} for {} at {}".format(test, sid, validator)
                 ok.append(test)
             except AttributeError:  # it's a simple function validator
                 pass  # extra validation functions
             except Invalid:
-                print(" - INVALID {} for {} at {}".format(test, sid, validator))
+                print " - INVALID {} for {} at {}".format(test, sid, validator)
                 failed.append(test)
 
     return ok, failed
