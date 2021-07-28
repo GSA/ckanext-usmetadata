@@ -11,3 +11,4 @@ ckanext_usmetadata.egg-info/
 .Trashes
 *ehthumbs.db
 *Thumbs.db
+*.swp
