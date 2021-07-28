@@ -7,7 +7,7 @@ jobs:
       - checkout
       - run:
           name: lint code
-          command: make lint
+          command: make lint-legacy
   test_inventory:
     working_directory: ~/usmetadata
     machine:
