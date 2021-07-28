@@ -1,6 +1,7 @@
 '''Tests for the ckanext.example_iauthfunctions extension.
 
 '''
+from builtins import object
 from ckanext.usmetadata import db_utils
 import paste.fixture
 import pylons.test
@@ -233,11 +234,11 @@ class TestUsmetadataPlugin(object):
         title = db_utils.get_organization_title(package_dict['id'])
         assert title == 'my package'
 
-        class Config:
+        class Config(object):
             def __init__(self, **kwds):
                 self.__dict__.update(kwds)
 
-        class Userobj:
+        class Userobj(object):
             def __init__(self, **kwds):
                 self.__dict__.update(kwds)
 

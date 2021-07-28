@@ -1,3 +1,4 @@
+from builtins import str
 __author__ = 'ykhadilkar'
 
 import ckan.model as model

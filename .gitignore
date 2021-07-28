@@ -12,3 +12,4 @@ ckanext_usmetadata.egg-info/
 *ehthumbs.db
 *Thumbs.db
 *.swp
+*.bak

@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from builtins import str
 import cgi
 import collections
 import copy
@@ -17,7 +19,7 @@ import ckan.lib.plugins
 import ckan.logic as logic
 import ckan.model as model
 import ckan.plugins as p
-import db_utils
+from . import db_utils
 from ckan.common import _, json, request, c, g, response
 from ckan.lib.base import BaseController
 
@@ -308,7 +310,7 @@ is_parent_options = {'true': 'Yes', 'false': 'No'}
 
 # list(set(x)) returns list with unique values
 media_types_dict = h.resource_formats()
-media_types = list(set([row[1] for row in h.resource_formats().values()]))
+media_types = list(set([row[1] for row in list(h.resource_formats().values())]))
 
 
 # all required_metadata should be required
@@ -397,8 +399,8 @@ class UsmetadataController(BaseController):
         replace = {
             'Format': 'Media Type'
         }
-        for old_key, new_key in replace.items():
-            if old_key in error_summary.keys():
+        for old_key, new_key in list(replace.items()):
+            if old_key in list(error_summary.keys()):
                 error_summary[new_key] = error_summary[old_key]
                 del error_summary[old_key]
         return error_summary
@@ -429,7 +431,7 @@ class UsmetadataController(BaseController):
 
             # see if we have any data that we are trying to save
             data_provided = False
-            for key, value in data.iteritems():
+            for key, value in data.items():
                 if ((value or isinstance(value, cgi.FieldStorage)) and key != 'resource_type'):
                     data_provided = True
                     break
@@ -674,7 +676,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             return facets_dict
         d = collections.OrderedDict()
         d['public_access_level'] = 'Access Level'
-        for k, vv in facets_dict.items():
+        for k, vv in list(facets_dict.items()):
             d[k] = vv
         return d
 
@@ -684,7 +686,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             return facets_dict
         d = collections.OrderedDict()
         d['public_access_level'] = 'Access Level'
-        for k, vv in facets_dict.items():
+        for k, vv in list(facets_dict.items()):
             d[k] = vv
         return d
 
@@ -844,7 +846,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
             # TODO remove debug
             log.debug('DCAT-US metadata: {0}'.format(common_metadata))
-            for key, value in new_dict.iteritems():
+            for key, value in new_dict.items():
                 # TODO remove debug
                 log.debug('checking key: {0}'.format(key))
                 if key in common_metadata:
@@ -1269,7 +1271,7 @@ class CloneController(BaseController):
 
         del pkg_dict['extras']
         pkg_dict['extras'] = []
-        for key, value in temp.iteritems():
+        for key, value in temp.items():
             if key != 'title':
                 pkg_dict[key] = value
 
@@ -1346,7 +1348,7 @@ class MediaController(BaseController):
         if q in media_types_dict:
             retval.append(media_types_dict[q][1])
 
-        media_keys = media_types_dict.keys()
+        media_keys = list(media_types_dict.keys())
         for media_type in media_keys:
             if q in media_type.lower() and media_types_dict[media_type][1] not in retval:
                 retval.append(media_types_dict[media_type][1])

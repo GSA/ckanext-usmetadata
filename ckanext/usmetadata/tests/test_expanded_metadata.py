@@ -1,3 +1,4 @@
+from __future__ import print_function
 from formencode import Invalid
 from ckanext.usmetadata.plugin import expanded_metadata
 
