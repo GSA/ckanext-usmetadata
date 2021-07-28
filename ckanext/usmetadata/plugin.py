@@ -9,10 +9,11 @@ from logging import getLogger
 
 import formencode.validators as v
 import requests
-from pylons import config
+from ckan.plugins.toolkit import config
 
 import ckan.lib.helpers as h
 import ckan.lib.base as base
+from flask import redirect
 import ckan.lib.dictization.model_dictize as model_dictize
 import ckan.lib.navl.dictization_functions as dict_fns
 import ckan.lib.plugins
@@ -25,7 +26,7 @@ from ckan.lib.base import BaseController
 
 render = base.render
 abort = base.abort
-redirect = base.redirect
+# redirect = base.redirect
 
 NotFound = logic.NotFound
 NotAuthorized = logic.NotAuthorized
@@ -43,7 +44,7 @@ lookup_package_plugin = ckan.lib.plugins.lookup_package_plugin
 # ITemplateHelpers, IDatasetForm, IPackageController
 # from formencode.validators import validators
 
-redirect = base.redirect
+# redirect = base.redirect
 log = getLogger(__name__)
 
 URL_REGEX = re.compile(
