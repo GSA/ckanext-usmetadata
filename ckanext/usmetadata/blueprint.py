@@ -91,10 +91,6 @@ REDACTED_REGEX = re.compile(
     r'^(\[\[REDACTED).*?(\]\])$'
 )
 
-REDACTION_STROKE_REGEX = re.compile(
-    r'(\[\[REDACTED-EX B[\d]\]\])'
-)
-
 
 def get_package_type(self, id):
     """

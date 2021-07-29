@@ -2,12 +2,17 @@ from __future__ import absolute_import
 from builtins import str
 import copy
 from logging import getLogger
+import re
 
 import formencode.validators as v
 import ckan.lib.helpers as h
 import ckan.plugins as p
 
 log = getLogger(__name__)
+
+REDACTION_STROKE_REGEX = re.compile(
+    r'(\[\[REDACTED-EX B[\d]\]\])'
+)
 
 # excluded title, description, tags and last update as they're part of the default ckan dataset metadata
 required_metadata = (

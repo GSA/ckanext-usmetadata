@@ -15,5 +15,5 @@ class MixinPlugin(object):
         # backwards compatibility using a sprinkling of conditionals. We don't
         # anticipate adding new features to the existing 2.8 templates.
         p.toolkit.add_template_directory(config, '../templates/templates_2_8')
-        p.toolkit.add_resource('../fanstatic_library', 'dataset_url')
+        p.toolkit.add_resource('../fanstatic', 'dataset_url')
         p.toolkit.add_public_directory(config, '../public')
