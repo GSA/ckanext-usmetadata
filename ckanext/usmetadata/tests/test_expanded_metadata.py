@@ -1,6 +1,6 @@
 from __future__ import print_function
 from formencode import Invalid
-from ckanext.usmetadata.plugin import expanded_metadata
+from ckanext.usmetadata.plugin.helper import expanded_metadata
 
 
 def validate(sid, values):

@@ -3,98 +3,56 @@
 '''
 from builtins import object
 from ckanext.usmetadata import db_utils
-import paste.fixture
-import pylons.test
-import ckan.tests.factories as factories
+from ckan.tests.helpers import FunctionalTestBase, reset_db
+from ckan.tests import factories
 
 import ckan.model as model
-import ckan.tests.legacy as tests
+import ckan.tests as tests
 import ckan.plugins as plugins
 
 
 class TestUsmetadataPlugin(object):
-    '''Tests for the usmetadata.plugin module.
-
-    '''
+    '''Tests for the usmetadata.plugin module.'''
 
     @classmethod
-    def setup_class(cls):
-        '''Nose runs this method once to setup our test class.'''
+    def setup(cls):
+        reset_db()
 
-        # Make the Paste TestApp that we'll use to simulate HTTP requests to
-        # CKAN.
-        cls.app = paste.fixture.TestApp(pylons.test.pylonsapp)
+    def create_datasets(self):
+        self.organization = factories.Organization()
+        self.user = factories.Sysadmin(name='admin')
+        self.user_name = self.user['name'].encode('ascii')
 
-        # Test code should use CKAN's plugins.load() function to load plugins
-        # to be tested.
-        # plugins.load('usmetadata')
+        dataset = {
+            'name': 'my_package_000',
+            'title': 'my package',
+            'notes': 'my package notes',
+            'public_access_level': 'public',
+            'access_level_comment': 'Access level comment',
+            'unique_id': '000',
+            'contact_name': 'Jhon',
+            'program_code': '018:001',
+            'bureau_code': '019:20',
+            'contact_email': 'jhon@mail.com',
+            'publisher': 'Publicher 01',
+            'modified': '2019-01-27 11:41:21',
+            'tag_string': 'mypackage,tag01,tag02',
+            'parent_dataset': 'true',
+            'owner_org': self.organization['id'],
+        }
 
-        model.repo.rebuild_db()
-
-    def setup(self):
-        '''Nose runs this method before each test method in our test class.'''
-
-        self.sysadmin = factories.Sysadmin()
-
-        self.org_dict = tests.call_action_api(self.app,
-                                              'organization_create',
-                                              apikey=self.sysadmin.get('apikey'),
-                                              name='my_org_000')
-
-        self.package_dict = tests.call_action_api(
-            self.app, 'package_create',
-            apikey=self.sysadmin.get('apikey'),
-            name='my_package_000',
-            title='my package',
-            notes='my package notes',
-            tag_string='my_package',
-            modified='2014-04-04',
-            publisher='GSA',
-            contact_name='john doe',
-            contact_email='john.doe@gsa.com',
-            unique_id='000',
-            public_access_level='public',
-            bureau_code='001:40',
-            program_code='015:010',
-            access_level_comment='Access level commemnt',
-            parent_dataset='true',
-            ower_org=self.org_dict['id'])
-
-    def teardown(self):
-        '''Nose runs this method after each test method in our test class.'''
-
-        # Rebuild CKAN's database after each test method, so that each test
-        # method runs with a clean slate.
-        model.repo.rebuild_db()
-
-    @classmethod
-    def teardown_class(cls):
-        '''Nose runs this method once after all the test methods in our class
-        have been run.
-
-        '''
-        # We have to unload the plugin we loaded, so it doesn't affect any
-        # tests that run after ours.
-        plugins.unload('usmetadata')
+        d1 = dataset.copy()
+        self.dataset1 = factories.Dataset(**d1)
 
     # test is dataset is getting created successfully
     def test_package_creation(self):
-        package_dict = tests.call_action_api(self.app, 'package_create', apikey=self.sysadmin.get('apikey'),
-                                             name='my_package',
-                                             title='my package',
-                                             notes='my package notes',
-                                             tag_string='my_package',
-                                             modified='2014-04-04',
-                                             publisher='GSA',
-                                             contact_name='john doe',
-                                             contact_email='john.doe@gsa.com',
-                                             unique_id='001',
-                                             public_access_level='public',
-                                             bureau_code='001:40',
-                                             program_code='015:010',
-                                             access_level_comment='Access level commemnt',
-                                             parent_dataset='true'
-                                             )
+        self.create_datasets()
+        self.app = self._get_test_app()
+
+        extra_environ = {'REMOTE_USER': self.user_name}
+        package_dict = self.app.post('/api/3/action/package_create',
+                                     params=self.dataset1,
+                                     extra_environ=extra_environ)
         assert package_dict['name'] == 'my_package'
 
     # test resource creation
