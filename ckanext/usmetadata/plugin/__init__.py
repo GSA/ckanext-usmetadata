@@ -1,19 +1,14 @@
 from __future__ import absolute_import
 from builtins import str
 import collections
-import copy
-from flask import redirect
-import formencode.validators as v
 import re
-#import requests
 from logging import getLogger
 
-from ckan.common import _, json, g, response # , c, request
+from ckan.common import json
 import ckan.lib.helpers as h
 import ckan.lib.base as base
-import ckan.model as model
 import ckan.plugins as p
-from ckan.plugins.toolkit import config, requires_ckan_version, CkanVersionException, c, request
+from ckan.plugins.toolkit import requires_ckan_version, CkanVersionException, c
 from .. import db_utils
 from . import helper as local_helper
 
@@ -24,14 +19,7 @@ except CkanVersionException:
 else:
     from ckanext.usmetadata.plugin.flask_plugin import MixinPlugin
 
-abort = base.abort
-# redirect = base.redirect
 
-# from ckan.plugins import implements, SingletonPlugin, toolkit, IConfigurer,
-# ITemplateHelpers, IDatasetForm, IPackageController
-# from formencode.validators import validators
-
-# redirect = base.redirect
 log = getLogger(__name__)
 
 
@@ -347,10 +335,12 @@ class CommonCoreMetadataFormPlugin(MixinPlugin, p.SingletonPlugin, p.toolkit.Def
     # See ckan.plugins.interfaces.IDatasetForm
     def _create_package_schema(self, schema):
         log.debug("_create_package_schema called")
-        if request.path_qs == u'/api/action/package_create':
+        if base.request.path == u'/api/3/action/package_create':
+            print("APIIIIIIIIIIIII")
             for update in local_helper.schema_api_for_create:
                 schema.update(update)
         else:
+            print("UPDATESSSSSSSSSS")
             for update in local_helper.schema_updates_for_create:
                 schema.update(update)
 
@@ -399,8 +389,8 @@ class CommonCoreMetadataFormPlugin(MixinPlugin, p.SingletonPlugin, p.toolkit.Def
         log.debug('update_package_schema')
 
         # find out action
-        action = request.environ['pylons.routes_dict']['action']
-        controller = request.environ['pylons.routes_dict']['controller']
+        action = base.request.environ['pylons.routes_dict']['action']
+        controller = base.request.environ['pylons.routes_dict']['controller']
 
         # new_resource and package
         # action, api, resource_create
