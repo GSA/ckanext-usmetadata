@@ -335,11 +335,19 @@ class CommonCoreMetadataFormPlugin(MixinPlugin, p.SingletonPlugin, p.toolkit.Def
     # See ckan.plugins.interfaces.IDatasetForm
     def _create_package_schema(self, schema):
         log.debug("_create_package_schema called")
+        print("<><><><><><><><><>")
+        print(base.request.path)
         if base.request.path == u'/api/3/action/package_create':
-            print("APIIIIIIIIIIIII")
+            # This is called when the api is explicitly used
+            print("PACKAGE_CREATEEEEEEEEEEEEE")
+            for update in local_helper.schema_api_for_create:
+                schema.update(update)
+        elif base.request.path == '/api/3/action/resource_create':
+            print("RESOURCE_CREATEEEEEEEEEEEE")
             for update in local_helper.schema_api_for_create:
                 schema.update(update)
         else:
+            # This is called when 'factories.dataset' creates the dataset
             print("UPDATESSSSSSSSSS")
             for update in local_helper.schema_updates_for_create:
                 schema.update(update)
@@ -358,6 +366,7 @@ class CommonCoreMetadataFormPlugin(MixinPlugin, p.SingletonPlugin, p.toolkit.Def
 
     def _modify_package_schema_update(self, schema):
         log.debug("_modify_package_schema_update called")
+        print("RESOURCE_CREATEEEEEEEEEEEE")
         for update in local_helper.schema_updates_for_update:
             schema.update(update)
 
@@ -388,22 +397,23 @@ class CommonCoreMetadataFormPlugin(MixinPlugin, p.SingletonPlugin, p.toolkit.Def
     def update_package_schema(self):
         log.debug('update_package_schema')
 
+        # TODO: Figure out what to do with the 'action' and 'controller' code
         # find out action
-        action = base.request.environ['pylons.routes_dict']['action']
-        controller = base.request.environ['pylons.routes_dict']['controller']
+        # action = base.request.environ['pylons.routes_dict']['action']
+        # controller = base.request.environ['pylons.routes_dict']['controller']
 
-        # new_resource and package
-        # action, api, resource_create
-        # action, api, package_update
+        # TODO: This was already commented out when I looked at the coe
+        # # if action == 'new_resource' and controller == 'package':
+        # # schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
+        # # schema = self._create_resource_schema(schema)
 
-        # if action == 'new_resource' and controller == 'package':
-        # schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
-        # schema = self._create_resource_schema(schema)
         schema = super(CommonCoreMetadataFormPlugin, self).update_package_schema()
-        if action == 'edit' and controller == 'package':
-            schema = self._create_package_schema(schema)
-        else:
-            schema = self._modify_package_schema_update(schema)
+        schema = self._modify_package_schema_update(schema)
+
+        # if action == 'edit' and controller == 'package':
+        #     schema = self._create_package_schema(schema)
+        # else:
+        #     schema = self._modify_package_schema_update(schema)
 
         return schema
 
