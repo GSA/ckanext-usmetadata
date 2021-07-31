@@ -9,6 +9,7 @@ sudo apt-get install postgresql postgresql-contrib solr-jetty libcommons-fileupl
 
 pip install pip==20.3.3
 pip install testrepository
+pip install -r requirements.txt
 
 echo "Installing CKAN and its Python dependencies..."
 git clone https://github.com/gsa/ckan
