@@ -3,12 +3,14 @@
 '''
 # from builtins import object
 import json
+import pytest
 import six
 # from ckanext.usmetadata import db_utils
 from ckan.tests.helpers import FunctionalTestBase, reset_db
 from ckan.tests import factories
 
 
+@pytest.mark.usefixtures("with_request_context")
 class TestUsmetadataPlugin(FunctionalTestBase):
     '''Tests for the usmetadata.plugin module.'''
 
@@ -19,14 +21,21 @@ class TestUsmetadataPlugin(FunctionalTestBase):
     @classmethod
     def setup_class(cls):
         super(TestUsmetadataPlugin, cls).setup_class()
-        sysadmin = factories.Sysadmin(name='admin')
-        if six.PY2:
-            cls.extra_environ = {'REMOTE_USER': sysadmin['name'].encode('ascii')}
-        else:
-            cls.extra_environ = {'REMOTE_USER': sysadmin['name']}
 
     def create_datasets(self):
-        self.dataset = {
+        self.sysadmin = factories.Sysadmin(name='admin')
+        self.user = factories.User()
+        self.organization = factories.Organization()
+        if six.PY2:
+            self.extra_environ = {'REMOTE_USER': self.sysadmin['name'].encode('ascii')}
+            self.extra_environ_user = {'REMOTE_USER': self.user['name'].encode('ascii')}
+        else:
+            self.extra_environ = {'REMOTE_USER': self.sysadmin['name']}
+            self.extra_environ_user = {'REMOTE_USER': self.user['name']}
+        # token_dict = call_action('api_token_create')
+        # print(token_dict)
+
+        self.dataset1 = {
             'name': 'my_package_000',
             'title': 'my package',
             'notes': 'my package notes',
@@ -41,81 +50,111 @@ class TestUsmetadataPlugin(FunctionalTestBase):
             'modified': '2019-01-27 11:41:21',
             'tag_string': 'mypackage,tag01,tag02',
             'parent_dataset': 'true',
+            'owner_org': self.organization['id']
         }
 
-        self.d1 = self.dataset.copy()
+        for key in self.sysadmin:
+            if key not in ['id', 'name']:
+                self.dataset1.update({key: self.sysadmin[key]})
+        self.dataset1 = factories.Dataset(**self.dataset1)
 
-    # test is dataset is getting created successfully
+        self.dataset2 = {
+            'name': 'my_package_001',
+            'title': 'my package 1',
+            'notes': 'my package notes',
+            'tag_string': 'my_package',
+            'modified': '2014-04-04',
+            'publisher': 'GSA',
+            'publisher_1': 'OCSIT',
+            'contact_name': 'john doe',
+            'contact_email': 'john.doe@gsa.com',
+            'unique_id': '001',
+            'public_access_level': 'public',
+            'bureau_code': '001:40',
+            'program_code': '015:010',
+            'access_level_comment': 'Access level commemnt',
+            'license_id': 'http://creativecommons.org/publicdomain/zero/1.0/',
+            'license_new': 'http://creativecommons.org/publicdomain/zero/1.0/',
+            'spatial': 'Lincoln, Nebraska',
+            'temporal': '2000-01-15T00:45:00Z/2010-01-15T00:06:00Z',
+            'category': ["vegetables", "produce"],
+            'data_dictionary': 'www.google.com',
+            'data_dictionary_type': 'tex/csv',
+            'data_quality': 'true',
+            'publishing_status': 'open',
+            'accrual_periodicity': 'annual',
+            'conforms_to': 'www.google.com',
+            'homepage_url': 'www.google.com',
+            'language': 'us-EN',
+            'primary_it_investment_uii': '021-123456789',
+            'related_documents': 'www.google.com',
+            'release_date': '2014-01-02',
+            'system_of_records': 'www.google.com',
+            'is_parent': 'true',
+            'accessURL': 'www.google.com',
+            'webService': 'www.gooogle.com',
+            'format': 'text/csv',
+            'formatReadable': 'text/csv',
+            'resources': [
+                {
+                    'name': 'my_resource',
+                    'url': 'www.google.com',
+                    'description': 'description'},
+                {
+                    'name': 'my_resource_1',
+                    'url': 'www.google.com',
+                    'description': 'description_2'}],
+            'owner_org': self.organization['id']
+        }
+
     def test_package_creation(self):
+        '''
+        test if dataset is getting created successfully
+        '''
         self.create_datasets()
         self.app = self._get_test_app()
 
-        package_dict = self.app.post('/api/3/action/package_create',
-                                     params=self.d1,
-                                     extra_environ=self.extra_environ)
+        # This test relies on 'factories.dataset' creating the dataset and this 'get'
+        # validates that the dataset was created properly
+        package_dict = self.app.get('/api/3/action/package_show?id=my_package_000',
+                                    extra_environ=self.extra_environ)
 
-        result = json.loads(package_dict.body)
-        assert result['result']['name'] == 'my_package_000'
+        result = json.loads(package_dict.body)['result']
+        assert result['name'] == 'my_package_000'
 
     # test resource creation
-    # def test_resource_create(self):
-    #     package_dict = tests.call_action_api(self.app, 'package_create', apikey=self.sysadmin.get('apikey'),
-    #                                          name='my_package',
-    #                                          title='my package',
-    #                                          notes='my package notes',
-    #                                          tag_string='my_package',
-    #                                          modified='2014-04-04',
-    #                                          publisher='GSA',
-    #                                          publisher_1='OCSIT',
-    #                                          contact_name='john doe',
-    #                                          contact_email='john.doe@gsa.com',
-    #                                          unique_id='001',
-    #                                          public_access_level='public',
-    #                                          bureau_code='001:40',
-    #                                          program_code='015:010',
-    #                                          access_level_comment='Access level commemnt',
-    #                                          license_id='http://creativecommons.org/publicdomain/zero/1.0/',
-    #                                          license_new='http://creativecommons.org/publicdomain/zero/1.0/',
-    #                                          spatial='Lincoln, Nebraska',
-    #                                          temporal='2000-01-15T00:45:00Z/2010-01-15T00:06:00Z',
-    #                                          category=["vegetables", "produce"],
-    #                                          data_dictionary='www.google.com',
-    #                                          data_dictionary_type='tex/csv',
-    #                                          data_quality='true',
-    #                                          publishing_status='open',
-    #                                          accrual_periodicity='annual',
-    #                                          conforms_to='www.google.com',
-    #                                          homepage_url='www.google.com',
-    #                                          language='us-EN',
-    #                                          primary_it_investment_uii='021-123456789',
-    #                                          related_documents='www.google.com',
-    #                                          release_date='2014-01-02',
-    #                                          system_of_records='www.google.com',
-    #                                          is_parent='true',
-    #                                          accessURL='www.google.com',
-    #                                          webService='www.gooogle.com',
-    #                                          format='text/csv',
-    #                                          formatReadable='text/csv',
-    #                                          resources=[
-    #                                              {
-    #                                                 'name': 'my_resource',
-    #                                                 'url': 'www.google.com',
-    #                                                 'description': 'description'},
-    #                                              {
-    #                                                  'name': 'my_resource_1',
-    #                                                  'url': 'www.google.com',
-    #                                                  'description': 'description_2'}]
-    #                                          )
+    def test_resource_create(self):
+        self.create_datasets()
+        self.app = self._get_test_app()
 
-    #     assert package_dict['name'] == 'my_package'
-    #     assert package_dict['resources'][0]['name'] == 'my_resource'
+        # This test added the dataset through the 'package_create' route and then
+        # checks that the dataset was created properly.
+        package_dict = self.app.post('/api/3/action/package_create',
+                                     headers={'Authorization': self.sysadmin.get('apikey').encode('ascii'),
+                                              'Content-type': 'application/json'},
+                                     params=json.dumps(self.dataset2),
+                                     extra_environ=self.extra_environ)
 
-    #     resource_dict = tests.call_action_api(self.app, 'resource_create', apikey=self.sysadmin.get('apikey'),
-    #                                           package_id=package_dict['id'],
-    #                                           name='my_resource_2',
-    #                                           url='www.google.com',
-    #                                           description='description_3')
-    #     assert resource_dict['name'] == 'my_resource_2'
+        result = json.loads(package_dict.body)['result']
+        assert result['name'] == 'my_package_001'
+        assert result['resources'][0]['name'] == 'my_resource'
+        assert result['resources'][1]['name'] == 'my_resource_1'
+
+        dataset2b = {
+            'package_id': result['id'],
+            'name': 'my_resource_2b',
+            'url': 'www.google.com',
+            'description': 'description_3',
+        }
+
+        resource_dict = self.app.post('/api/3/action/resource_create',
+                                      params=dataset2b,
+                                      headers={'Authorization': self.sysadmin.get('apikey').encode('ascii'),
+                                               'X-CKAN-API-Key': self.sysadmin.get('apikey').encode('ascii')},
+                                      extra_environ=self.extra_environ)
+
+        result = json.loads(resource_dict.body)['result']
+        assert result['name'] == 'my_resource_2b'
 
     # # test package update
     # def test_package_update(self):
