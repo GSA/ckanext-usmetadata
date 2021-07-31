@@ -122,8 +122,10 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         result = json.loads(package_dict.body)['result']
         assert result['name'] == 'my_package_000'
 
-    # test resource creation
     def test_resource_create(self):
+        '''
+        test resource creation
+        '''
         self.create_datasets()
         self.app = self._get_test_app()
 
@@ -156,52 +158,49 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         result = json.loads(resource_dict.body)['result']
         assert result['name'] == 'my_resource_2b'
 
-    # # test package update
-    # def test_package_update(self):
-    #     package_dict = tests.call_action_api(self.app, 'package_create', apikey=self.sysadmin.get('apikey'),
-    #                                          name='my_package',
-    #                                          title='my package',
-    #                                          notes='my package notes',
-    #                                          tag_string='my_package',
-    #                                          modified='2014-04-04',
-    #                                          publisher='GSA',
-    #                                          contact_name='john doe',
-    #                                          contact_email='john.doe@gsa.com',
-    #                                          unique_id='001',
-    #                                          public_access_level='public',
-    #                                          bureau_code='001:40',
-    #                                          program_code='015:010',
-    #                                          access_level_comment='Access level commemnt'
-    #                                          )
-    #     assert package_dict['name'] == 'my_package'
-    #     package_dict_update = tests.call_action_api(
-    #         self.app, 'package_update',
-    #         apikey=self.sysadmin.get('apikey'),
-    #         name='my_package',
-    #         title='my package update',
-    #         notes='my package notes update',
-    #         tag_string='my_package',
-    #         modified='2014-04-05',
-    #         publisher='GSA',
-    #         contact_name='john doe jr',
-    #         contact_email='john.doe1@gsa.com',
-    #         unique_id='002',
-    #         public_access_level='public',
-    #         bureau_code='001:41',
-    #         program_code='015:011',
-    #         access_level_comment='Access level commemnt update')
+    def test_package_update(self):
+        '''
+        test package update
+        '''
+        self.create_datasets()
+        self.app = self._get_test_app()
 
-    #     assert package_dict_update['title'] == 'my package update'
+        update_dict = {
+            'name': 'my_package_000',
+            'title': 'my package update',
+            'notes': 'my package notes update',
+            'tag_string': 'my_package',
+            'modified': '2014-04-05',
+            'publisher': 'GSA',
+            'contact_name': 'john doe jr',
+            'contact_email': 'john.doe1@gsa.com',
+            'unique_id': '002',
+            'public_access_level': 'public',
+            'bureau_code': '001:41',
+            'program_code': '015:011',
+            'access_level_comment': 'Access level commemnt update'
+        }
 
-    #     assert package_dict_update['extras'][0]['value'] == 'Access level commemnt update'
-    #     assert package_dict_update['extras'][1]['value'] == '001:41'
-    #     assert package_dict_update['extras'][2]['value'] == 'john.doe1@gsa.com'
-    #     assert package_dict_update['extras'][3]['value'] == 'john doe jr'
-    #     assert package_dict_update['extras'][4]['value'] == '2014-04-05'
-    #     assert package_dict_update['extras'][5]['value'] == '015:011'
-    #     assert package_dict_update['extras'][6]['value'] == 'public'
-    #     assert package_dict_update['extras'][7]['value'] == 'GSA'
-    #     assert package_dict_update['extras'][8]['value'] == '002'
+        package_dict_update = self.app.post('/api/3/action/package_update',
+                                            params=update_dict,
+                                            headers={'Authorization': self.sysadmin.get('apikey').encode('ascii'),
+                                                     'X-CKAN-API-Key': self.sysadmin.get('apikey').encode('ascii')},
+                                            extra_environ=self.extra_environ)
+
+        result = json.loads(package_dict_update.body)['result']
+        assert result['title'] == 'my package update'
+        updates = {}
+        for keyvalue in result['extras']:
+            updates[keyvalue['key']] = keyvalue['value']
+        assert updates['access_level_comment'] == 'Access level commemnt update'
+        assert updates['bureau_code'] == '001:41'
+        assert updates['contact_email'] == 'john.doe1@gsa.com'
+        assert updates['contact_name'] == 'john doe jr'
+        assert updates['modified'] == '2014-04-05'
+        assert updates['program_code'] == '015:011'
+        assert updates['public_access_level'] == 'public'
+        assert updates['publisher'] == 'GSA'
+        assert updates['unique_id'] == '002'
 
     # # test parent dataset
     # def test_package_parent_dataset(self):
