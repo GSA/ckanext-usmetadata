@@ -6,8 +6,8 @@ import ckan.model as model
 cached_tables = {}
 
 
-def get_organization_title(id):
-    query = "select id, title from package where package.id = '" + id + "'"
+def get_organization_title(dataset_id):
+    query = "select id, title from package where package.id = '" + dataset_id + "'"
     connection = model.Session.connection()
     res = connection.execute(query).fetchone()
     return res._row[1]
