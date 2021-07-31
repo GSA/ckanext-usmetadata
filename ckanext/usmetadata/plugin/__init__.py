@@ -10,6 +10,7 @@ import ckan.lib.base as base
 import ckan.plugins as p
 from ckan.plugins.toolkit import requires_ckan_version, CkanVersionException, c
 from .. import db_utils
+from .. import blueprint
 from . import helper as local_helper
 
 try:
@@ -36,6 +37,7 @@ class CommonCoreMetadataFormPlugin(MixinPlugin, p.SingletonPlugin, p.toolkit.Def
     p.implements(p.interfaces.IPackageController, inherit=True)
     p.implements(p.interfaces.IOrganizationController, inherit=True)
     p.implements(p.IFacets, inherit=True)
+    p.implements(p.IBlueprint)
 
     def validate(self, context, data_dict, schema, action):
         """
@@ -450,3 +452,6 @@ class CommonCoreMetadataFormPlugin(MixinPlugin, p.SingletonPlugin, p.toolkit.Def
             'redacted_icon': self.redacted_icon,
             'resource_redacted_icon': self.resource_redacted_icon
         }
+
+    def get_blueprint(self):
+        return blueprint.datapusher
