@@ -1,11 +1,11 @@
 '''Tests for the ckanext.example_iauthfunctions extension.
 
 '''
-# from builtins import object
+from builtins import object
 import json
 import pytest
 import six
-# from ckanext.usmetadata import db_utils
+from ckanext.usmetadata import db_utils
 from ckan.tests.helpers import FunctionalTestBase, reset_db
 from ckan.tests import factories
 
@@ -202,54 +202,35 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         assert updates['publisher'] == 'GSA'
         assert updates['unique_id'] == '002'
 
-    # # test parent dataset
-    # def test_package_parent_dataset(self):
-    #     org_dict = tests.call_action_api(
-    #         self.app,
-    #         'organization_create',
-    #         apikey=self.sysadmin.get('apikey'),
-    #         name='my_org')
+    def test_package_parent_dataset(self):
+        '''
+        test parent dataset
+        '''
+        self.create_datasets()
+        self.app = self._get_test_app()
 
-    #     package_dict = tests.call_action_api(self.app, 'package_create', apikey=self.sysadmin.get('apikey'),
-    #                                          name='my_package',
-    #                                          title='my package',
-    #                                          notes='my package notes',
-    #                                          tag_string='my_package',
-    #                                          modified='2014-04-04',
-    #                                          publisher='GSA',
-    #                                          contact_name='john doe',
-    #                                          contact_email='john.doe@gsa.com',
-    #                                          unique_id='001',
-    #                                          public_access_level='public',
-    #                                          bureau_code='001:40',
-    #                                          program_code='015:010',
-    #                                          access_level_comment='Access level commemnt',
-    #                                          parent_dataset='true',
-    #                                          ower_org=org_dict['id']
-    #                                          )
-    #     assert package_dict['name'] == 'my_package'
+        title = db_utils.get_organization_title(self.dataset1['id'])
+        assert title == 'my package'
 
-    #     title = db_utils.get_organization_title(package_dict['id'])
-    #     assert title == 'my package'
+        class Config(object):
+            def __init__(self, **kwds):
+                self.__dict__.update(kwds)
 
-    #     class Config(object):
-    #         def __init__(self, **kwds):
-    #             self.__dict__.update(kwds)
+        class Userobj(object):
+            def __init__(self, outer_instance=None, **kwds):
+                self.outer_instance = outer_instance
+                self.__dict__.update(kwds)
 
-    #     class Userobj(object):
-    #         def __init__(self, **kwds):
-    #             self.__dict__.update(kwds)
+            def get_group_ids(self):
+                return [self.outer_instance.organization['id']]
 
-    #         def get_group_ids(self):
-    #             return [org_dict['id']]
+        config = Config(userobj=Userobj(outer_instance=self, sysadmin=True))
+        items = db_utils.get_parent_organizations(config)
+        assert self.organization['id'] not in items
 
-    #     config = Config(userobj=Userobj(sysadmin=True))
-    #     items = db_utils.get_parent_organizations(config)
-    #     assert org_dict['id'] not in items
-
-    #     config = Config(userobj=Userobj(sysadmin=False))
-    #     items = db_utils.get_parent_organizations(config)
-    #     assert org_dict['id'] not in items
+        config = Config(userobj=Userobj(outer_instance=self, sysadmin=False))
+        items = db_utils.get_parent_organizations(config)
+        assert self.organization['id'] not in items
 
     # # TODO:Add assertions for all field validations
     # def test_validate_dataset_action(self):
