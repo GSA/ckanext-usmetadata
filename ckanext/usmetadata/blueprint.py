@@ -6,7 +6,7 @@ from logging import getLogger
 import re
 import requests
 
-from ckan.common import _, json, c, g, response
+from ckan.common import _, json, g
 import ckan.lib.base as base
 import ckan.lib.helpers as h
 import ckan.lib.dictization.model_dictize as model_dictize
@@ -14,9 +14,17 @@ import ckan.lib.navl.dictization_functions as dict_fns
 import ckan.lib.plugins
 import ckan.logic as logic
 import ckan.model as model
-from ckan.plugins.toolkit import config, request
+from ckan.plugins.toolkit import c, config, request, requires_ckan_version, CkanVersionException
 
-from plugin import helper as local_helper
+
+try:
+    requires_ckan_version("2.9")
+except CkanVersionException:
+    from ckan.common import response
+    from plugin import helper as local_helper
+else:
+    from flask.wrappers import Response as response
+    from ckanext.usmetadata.plugin import helper as local_helper
 
 datapusher = Blueprint('usmetadata', __name__)
 log = getLogger(__name__)
