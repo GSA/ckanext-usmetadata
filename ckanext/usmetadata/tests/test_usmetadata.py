@@ -354,18 +354,30 @@ class TestUsmetadataPlugin(FunctionalTestBase):
                            '&resource_type=file&format=&describedBy=&describedByType=&conformsTo=')
         assert 'Invalid' in res
 
-    # def test_get_content_type_action(self):
-    #     res = self.app.get('/api/2/util/resource/content_type?url=badulr')
-    #     assert 'InvalidFormat' in res
+    def test_get_content_type_action(self):
+        self.create_datasets()
+        self.app = self._get_test_app()
 
-    # def test_get_media_types_action(self):
-    #     res = self.app.get('/api/2/util/resource/media_autocomplete')
-    #     assert 'CSV' in res
+        res = self.app.get('/api/2/util/resource/content_type?url=badulr')
+        assert 'InvalidFormat' in res
 
-    # def test_get_media_types_autocomplete_action(self):
-    #     res = self.app.get('/api/2/util/resource/media_autocomplete?incomplete=Excel')
-    #     assert 'XLS' in res
+    def test_get_media_types_action(self):
+        self.create_datasets()
+        self.app = self._get_test_app()
 
-    # def test_license_url_autocomplete_action(self):
-    #     res = self.app.get('/api/2/util/resource/license_url_autocomplete?incomplete=d')
-    #     assert 'creativecommons' in res
+        res = self.app.get('/api/2/util/resource/media_autocomplete')
+        assert 'CSV' in res
+
+    def test_get_media_types_autocomplete_action(self):
+        self.create_datasets()
+        self.app = self._get_test_app()
+
+        res = self.app.get('/api/2/util/resource/media_autocomplete?incomplete=Excel')
+        assert 'XLS' in res
+
+    def test_license_url_autocomplete_action(self):
+        self.create_datasets()
+        self.app = self._get_test_app()
+
+        res = self.app.get('/api/2/util/resource/license_url_autocomplete?incomplete=d')
+        assert 'creativecommons' in res
