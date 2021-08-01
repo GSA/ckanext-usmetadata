@@ -32,11 +32,11 @@ jobs:
       solr:
         image: datagov/catalog.data.gov.solr:latest
       db:
-        image: datagov/catalog.data.gov.db:latest
+        image: ckan/ckan-postgres-dev:${{ matrix.ckan-version }}
         env:
-          POSTGRES_USER: ckan
-          POSTGRES_PASSWORD: ckan
-          POSTGRES_DB: ckan
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 10
       redis:
           image: redis:alpine
@@ -55,12 +55,12 @@ jobs:
       if: ${{ matrix.ckan-version != '2.8' }}
       run: |
         source $ENV_FILE
-        ckan -c test.github.ini db init
+        ckan -c test.ini db init
     - name: Setup extension (CKAN < 2.9)
       if: ${{ matrix.ckan-version == '2.8' }}
       run: |
         source $ENV_FILE
-        paster --plugin=ckan db init -c test.github.ini
+        paster --plugin=ckan db init -c test.ini
     - name: Run tests
-      run: pytest --ckan-ini=test.github.ini --cov=ckanext.usmetadata --cov-fail-under=${CODE_COVERAGE_THRESHOLD_REQUIRED} --disable-warnings ckanext/usmetadata/tests
+      run: pytest --ckan-ini=test.ini --cov=ckanext.usmetadata --cov-fail-under=${CODE_COVERAGE_THRESHOLD_REQUIRED} --disable-warnings ckanext/usmetadata/tests
 
