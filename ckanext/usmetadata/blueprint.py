@@ -6,7 +6,7 @@ from logging import getLogger
 import re
 import requests
 
-from ckan.common import _, json, request, c, g, response
+from ckan.common import _, json, c, g, response
 import ckan.lib.base as base
 import ckan.lib.helpers as h
 import ckan.lib.dictization.model_dictize as model_dictize
@@ -14,7 +14,7 @@ import ckan.lib.navl.dictization_functions as dict_fns
 import ckan.lib.plugins
 import ckan.logic as logic
 import ckan.model as model
-from ckan.plugins.toolkit import config
+from ckan.plugins.toolkit import config, request
 
 from plugin import helper as local_helper
 
@@ -361,9 +361,8 @@ def dv_validate_dataset():
 
         matching_package = dv_check_if_unique(unique_id, owner_org, pkg_name)
         if unique_id and matching_package:
-            errors['unique_id'] = 'Already being used by ' + request.application_url + '/dataset/' \
+            errors['unique_id'] = 'Already being used by ' + request.host_url + '/dataset/' \
                                   + matching_package
-
         if rights and len(rights) > 255:
             errors['access-level-comment'] = 'The length of the string exceeds limit of 255 chars'
 

@@ -232,13 +232,119 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         items = db_utils.get_parent_organizations(config)
         assert self.organization['id'] not in items
 
-    # # TODO:Add assertions for all field validations
-    # def test_validate_dataset_action(self):
-    #     url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + self.org_dict['id'] + '&'
-    #            'unique_id=000&rights=&license_url=&temporal=&described_by=&described_by_type=&conforms'
-    #            '_to=&landing_page=&language=&investment_uii=&references=&issued=&system_of_records=')
-    #     res = self.app.get(url)
-    #     assert 'Success' in res
+    def test_validate_dataset_action(self):
+        # TODO:Add assertions for all field validations
+        self.create_datasets()
+        self.app = self._get_test_app()
+        test_organization = factories.Organization()
+
+        # Test 'unique_id'
+        test_input = '000'
+        url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
+               'unique_id=%s&rights=&license_url=&temporal=&described_by=&described_by_type=&conforms'
+               '_to=&landing_page=&language=&investment_uii=&references=&issued=&system_of_records=' %
+               test_input)
+        res = self.app.get(url, extra_environ=self.extra_environ)
+        assert 'Success' in res
+
+        # Test 'rights'
+        test_input = 'some+important+rights'
+        url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
+               'unique_id=&rights=%s&license_url=&temporal=&described_by=&described_by_type=&conforms_to='
+               '&landing_page=&language=&investment_uii=&references=&issued=&system_of_records=' % test_input)
+        res = self.app.get(url, extra_environ=self.extra_environ)
+        assert 'Success' in res
+
+        # Test 'license_url'
+        test_input = 'http://www.google.com'
+        url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
+               'unique_id=&rights=&license_url=%s&temporal=&described_by=&described_by_type=&conforms_to='
+               '&landing_page=&language=&investment_uii=&references=&issued=&system_of_records=' % test_input)
+        res = self.app.get(url, extra_environ=self.extra_environ)
+        assert 'Success' in res
+
+        # Test 'temporal'
+        test_input = '2021-02-14T12:00:00Z/2013-07-04T19:34:00Z'
+        url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
+               'unique_id=&rights=&license_url=&temporal=%s&described_by=&described_by_type=&conforms_to='
+               '&landing_page=&language=&investment_uii=&references=&issued=&system_of_records=' % test_input)
+        res = self.app.get(url, extra_environ=self.extra_environ)
+        assert 'Success' in res
+
+        # Test 'described_by'
+        test_input = 'https://project-open-data.cio.gov/v1.1/schema/catalog.json'
+        url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
+               'unique_id=&rights=&license_url=&temporal=&described_by=%s&described_by_type=&conforms_to='
+               '&landing_page=&language=&investment_uii=&references=&issued=&system_of_records=' % test_input)
+        res = self.app.get(url, extra_environ=self.extra_environ)
+        assert 'Success' in res
+
+        # Test 'described_by_type'
+        test_input = 'application/json'
+        url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
+               'unique_id=&rights=&license_url=&temporal=&described_by=&described_by_type=%s&conforms_to='
+               '&landing_page=&language=&investment_uii=&references=&issued=&system_of_records=' % test_input)
+        res = self.app.get(url, extra_environ=self.extra_environ)
+        assert 'Success' in res
+
+        # Test 'conforms_to'
+        test_input = 'https://project-open-data.cio.gov/v1.1/schema'
+        url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
+               'unique_id=&rights=&license_url=&temporal=&described_by=&described_by_type=&conforms_to=%s'
+               '&landing_page=&language=&investment_uii=&references=&issued=&system_of_records=' % test_input)
+        res = self.app.get(url, extra_environ=self.extra_environ)
+        assert 'Success' in res
+
+        # Test 'landing_page'
+        test_input = 'https://catalog.data.gov'
+        url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
+               'unique_id=&rights=&license_url=&temporal=&described_by=&described_by_type=&conforms_to='
+               '&landing_page=%s&language=&investment_uii=&references=&issued=&system_of_records=' % test_input)
+        res = self.app.get(url, extra_environ=self.extra_environ)
+        assert 'Success' in res
+
+        # Test 'language'
+        test_input = "[&quot;es-MX&quot;,&quot;wo&quot;,&quot;nv&quot;,&quot;en-US&quot;]"
+        test_input = '%5B%22en-US%22%5D%0A'
+        test_input = 'es-MX,wo,nv,en-US'
+        url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
+               'unique_id=&rights=&license_url=&temporal=&described_by=&described_by_type=&conforms_to='
+               '&landing_page=&language=%s&investment_uii=&references=&issued=&system_of_records=' % test_input)
+        res = self.app.get(url, extra_environ=self.extra_environ)
+        assert 'Success' in res
+
+        # Test 'investment_uii'
+        test_input = '023-000000001'
+        url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
+               'unique_id=&rights=&license_url=&temporal=&described_by=&described_by_type=&conforms_to='
+               '&landing_page=&language=&investment_uii=%s&references=&issued=&system_of_records=' % test_input)
+        res = self.app.get(url, extra_environ=self.extra_environ)
+        assert 'Success' in res
+
+        # Test 'references'
+        test_input = 'https://project-open-data.cio.gov/v1.1/schema'
+        url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
+               'unique_id=&rights=&license_url=&temporal=&described_by=&described_by_type=&conforms_to='
+               '&landing_page=&language=&investment_uii=&references=%s&issued=&system_of_records=' % test_input)
+        res = self.app.get(url, extra_environ=self.extra_environ)
+        assert 'Success' in res
+
+        # Test 'issued'
+        test_input = '2021-07-31'
+        url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
+               'unique_id=&rights=&license_url=&temporal=&described_by=&described_by_type=&conforms_to='
+               '&landing_page=&language=&investment_uii=&references=&issued=%s&system_of_records=' % test_input)
+        res = self.app.get(url, extra_environ=self.extra_environ)
+        assert 'Success' in res
+
+        # Test 'system_of_records'
+        test_input = ('https://www.federalregister.gov/articles/2002/04/08/02-7376/privacy-act-of-1974'
+                      '-publication-in-full-of-all-notices-of-systems-of-records-including-several-new#p-361')
+        url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
+               'unique_id=&rights=&license_url=&temporal=&described_by=&described_by_type=&conforms_to='
+               '&landing_page=&language=&investment_uii=&references=&issued=&system_of_records=%s' % test_input)
+        res = self.app.get(url, extra_environ=self.extra_environ)
+        assert 'Success' in res
 
     # def test_validate_resource_action(self):
     #     res = self.app.get('/api/2/util/resource/validate_resource?url=badurl'
