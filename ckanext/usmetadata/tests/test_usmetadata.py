@@ -346,10 +346,13 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         res = self.app.get(url, extra_environ=self.extra_environ)
         assert 'Success' in res
 
-    # def test_validate_resource_action(self):
-    #     res = self.app.get('/api/2/util/resource/validate_resource?url=badurl'
-    #                        '&resource_type=file&format=&describedBy=&describedByType=&conformsTo=')
-    #     assert 'Invalid' in res
+    def test_validate_resource_action(self):
+        self.create_datasets()
+        self.app = self._get_test_app()
+
+        res = self.app.get('/api/2/util/resource/validate_resource?url=badurl'
+                           '&resource_type=file&format=&describedBy=&describedByType=&conformsTo=')
+        assert 'Invalid' in res
 
     # def test_get_content_type_action(self):
     #     res = self.app.get('/api/2/util/resource/content_type?url=badulr')
