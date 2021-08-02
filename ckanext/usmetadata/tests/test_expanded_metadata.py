@@ -1,6 +1,7 @@
 from __future__ import print_function
-from formencode import Invalid
-from ckanext.usmetadata.plugin.helper import expanded_metadata
+import ckan.plugins as p
+from ckan.lib.navl.dictization_functions import Invalid
+from ckanext.usmetadata.plugin.helper import expanded_metadata, release_date_validator, accrual_periodicity_validator, language_validator
 
 
 def validate(sid, values):
@@ -17,14 +18,20 @@ def validate(sid, values):
             # if fails will raise an error
             print("validating {} for {} at {}".format(test, sid, validator))
             try:
-                validator.to_python(test)
-                print(" - OK {} for {} at {}".format(test, sid, validator))
-                ok.append(test)
+                if validator in [release_date_validator, accrual_periodicity_validator, language_validator]:
+                    valid = validator(test)
+                    if type(valid) !=Invalid:
+                        print(" - OK {} for {} at {}".format(test, sid, validator))
+                        ok.append(test)
+                    else:
+                        print(" - INVALID {} for {} at {}".format(test, sid, validator))
+                        failed.append(test)
+                else:
+                    validator.to_python(test)
+                    print(" - OK {} for {} at {}".format(test, sid, validator))
+                    ok.append(test)
             except AttributeError:  # it's a simple function validator
                 pass  # extra validation functions
-            except Invalid:
-                print(" - INVALID {} for {} at {}".format(test, sid, validator))
-                failed.append(test)
 
     return ok, failed
 

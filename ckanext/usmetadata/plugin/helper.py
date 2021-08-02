@@ -4,7 +4,6 @@ import copy
 from logging import getLogger
 import re
 
-import formencode.validators as v
 import ckan.lib.helpers as h
 import ckan.plugins as p
 
@@ -14,87 +13,132 @@ REDACTION_STROKE_REGEX = re.compile(
     r'(\[\[REDACTED-EX B[\d]\]\])'
 )
 
-# excluded title, description, tags and last update as they're part of the default ckan dataset metadata
-required_metadata = (
-    {'id': 'title', 'validators': [p.toolkit.get_validator('not_empty'), str]},
-    {'id': 'notes', 'validators': [p.toolkit.get_validator('not_empty'), str]},
-    # {'id': 'tag_string', 'validators': [v.NotEmpty]},
-    {'id': 'public_access_level',
-     'validators': [v.Regex(r'^(public)|(restricted public)|(non-public)$')]},
-    {'id': 'publisher', 'validators': [p.toolkit.get_validator('not_empty'), str]},
-    {'id': 'contact_name', 'validators': [p.toolkit.get_validator('not_empty'), str]},
-    {'id': 'contact_email', 'validators': [p.toolkit.get_validator('not_empty'), str]},
-    # TODO should this unique_id be validated against any other unique IDs for this agency?
-    {'id': 'unique_id', 'validators': [p.toolkit.get_validator('not_empty'), str]},
-    {'id': 'modified', 'validators': [p.toolkit.get_validator('not_empty'), str]},
-    {'id': 'bureau_code', 'validators': [v.Regex(
-        r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$'
-    )]},
-    {'id': 'program_code', 'validators': [v.Regex(
-        r'^\d{3}:\d{3}(\s*,\s*\d{3}:\d{3}\s*)*$'
-    )]}
-)
+def public_access_level_validator(regex_candidate):
+    validator = re.compile(r'^(public)|(restricted public)|(non-public)$')
+    if type(validator.match(regex_candidate)) == re.Match:
+        return regex_candidate
+    return p.toolkit.Invalid("Doesn't match public access level validators.")
 
+def bureau_code_validator(regex_candidate):
+    validator = re.compile(r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$')
+    if type(validator.match(regex_candidate)) == re.Match:
+        return regex_candidate
+    return p.toolkit.Invalid("Doesn't match bureau code format.")
 
-# used to bypass validation on create
-required_metadata_update = (
-    {'id': 'public_access_level',
-     'validators': [v.Regex(r'^(public)|(restricted public)|(non-public)$')]},
-    {'id': 'publisher', 'validators': [v.String(max=300)]},
-    {'id': 'contact_name', 'validators': [v.String(max=300)]},
-    {'id': 'contact_email', 'validators': [v.String(max=200)]},
-    # TODO should this unique_id be validated against any other unique IDs for this agency?
-    {'id': 'unique_id', 'validators': [v.String(max=100)]},
-    {'id': 'modified', 'validators': [v.String(max=100)]},
-    {'id': 'bureau_code', 'validators': [v.Regex(
-        r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$'
-    )]},
-    {'id': 'program_code', 'validators': [v.Regex(
-        r'^\d{3}:\d{3}(\s*,\s*\d{3}:\d{3}\s*)*$'
-    )]}
-)
+def program_code_validator(regex_candidate):
+    validator = re.compile(r'^\d{3}:\d{3}(\s*,\s*\d{3}:\d{3}\s*)*$')
+    if type(validator.match(regex_candidate)) == re.Match:
+        return regex_candidate
+    return p.toolkit.Invalid("Doesn't match program code format.")
 
-# some of these could be excluded (e.g. related_documents) which can be captured from other ckan default data
-expanded_metadata = (
-    # issued
-    {'id': 'release_date', 'validators': [v.Regex(
+def temporal_validator(regex_candidate):
+    validator = re.compile(r'^([\-\dTWRZP/YMWDHMS:\+]{3,}/[\-\dTWRZP/YMWDHMS:\+]{3,})|(\[\[REDACTED).*?(\]\])$')
+    if type(validator.match(regex_candidate)) == re.Match:
+        return regex_candidate
+    return p.toolkit.Invalid("Doesn't match temporal format.")
+
+def release_date_validator(regex_candidate):
+    validator = re.compile(
         r'^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?'
         r'|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]'
         r'\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?|(\[\[REDACTED).*?(\]\])$'
-    ), v.String(max=500)]},
-    {'id': 'accrual_periodicity', 'validators': [v.Regex(
+    )
+    if type(validator.match(regex_candidate)) == re.Match:
+        return regex_candidate
+    return p.toolkit.Invalid("Doesn't match release date format.")
+
+def accrual_periodicity_validator(regex_candidate):
+    validator = re.compile(
         r'^([Dd]ecennial)|([Qq]uadrennial)|([Aa]nnual)|([Bb]imonthly)|([Ss]emiweekly)|([Dd]aily)|([Bb]iweekly)'
         r'|([Ss]emiannual)|([Bb]iennial)|([Tt]riennial)|([Tt]hree times a week)|([Tt]hree times a month)'
         r'|(Continuously updated)|([Mm]onthly)|([Qq]uarterly)|([Ss]emimonthly)|([Tt]hree times a year)'
-        r'|R\/P(?:(\d+(?:[\.,]\d+)?)Y)?(?:(\d+(?:[\.,]\d+)?)M)?(?:(\d+(?:[\.,]\d+)?)D)?(?:T(?:(\d+(?:[\.,]\d+)?)H)?(?:(\d+(?:[\.,]\d+)?)M)?(?:(\d+(?:[\.,]\d+)?)S)?)?$'  # NOQA E501  # ISO 8601 duration
-        r'|([Ww]eekly)|([Hh]ourly)|([Cc]ompletely irregular)|([Ii]rregular)|(\[\[REDACTED).*?(\]\])$')]},
-    {'id': 'language', 'validators': [v.Regex(
+        r'|R\/P(?:(\d+(?:[\.,]\d+)?)Y)?(?:(\d+(?:[\.,]\d+)?)M)?(?:(\d+(?:[\.,]\d+)?)D)?(?:T(?:(\d+(?:[\.,]\d+)'
+        r'?)H)?(?:(\d+(?:[\.,]\d+)?)M)?(?:(\d+(?:[\.,]\d+)?)S)?)?$'  # ISO 8601 duration
+        r'|([Ww]eekly)|([Hh]ourly)|([Cc]ompletely irregular)|([Ii]rregular)|(\[\[REDACTED).*?(\]\])$'
+    )
+    if type(validator.match(regex_candidate)) == re.Match:
+        return regex_candidate
+    return p.toolkit.Invalid("Doesn't match accrual periodicity format.")
+
+def language_validator(regex_candidate):
+    validator = re.compile(
         r'^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?'
         r'(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z]'
         r'(-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed'
         r'|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu'
         r'|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min'
         r'|zh-min-nan|zh-xiang)))$'
-    )]},
-    {'id': 'data_quality', 'validators': [v.String(max=1000)]},
-    {'id': 'publishing_status', 'validators': [v.String(max=1000)]},
-    {'id': 'is_parent', 'validators': [v.String(max=1000)]},
-    {'id': 'parent_dataset', 'validators': [v.String(max=1000)]},
+    )
+    if type(validator.match(regex_candidate)) == re.Match:
+        return regex_candidate
+    return p.toolkit.Invalid("Doesn't match language format.")
+
+def primary_it_investment_uii_validator(regex_candidate):
+    validator = re.compile(r'^([0-9]{3}-[0-9]{9})|(\[\[REDACTED).*?(\]\])$')
+    if type(validator.match(regex_candidate)) == re.Match:
+        return regex_candidate
+    return p.toolkit.Invalid("Doesn't match primary it investment uii format.")
+
+def string_length_validator(max=100):
+    def string_validator(value):
+        if len(value) <= max:
+            return value
+        else:
+            return p.toolkit.Invalid("Attribute is too long.")
+    return string_validator
+
+# excluded title, description, tags and last update as they're part of the default ckan dataset metadata
+required_metadata = (
+    {'id': 'title', 'validators': [p.toolkit.get_validator('not_empty'), str]},
+    {'id': 'notes', 'validators': [p.toolkit.get_validator('not_empty'), str]},
+    {'id': 'publisher', 'validators': [p.toolkit.get_validator('not_empty'), str]},
+    {'id': 'contact_name', 'validators': [p.toolkit.get_validator('not_empty'), str]},
+    {'id': 'contact_email', 'validators': [p.toolkit.get_validator('not_empty'), str]},
+    # TODO should this unique_id be validated against any other unique IDs for this agency?
+    {'id': 'unique_id', 'validators': [p.toolkit.get_validator('not_empty'), str]},
+    {'id': 'modified', 'validators': [p.toolkit.get_validator('not_empty'), str]},
+    {'id': 'public_access_level', 'validators': [public_access_level_validator]},
+    {'id': 'bureau_code', 'validators': [bureau_code_validator]},
+    {'id': 'program_code', 'validators': [program_code_validator]}
+)
+
+
+# used to bypass validation on create
+required_metadata_update = (
+    {'id': 'public_access_level', 'validators': [public_access_level_validator]},
+    {'id': 'publisher', 'validators': [string_length_validator(max=300)]},
+    {'id': 'contact_name', 'validators': [string_length_validator(max=300)]},
+    {'id': 'contact_email', 'validators': [string_length_validator(max=200)]},
+    # TODO should this unique_id be validated against any other unique IDs for this agency?
+    {'id': 'unique_id', 'validators': [string_length_validator(max=100)]},
+    {'id': 'modified', 'validators': [string_length_validator(max=100)]},
+    {'id': 'bureau_code', 'validators': [bureau_code_validator]},
+    {'id': 'program_code', 'validators': [program_code_validator]}
+)
+
+# some of these could be excluded (e.g. related_documents) which can be captured from other ckan default data
+expanded_metadata = (
+    # issued
+    {'id': 'release_date', 'validators': [release_date_validator, string_length_validator(max=500)]},
+    {'id': 'accrual_periodicity', 'validators': [accrual_periodicity_validator]},
+    {'id': 'language', 'validators': [language_validator]},
+    {'id': 'data_quality', 'validators': [string_length_validator(max=1000)]},
+    {'id': 'publishing_status', 'validators': [string_length_validator(max=1000)]},
+    {'id': 'is_parent', 'validators': [string_length_validator(max=1000)]},
+    {'id': 'parent_dataset', 'validators': [string_length_validator(max=1000)]},
     # theme
-    {'id': 'category', 'validators': [v.String(max=1000)]},
+    {'id': 'category', 'validators': [string_length_validator(max=1000)]},
     # describedBy
-    {'id': 'related_documents', 'validators': [v.String(max=2100)]},
-    {'id': 'conforms_to', 'validators': [v.String(max=2100)]},
-    {'id': 'homepage_url', 'validators': [v.String(max=2100)]},
-    {'id': 'system_of_records', 'validators': [v.String(max=2100)]},
-    {'id': 'primary_it_investment_uii', 'validators': [v.Regex(
-        r'^([0-9]{3}-[0-9]{9})|(\[\[REDACTED).*?(\]\])$'
-    )]},
-    {'id': 'publisher_1', 'validators': [v.String(max=300)]},
-    {'id': 'publisher_2', 'validators': [v.String(max=300)]},
-    {'id': 'publisher_3', 'validators': [v.String(max=300)]},
-    {'id': 'publisher_4', 'validators': [v.String(max=300)]},
-    {'id': 'publisher_5', 'validators': [v.String(max=300)]}
+    {'id': 'related_documents', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'conforms_to', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'homepage_url', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'system_of_records', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'primary_it_investment_uii', 'validators': [primary_it_investment_uii_validator]},
+    {'id': 'publisher_1', 'validators': [string_length_validator(max=300)]},
+    {'id': 'publisher_2', 'validators': [string_length_validator(max=300)]},
+    {'id': 'publisher_3', 'validators': [string_length_validator(max=300)]},
+    {'id': 'publisher_4', 'validators': [string_length_validator(max=300)]},
+    {'id': 'publisher_5', 'validators': [string_length_validator(max=300)]}
 )
 
 exempt_allowed = [
@@ -125,72 +169,70 @@ exempt_allowed = [
 ]
 
 for field in exempt_allowed:
-    expanded_metadata += ({'id': 'redacted_' + field, 'validators': [v.String(max=300)]},)
+    expanded_metadata += ({'id': 'redacted_' + field, 'validators': [string_length_validator(max=300)]},)
 
 # excluded download_url, endpoint, format and license as they may be discoverable
 required_if_applicable_metadata = (
-    {'id': 'data_dictionary', 'validators': [v.String(max=2100)]},
-    {'id': 'data_dictionary_type', 'validators': [v.String(max=2100)]},
-    {'id': 'spatial', 'validators': [v.String(max=500)]},
-    {'id': 'temporal', 'validators': [v.Regex(
-        r'^([\-\dTWRZP/YMWDHMS:\+]{3,}/[\-\dTWRZP/YMWDHMS:\+]{3,})|(\[\[REDACTED).*?(\]\])$'
-    )]},
-    {'id': 'access_level_comment', 'validators': [v.String(max=255)]},
-    {'id': 'license_new', 'validators': [v.String(max=2100)]}
+    {'id': 'data_dictionary', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'data_dictionary_type', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'spatial', 'validators': [string_length_validator(max=500)]},
+    {'id': 'temporal', 'validators': [temporal_validator]},
+    {'id': 'access_level_comment', 'validators': [string_length_validator(max=255)]},
+    {'id': 'license_new', 'validators': [string_length_validator(max=2100)]}
 )
 
 # used for by passing API validation
 required_metadata_by_pass_validation = (
     {'id': 'title', 'validators': [p.toolkit.get_validator('not_empty'), str]},
     {'id': 'notes', 'validators': [p.toolkit.get_validator('not_empty'), str]},
-    {'id': 'public_access_level', 'validators': [v.String(max=2100)]},
-    {'id': 'publisher', 'validators': [v.String(max=300)]},
-    {'id': 'contact_name', 'validators': [v.String(max=2100)]},
-    {'id': 'contact_email', 'validators': [v.String(max=2100)]},
+    {'id': 'public_access_level', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'publisher', 'validators': [string_length_validator(max=300)]},
+    {'id': 'contact_name', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'contact_email', 'validators': [string_length_validator(max=2100)]},
     # TODO should this unique_id be validated against any other unique IDs for this agency?
-    {'id': 'unique_id', 'validators': [v.String(max=100)]},
-    {'id': 'modified', 'validators': [v.String(max=100)]},
-    {'id': 'bureau_code', 'validators': [v.String(max=2100)]},
-    {'id': 'program_code', 'validators': [v.String(max=2100)]}
+    {'id': 'unique_id', 'validators': [string_length_validator(max=100)]},
+    {'id': 'modified', 'validators': [string_length_validator(max=100)]},
+    {'id': 'bureau_code', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'program_code', 'validators': [string_length_validator(max=2100)]}
 )
 
 # used for by passing API validation
 expanded_metadata_by_pass_validation = (
     # issued
-    {'id': 'release_date', 'validators': [v.String(max=2100)]},
-    {'id': 'accrual_periodicity', 'validators': [v.String(max=2100)]},
-    {'id': 'language', 'validators': [v.String(max=2100)]},
-    {'id': 'data_quality', 'validators': [v.String(max=1000)]},
-    {'id': 'publishing_status', 'validators': [v.String(max=1000)]},
-    {'id': 'is_parent', 'validators': [v.String(max=1000)]},
-    {'id': 'parent_dataset', 'validators': [v.String(max=1000)]},
+    {'id': 'release_date', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'accrual_periodicity', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'language', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'data_quality', 'validators': [string_length_validator(max=1000)]},
+    {'id': 'publishing_status', 'validators': [string_length_validator(max=1000)]},
+    {'id': 'is_parent', 'validators': [string_length_validator(max=1000)]},
+    {'id': 'parent_dataset', 'validators': [string_length_validator(max=1000)]},
     # theme
-    {'id': 'category', 'validators': [v.String(max=1000)]},
+    {'id': 'category', 'validators': [string_length_validator(max=1000)]},
     # describedBy
-    {'id': 'related_documents', 'validators': [v.String(max=2100)]},
-    {'id': 'conforms_to', 'validators': [v.String(max=2100)]},
-    {'id': 'homepage_url', 'validators': [v.String(max=2100)]},
-    {'id': 'rss_feed', 'validators': [v.String(max=2100)]},
-    {'id': 'system_of_records', 'validators': [v.String(max=2100)]},
-    {'id': 'system_of_records_none_related_to_this_dataset', 'validators': [v.String(max=2100)]},
-    {'id': 'primary_it_investment_uii', 'validators': [v.String(max=2100)]},
-    {'id': 'webservice', 'validators': [v.String(max=300)]},
-    {'id': 'publisher_1', 'validators': [v.String(max=300)]},
-    {'id': 'publisher_2', 'validators': [v.String(max=300)]},
-    {'id': 'publisher_3', 'validators': [v.String(max=300)]},
-    {'id': 'publisher_4', 'validators': [v.String(max=300)]},
-    {'id': 'publisher_5', 'validators': [v.String(max=300)]}
+    {'id': 'related_documents', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'conforms_to', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'homepage_url', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'rss_feed', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'system_of_records', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'system_of_records_none_related_to_this_dataset', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'primary_it_investment_uii', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'webservice', 'validators': [string_length_validator(max=300)]},
+    {'id': 'publisher_1', 'validators': [string_length_validator(max=300)]},
+    {'id': 'publisher_2', 'validators': [string_length_validator(max=300)]},
+    {'id': 'publisher_3', 'validators': [string_length_validator(max=300)]},
+    {'id': 'publisher_4', 'validators': [string_length_validator(max=300)]},
+    {'id': 'publisher_5', 'validators': [string_length_validator(max=300)]}
 )
 
 # used for by passing API validation
 required_if_applicable_metadata_by_pass_validation = (
-    {'id': 'data_dictionary', 'validators': [v.String(max=2100)]},
-    {'id': 'data_dictionary_type', 'validators': [v.String(max=2100)]},
-    {'id': 'endpoint', 'validators': [v.String(max=2100)]},
-    {'id': 'spatial', 'validators': [v.String(max=500)]},
-    {'id': 'temporal', 'validators': [v.String(max=500)]},
-    {'id': 'access_level_comment', 'validators': [v.String(max=255)]},
-    {'id': 'license_new', 'validators': [v.String(max=2100)]}
+    {'id': 'data_dictionary', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'data_dictionary_type', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'endpoint', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'spatial', 'validators': [string_length_validator(max=500)]},
+    {'id': 'temporal', 'validators': [string_length_validator(max=500)]},
+    {'id': 'access_level_comment', 'validators': [string_length_validator(max=255)]},
+    {'id': 'license_new', 'validators': [string_length_validator(max=2100)]}
 )
 
 accrual_periodicity = [u"Decennial", u"Quadrennial", u"Annual", u"Bimonthly", u"Semiweekly", u"Daily", u"Biweekly",
