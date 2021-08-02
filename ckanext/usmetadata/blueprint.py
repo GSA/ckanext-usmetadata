@@ -4,6 +4,7 @@ from flask import Blueprint
 from flask import redirect
 from logging import getLogger
 import re
+import six
 import requests
 
 from ckan.common import _, json, g
@@ -323,14 +324,24 @@ def dv_get_packages(owner_org):
     packages = dv_get_all_group_packages(group_id=owner_org)
     # get packages for sub-agencies.
     sub_agency = model.Group.get(owner_org)
-    if 'sub-agencies' in sub_agency.extras.col.target \
-            and sub_agency.extras.col.target['sub-agencies'].state == 'active':
-        sub_agencies = sub_agency.extras.col.target['sub-agencies'].value
-        sub_agencies_list = sub_agencies.split(",")
-        for sub in sub_agencies_list:
-            sub_packages = dv_get_all_group_packages(group_id=sub)
-            for sub_package in sub_packages:
-                packages.append(sub_package)
+    if six.PY2:
+        if 'sub-agencies' in sub_agency.extras.col.target \
+                and sub_agency.extras.col.target['sub-agencies'].state == 'active':
+            sub_agencies = sub_agency.extras.col.target['sub-agencies'].value
+            sub_agencies_list = sub_agencies.split(",")
+            for sub in sub_agencies_list:
+                sub_packages = dv_get_all_group_packages(group_id=sub)
+                for sub_package in sub_packages:
+                    packages.append(sub_package)
+    else:
+        if 'sub-agencies' in sub_agency.extras.col.keys() \
+                and sub_agency.extras.col['sub-agencies'].state == 'active':
+            sub_agencies = sub_agency.extras.col['sub-agencies'].value
+            sub_agencies_list = sub_agencies.split(",")
+            for sub in sub_agencies_list:
+                sub_packages = dv_get_all_group_packages(group_id=sub)
+                for sub_package in sub_packages:
+                    packages.append(sub_package)
 
     return packages
 

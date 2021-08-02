@@ -1,4 +1,5 @@
 from builtins import str
+import six
 __author__ = 'ykhadilkar'
 
 import ckan.model as model
@@ -28,7 +29,10 @@ def get_parent_organizations(c):
         ids = []
 
         for id in userGroupsIds:
-            ids.append(id.encode('ascii', 'ignore'))
+            if six.PY2:
+                ids.append(id.encode('ascii', 'ignore'))
+            else:
+                ids.append(id)
 
         # Ugly hack - If user has access to only one organization then SQL query blows up because IN statement ends up with
         # dangling comma at the end. Adding dumy id should fix that.
