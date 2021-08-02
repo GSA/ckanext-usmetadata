@@ -16,28 +16,28 @@ REDACTION_STROKE_REGEX = re.compile(
 
 def public_access_level_validator(regex_candidate):
     validator = re.compile(r'^(public)|(restricted public)|(non-public)$')
-    if type(validator.match(regex_candidate)) == type(re.match("", "")):
+    if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
         return regex_candidate
     return p.toolkit.Invalid("Doesn't match public access level validators.")
 
 
 def bureau_code_validator(regex_candidate):
     validator = re.compile(r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$')
-    if type(validator.match(regex_candidate)) == type(re.match("", "")):
+    if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
         return regex_candidate
     return p.toolkit.Invalid("Doesn't match bureau code format.")
 
 
 def program_code_validator(regex_candidate):
     validator = re.compile(r'^\d{3}:\d{3}(\s*,\s*\d{3}:\d{3}\s*)*$')
-    if type(validator.match(regex_candidate)) == type(re.match("", "")):
+    if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
         return regex_candidate
     return p.toolkit.Invalid("Doesn't match program code format.")
 
 
 def temporal_validator(regex_candidate):
     validator = re.compile(r'^([\-\dTWRZP/YMWDHMS:\+]{3,}/[\-\dTWRZP/YMWDHMS:\+]{3,})|(\[\[REDACTED).*?(\]\])$')
-    if type(validator.match(regex_candidate)) == type(re.match("", "")):
+    if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
         return regex_candidate
     return p.toolkit.Invalid("Doesn't match temporal format.")
 
@@ -48,7 +48,7 @@ def release_date_validator(regex_candidate):
         r'|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]'
         r'\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?|(\[\[REDACTED).*?(\]\])$'
     )
-    if type(validator.match(regex_candidate)) == type(re.match("", "")):
+    if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
         return regex_candidate
     return p.toolkit.Invalid("Doesn't match release date format.")
 
@@ -62,7 +62,7 @@ def accrual_periodicity_validator(regex_candidate):
         r'?)H)?(?:(\d+(?:[\.,]\d+)?)M)?(?:(\d+(?:[\.,]\d+)?)S)?)?$'  # ISO 8601 duration
         r'|([Ww]eekly)|([Hh]ourly)|([Cc]ompletely irregular)|([Ii]rregular)|(\[\[REDACTED).*?(\]\])$'
     )
-    if type(validator.match(regex_candidate)) == type(re.match("", "")):
+    if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
         return regex_candidate
     return p.toolkit.Invalid("Doesn't match accrual periodicity format.")
 
@@ -76,14 +76,14 @@ def language_validator(regex_candidate):
         r'|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min'
         r'|zh-min-nan|zh-xiang)))$'
     )
-    if type(validator.match(regex_candidate)) == type(re.match("", "")):
+    if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
         return regex_candidate
     return p.toolkit.Invalid("Doesn't match language format.")
 
 
 def primary_it_investment_uii_validator(regex_candidate):
     validator = re.compile(r'^([0-9]{3}-[0-9]{9})|(\[\[REDACTED).*?(\]\])$')
-    if type(validator.match(regex_candidate)) == type(re.match("", "")):
+    if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
         return regex_candidate
     return p.toolkit.Invalid("Doesn't match primary it investment uii format.")
 
