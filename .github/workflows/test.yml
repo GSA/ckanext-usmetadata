@@ -60,7 +60,10 @@ jobs:
       if: ${{ matrix.ckan-version == '2.8' }}
       run: |
         source $ENV_FILE
-        paster --plugin=ckan db init -c test.ini
+        while ! paster --plugin=ckan db init -c test.ini; do
+          echo Retrying in 5 seconds...
+          sleep 5
+        done
     - name: Run tests
       run: pytest --ckan-ini=test.ini --cov=ckanext.usmetadata --cov-fail-under=${CODE_COVERAGE_THRESHOLD_REQUIRED} --disable-warnings ckanext/usmetadata/tests
 
