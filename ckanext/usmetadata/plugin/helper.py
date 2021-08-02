@@ -13,11 +13,13 @@ REDACTION_STROKE_REGEX = re.compile(
     r'(\[\[REDACTED-EX B[\d]\]\])'
 )
 
+
 def public_access_level_validator(regex_candidate):
     validator = re.compile(r'^(public)|(restricted public)|(non-public)$')
     if type(validator.match(regex_candidate)) == re.Match:
         return regex_candidate
     return p.toolkit.Invalid("Doesn't match public access level validators.")
+
 
 def bureau_code_validator(regex_candidate):
     validator = re.compile(r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$')
@@ -25,17 +27,20 @@ def bureau_code_validator(regex_candidate):
         return regex_candidate
     return p.toolkit.Invalid("Doesn't match bureau code format.")
 
+
 def program_code_validator(regex_candidate):
     validator = re.compile(r'^\d{3}:\d{3}(\s*,\s*\d{3}:\d{3}\s*)*$')
     if type(validator.match(regex_candidate)) == re.Match:
         return regex_candidate
     return p.toolkit.Invalid("Doesn't match program code format.")
 
+
 def temporal_validator(regex_candidate):
     validator = re.compile(r'^([\-\dTWRZP/YMWDHMS:\+]{3,}/[\-\dTWRZP/YMWDHMS:\+]{3,})|(\[\[REDACTED).*?(\]\])$')
     if type(validator.match(regex_candidate)) == re.Match:
         return regex_candidate
     return p.toolkit.Invalid("Doesn't match temporal format.")
+
 
 def release_date_validator(regex_candidate):
     validator = re.compile(
@@ -46,6 +51,7 @@ def release_date_validator(regex_candidate):
     if type(validator.match(regex_candidate)) == re.Match:
         return regex_candidate
     return p.toolkit.Invalid("Doesn't match release date format.")
+
 
 def accrual_periodicity_validator(regex_candidate):
     validator = re.compile(
@@ -60,6 +66,7 @@ def accrual_periodicity_validator(regex_candidate):
         return regex_candidate
     return p.toolkit.Invalid("Doesn't match accrual periodicity format.")
 
+
 def language_validator(regex_candidate):
     validator = re.compile(
         r'^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?'
@@ -73,11 +80,13 @@ def language_validator(regex_candidate):
         return regex_candidate
     return p.toolkit.Invalid("Doesn't match language format.")
 
+
 def primary_it_investment_uii_validator(regex_candidate):
     validator = re.compile(r'^([0-9]{3}-[0-9]{9})|(\[\[REDACTED).*?(\]\])$')
     if type(validator.match(regex_candidate)) == re.Match:
         return regex_candidate
     return p.toolkit.Invalid("Doesn't match primary it investment uii format.")
+
 
 def string_length_validator(max=100):
     def string_validator(value):
@@ -86,6 +95,7 @@ def string_length_validator(max=100):
         else:
             return p.toolkit.Invalid("Attribute is too long.")
     return string_validator
+
 
 # excluded title, description, tags and last update as they're part of the default ckan dataset metadata
 required_metadata = (

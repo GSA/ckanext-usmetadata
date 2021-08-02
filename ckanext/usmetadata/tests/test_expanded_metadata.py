@@ -1,7 +1,7 @@
 from __future__ import print_function
-import ckan.plugins as p
 from ckan.lib.navl.dictization_functions import Invalid
-from ckanext.usmetadata.plugin.helper import expanded_metadata, release_date_validator, accrual_periodicity_validator, language_validator
+from ckanext.usmetadata.plugin.helper import expanded_metadata, \
+    release_date_validator, accrual_periodicity_validator, language_validator
 
 
 def validate(sid, values):
@@ -20,7 +20,7 @@ def validate(sid, values):
             try:
                 if validator in [release_date_validator, accrual_periodicity_validator, language_validator]:
                     valid = validator(test)
-                    if type(valid) !=Invalid:
+                    if type(valid) != Invalid:
                         print(" - OK {} for {} at {}".format(test, sid, validator))
                         ok.append(test)
                     else:
