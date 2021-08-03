@@ -78,25 +78,25 @@ class MetadataPluginTest(unittest.TestCase):
         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
         MetadataPluginTest.__check_dicts_match__(expected, actual)
 
-#     def testLoadDataIntoDictLarge(self):
-#          original = {'aardvark':'foo',
-#                      'extras': [{u'value': u'daily', u'key': u'accrual_periodicity',
-#                                  '__extras': {u'package_id': u'154dc150-bba6-4201-b4ff-1a684121e27e',
-#                                               u'revision_id': u'0fe96ac4-bac5-4ee5-a7e6-224f58897575'}},
-#                                 {u'value': u'asdfa', u'key': u'category',
-#                                  '__extras': {u'revision_id': u'0fe96ac4-bac5-4ee5-a7e6-224f58897575',
-#                                               u'package_id': u'154dc150-bba6-4201-b4ff-1a684121e27e'}},
-#                                 {u'value': u'contactmyemailaddr', u'key': u'contact_email',
-#                                  '__extras': {u'package_id': u'154dc150-bba6-4201-b4ff-1a684121e27e',
-#                                  u'revision_id': u'43774ce1-7b28-45d3-95cb-b98bc3860f6f'}} ]}
-#         expected = {'aardvark':'foo',
-#                     'common_core': {u'accrual_periodicity':u'value',
-#                                     u'category':'asdfa',
-#                                     u'contact_email':'contactmyemailaddr'},
-#                     'extras':[]}
-#         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
-#         MetadataPluginTest.__check_dicts_match__(expected, actual)
-#
+    def testLoadDataIntoDictLarge(self):
+        original = {'aardvark':'foo',
+                    'extras': [{u'value': u'daily', u'key': u'accrual_periodicity',
+                                '__extras': {u'package_id': u'154dc150-bba6-4201-b4ff-1a684121e27e',
+                                             u'revision_id': u'0fe96ac4-bac5-4ee5-a7e6-224f58897575'}},
+                               {u'value': u'asdfa', u'key': u'category',
+                                '__extras': {u'revision_id': u'0fe96ac4-bac5-4ee5-a7e6-224f58897575',
+                                             u'package_id': u'154dc150-bba6-4201-b4ff-1a684121e27e'}},
+                               {u'value': u'contactmyemailaddr', u'key': u'contact_email',
+                                '__extras': {u'package_id': u'154dc150-bba6-4201-b4ff-1a684121e27e',
+                                u'revision_id': u'43774ce1-7b28-45d3-95cb-b98bc3860f6f'}} ]}
+        expected = {'aardvark':'foo',
+                    'common_core': {u'accrual_periodicity':u'value',
+                                    u'category':'asdfa',
+                                    u'contact_email':'contactmyemailaddr'},
+                    'extras':[]}
+        actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
+        MetadataPluginTest.__check_dicts_match__(expected, actual)
+
 #     def testLoadDataIntoDictNoExtra(self):
 #         """Verify that when no '__extras' key exist, load_data_into_dict()
 #            will move any DCAT-US metadata in key value pairs into a dict under
