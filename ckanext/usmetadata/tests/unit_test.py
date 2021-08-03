@@ -131,15 +131,14 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {})
 
-#     def testFieldValidationPublicAccessLevelRestricted(self):
-#
-#         data = {'public_access_level':'restricted public'
-#         }
-#         schema = self.__getSchemaFromMetadataDict__('public_access_level')
-#
-#         converted_data, errors = df.validate(data, schema)
-#         self.assertEqual(errors, {})
-#
+    def testFieldValidationPublicAccessLevelRestricted(self):
+
+        data = {'public_access_level': 'restricted public'}
+        schema = self.__getSchemaFromMetadataDict__('public_access_level')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
 #     def testFieldValidationPublicAccessLevelBadValue(self):
 #
 #         data = {'public_access_level':'BadValue'
