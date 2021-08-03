@@ -197,16 +197,16 @@ class MetadataPluginTest(unittest.TestCase):
         # self.assertEqual(errors, {'publisher':[u'Missing value']})
         assert converted_data == {}
 
-#     def testFieldValidationPublisherRejectsEmpty(self):
-#
-#         data = {'publisher':''}
-#         schema = self.__getSchemaFromMetadataDict__('publisher')
-#
-#         converted_data, errors = df.validate(data, schema)
-#         self.assertEqual(errors, {'publisher':[u'Missing value']})
-#
-#     ###### Field: contact_name #####
-#
+    def testFieldValidationPublisherRejectsEmpty(self):
+
+        data = {'publisher':''}
+        schema = self.__getSchemaFromMetadataDict__('publisher')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {'publisher':[u'Missing value']})
+
+    ###### Field: contact_name #####
+
 #     def testFieldValidationContactBasic(self):
 #
 #         data = {'contact_name':'jim'
