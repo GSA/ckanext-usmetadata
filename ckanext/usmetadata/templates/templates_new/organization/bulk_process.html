@@ -57,12 +57,12 @@
                       <input type="checkbox" name="dataset_{{ package.id }}">
                     </td>
                     <td class="context">
-                      <a href="{% url_for controller='package', action='edit', id=package.name %}" class="edit pull-right">
+                      <a href="{% url_for controller='dataset', action='edit', id=package.name %}" class="edit pull-right">
                         {{ _('Edit') }}
                       </a>
                       <h3 class="dataset-heading">
                         {{ h.redacted_icon(package,'title')|safe }}
-                        {{ h.link_to(h.truncate(h.usmetadata_filter(title), truncate_title), h.url_for(controller='package', action='read', id=package.name), class="redacted-md") }}
+                        {{ h.link_to(h.truncate(h.usmetadata_filter(title), truncate_title), h.url_for(controller='dataset', action='read', id=package.name), class="redacted-md") }}
                         {% if package.get('state', '').startswith('draft') %}
                           <span class="label label-info">{{ _('Draft') }}</span>
                         {% elif package.get('state', '').startswith('deleted') %}
