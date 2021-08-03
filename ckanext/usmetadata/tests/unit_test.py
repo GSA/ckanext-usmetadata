@@ -169,15 +169,14 @@ class MetadataPluginTest(unittest.TestCase):
 
     ###### Field: publisher #####
 
-#     def testFieldValidationPublisherBasic(self):
-#
-#         data = {'publisher':'an agency'
-#         }
-#         schema = self.__getSchemaFromMetadataDict__('publisher')
-#
-#         converted_data, errors = df.validate(data, schema)
-#         self.assertEqual(errors, {})
-#
+    def testFieldValidationPublisherBasic(self):
+
+        data = {'publisher': 'an agency'}
+        schema = self.__getSchemaFromMetadataDict__('publisher')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
 #     def testFieldValidationPublisherNameTooLong(self):
 #
 #         data = {'publisher':'a'*301
