@@ -119,19 +119,18 @@ class MetadataPluginTest(unittest.TestCase):
 
     ###### Field: public_access_level #####
 
-#     def testFieldValidationPublicAccessLevelPublic(self):
-#
-#         data = {'public_access_level':'public'
-#         }
-#         schema = self.__getSchemaFromMetadataDict__('public_access_level')
-#
-#         converted_data, errors = df.validate(data, schema)
-#         self.assertEqual(errors, {})
-#
-#         data['public_access_level']='Public'
-#         converted_data, errors = df.validate(data, schema)
-#         self.assertEqual(errors, {})
-#
+    def testFieldValidationPublicAccessLevelPublic(self):
+
+        data = {'public_access_level': 'public'}
+        schema = self.__getSchemaFromMetadataDict__('public_access_level')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
+        data['public_access_level']='Public'
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {})
+
 #     def testFieldValidationPublicAccessLevelRestricted(self):
 #
 #         data = {'public_access_level':'restricted public'
@@ -727,15 +726,17 @@ class MetadataPluginTest(unittest.TestCase):
 #         converted_data, errors = df.validate(data, schema)
 #         self.assertEqual(errors, {})
 #
-#     ###### Utility methods #####
-#     @classmethod
-#     def __getSchemaFromMetadataDict__(cls, id_value):
-#         """Convenience function to extract the schema for a given field"""
-#         for scheme in plugin.required_metadata+plugin.required_if_applicable_metadata+plugin.expanded_metadata:
-#             if scheme['id'] == id_value:
-#                 return {scheme['id']:scheme['validators']}
-#         return {}
-#
+    ###### Utility methods #####
+    @classmethod
+    def __getSchemaFromMetadataDict__(cls, id_value):
+        """Convenience function to extract the schema for a given field"""
+        for scheme in (plugin.helper.required_metadata +  # NOQA
+                       plugin.helper.required_if_applicable_metadata +  # NOQA
+                       plugin.helper.expanded_metadata):
+            if scheme['id'] == id_value:
+                return {scheme['id']:scheme['validators']}
+        return {}
+
     @classmethod
     def __check_dicts_match__(cls, dict1, dict2):
         """helper function to compare two dicts to ensure that they match"""
