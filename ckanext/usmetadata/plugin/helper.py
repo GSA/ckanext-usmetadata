@@ -87,6 +87,7 @@ def primary_it_investment_uii_validator(regex_candidate):
         return regex_candidate
     return p.toolkit.Invalid("Doesn't match primary it investment uii format.")
 
+
 def string_length_validator(max=100):
     def string_validator(value):
         try:
@@ -97,7 +98,7 @@ def string_length_validator(max=100):
         except TypeError:
             # The given value is already invalid from another validator
             return value
-            
+
     return string_validator
 
 

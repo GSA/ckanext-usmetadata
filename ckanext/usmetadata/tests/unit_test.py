@@ -169,7 +169,7 @@ class MetadataPluginTest(unittest.TestCase):
 
     def testFieldValidationPublisherNameTooLong(self):
 
-        data = {'publisher': 'a'*301}
+        data = {'publisher': 'a' * 301}
         schema = self.__getSchemaFromMetadataDict__('publisher')
 
         converted_data, errors = df.validate(data, schema)
@@ -208,7 +208,7 @@ class MetadataPluginTest(unittest.TestCase):
 
     def testFieldValidationContactNameTooLong(self):
 
-        data = {'contact_name': 'a'*301}
+        data = {'contact_name': 'a' * 301}
         schema = self.__getSchemaFromMetadataDict__('contact_name')
 
         converted_data, errors = df.validate(data, schema)
@@ -245,7 +245,7 @@ class MetadataPluginTest(unittest.TestCase):
 
     def testFieldValidationContactEmailTooLong(self):
 
-        data = {'contact_email': 'a'*200+'@foo.com'}
+        data = {'contact_email': 'a' * 200 + '@foo.com'}
         schema = self.__getSchemaFromMetadataDict__('contact_email')
 
         converted_data, errors = df.validate(data, schema)
@@ -283,7 +283,7 @@ class MetadataPluginTest(unittest.TestCase):
 
     def testFieldValidationUIDTooLong(self):
 
-        data = {'unique_id': 'a'*101}
+        data = {'unique_id': 'a' * 101}
         schema = self.__getSchemaFromMetadataDict__('unique_id')
 
         converted_data, errors = df.validate(data, schema)
@@ -331,7 +331,7 @@ class MetadataPluginTest(unittest.TestCase):
 
     def testFieldValidationDataDictionaryTooLong(self):
 
-        data = {'data_dictionary': 'http://www.foo.com/'+('a'*2040)}
+        data = {'data_dictionary': 'http://www.foo.com/' + ('a' * 2040)}
         schema = self.__getSchemaFromMetadataDict__('data_dictionary')
 
         converted_data, errors = df.validate(data, schema)
@@ -402,7 +402,7 @@ class MetadataPluginTest(unittest.TestCase):
 
     def testFieldValidationSpatialTooLong(self):
 
-        data = {'spatial': 'a'*501}
+        data = {'spatial': 'a' * 501}
         schema = self.__getSchemaFromMetadataDict__('spatial')
 
         converted_data, errors = df.validate(data, schema)
@@ -652,7 +652,7 @@ class MetadataPluginTest(unittest.TestCase):
 
     def testFieldValidationAccessLevelCommentTooLong(self):
 
-        data = {'access_level_comment': 'a'*256 }
+        data = {'access_level_comment': 'a' * 256}
         schema = self.__getSchemaFromMetadataDict__('access_level_comment')
 
         converted_data, errors = df.validate(data, schema)
@@ -679,7 +679,7 @@ class MetadataPluginTest(unittest.TestCase):
 
     def testFieldValidationInvestmentUIITooLong(self):
 
-        data = {'primary_it_investment_uii': '[[' + 'REDACTEDaa'*210  + ']]'}
+        data = {'primary_it_investment_uii': '[[' + 'REDACTEDaa' * 210 + ']]'}
         schema = self.__getSchemaFromMetadataDict__('primary_it_investment_uii')
 
         converted_data, errors = df.validate(data, schema)
