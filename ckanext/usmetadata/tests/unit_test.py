@@ -167,14 +167,14 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         assert data['publisher'] == converted_data['publisher']
 
-#     def testFieldValidationPublisherNameTooLong(self):
-#         # TODO: Test does not hit 'string_length_validator' to reject this
-#
-#         data = {'publisher': 'a'*302}
-#         schema = self.__getSchemaFromMetadataDict__('publisher')
-#
-#         converted_data, errors = df.validate(data, schema)
-#         self.assertEqual(errors, {'publisher':[u'Enter a value not more than 300 characters long']})
+    def testFieldValidationPublisherNameTooLong(self):
+
+        data = {'publisher': 'a'*301}
+        schema = self.__getSchemaFromMetadataDict__('publisher')
+
+        converted_data, errors = df.validate(data, schema)
+        assert type(converted_data['publisher']) == Invalid
+        assert converted_data['publisher'].error == 'Attribute is too long.'
 
     def testFieldValidationPublisherRejectsMissing(self):
 
@@ -206,14 +206,14 @@ class MetadataPluginTest(unittest.TestCase):
         assert errors == {}
         assert data['contact_name'] == converted_data['contact_name']
 
-#     def testFieldValidationContactNameTooLong(self):
-#         # TODO: Test does not hit 'string_length_validator' to reject this
-#
-#         data = {'contact_name': 'a'*301}
-#         schema = self.__getSchemaFromMetadataDict__('contact_name')
-#
-#         converted_data, errors = df.validate(data, schema)
-#         self.assertEqual(errors, {'contact_name':[u'Enter a value not more than 300 characters long']})
+    def testFieldValidationContactNameTooLong(self):
+
+        data = {'contact_name': 'a'*301}
+        schema = self.__getSchemaFromMetadataDict__('contact_name')
+
+        converted_data, errors = df.validate(data, schema)
+        assert type(converted_data['contact_name']) == Invalid
+        assert converted_data['contact_name'].error == 'Attribute is too long.'
 
     def testFieldValidationContactRejectsMissing(self):
 
@@ -243,14 +243,14 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         assert errors == {}
 
-#     def testFieldValidationContactEmailTooLong(self):
-#         # TODO: Test does not hit 'string_length_validator' to reject this
-#
-#         data = {'contact_email': 'a'*100+'@foo.com'}
-#         schema = self.__getSchemaFromMetadataDict__('contact_email')
-#
-#         converted_data, errors = df.validate(data, schema)
-#         self.assertEqual(errors, {'contact_email':[u'Enter a value not more than 100 characters long']})
+    def testFieldValidationContactEmailTooLong(self):
+
+        data = {'contact_email': 'a'*200+'@foo.com'}
+        schema = self.__getSchemaFromMetadataDict__('contact_email')
+
+        converted_data, errors = df.validate(data, schema)
+        assert type(converted_data['contact_email']) == Invalid
+        assert converted_data['contact_email'].error == 'Attribute is too long.'
 
     def testFieldValidationContactEmailRejectsMissing(self):
 
@@ -281,14 +281,14 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         assert errors == {}
 
-#     def testFieldValidationUIDTooLong(self):
-#         # TODO: Test does not hit 'string_length_validator' to reject this
-#
-#         data = {'unique_id': 'a'*101}
-#         schema = self.__getSchemaFromMetadataDict__('unique_id')
-#
-#         converted_data, errors = df.validate(data, schema)
-#         self.assertEqual(errors, {'unique_id':[u'Enter a value not more than 100 characters long']})
+    def testFieldValidationUIDTooLong(self):
+
+        data = {'unique_id': 'a'*101}
+        schema = self.__getSchemaFromMetadataDict__('unique_id')
+
+        converted_data, errors = df.validate(data, schema)
+        assert type(converted_data['unique_id']) == Invalid
+        assert converted_data['unique_id'].error == 'Attribute is too long.'
 
     def testFieldValidationUIDRejectsMissing(self):
 
@@ -329,15 +329,14 @@ class MetadataPluginTest(unittest.TestCase):
 #         print(converted_data)
 #         self.assertEqual(errors, {'data_dictionary':[u'That is not a valid URL']})
 
-#     def testFieldValidationDataDictionaryTooLong(self):
-#         # TODO: Test does not hit 'string_length_validator' to reject this
-#
-#         data = {'data_dictionary': 'http://www.foo.com/'+('a'*350)}
-#         schema = self.__getSchemaFromMetadataDict__('data_dictionary')
-#
-#         converted_data, errors = df.validate(data, schema)
-#         converted_data = schema['data_dictionary'][1](data['data_dictionary'])
-#         self.assertEqual(errors, {'data_dictionary':[u'Enter a value not more than 350 characters long']})
+    def testFieldValidationDataDictionaryTooLong(self):
+
+        data = {'data_dictionary': 'http://www.foo.com/'+('a'*2040)}
+        schema = self.__getSchemaFromMetadataDict__('data_dictionary')
+
+        converted_data, errors = df.validate(data, schema)
+        assert type(converted_data['data_dictionary']) == Invalid
+        assert converted_data['data_dictionary'].error == 'Attribute is too long.'
 
     def testFieldValidationDataDictionaryIgnoresMissing(self):
 
@@ -383,16 +382,6 @@ class MetadataPluginTest(unittest.TestCase):
 #         converted_data, errors = df.validate(data, schema)
 #         self.assertEqual(errors, {'endpoint':[u'You must provide a full domain name (like wowthisisntavalidurl.com)']})
 
-#     def testFieldValidationEndpointTooLong(self):
-#         # TODO: Test does not hit 'string_length_validator' to reject this
-#
-#         data = {'endpoint': 'http://www.foo.com/'+('a'*350)
-#         }
-#         schema = self.__getSchemaFromMetadataDict__('endpoint')
-#
-#         converted_data, errors = df.validate(data, schema)
-#         self.assertEqual(errors, {'endpoint':[u'Enter a value not more than 350 characters long']})
-
     def testFieldValidationEndpointIgnoresMissing(self):
 
         data = {}
@@ -411,14 +400,14 @@ class MetadataPluginTest(unittest.TestCase):
 
     # ##### Field: spatial #####
 
-#     def testFieldValidationSpatialTooLong(self):
-#         # TODO: Test does not hit 'string_length_validator' to reject this
-#
-#         data = {'spatial': 'a'*501}
-#         schema = self.__getSchemaFromMetadataDict__('spatial')
-#
-#         converted_data, errors = df.validate(data, schema)
-#         self.assertEqual(errors, {'spatial':[u'Enter a value not more than 500 characters long']})
+    def testFieldValidationSpatialTooLong(self):
+
+        data = {'spatial': 'a'*501}
+        schema = self.__getSchemaFromMetadataDict__('spatial')
+
+        converted_data, errors = df.validate(data, schema)
+        assert type(converted_data['spatial']) == Invalid
+        assert converted_data['spatial'].error == 'Attribute is too long.'
 
     def testFieldValidationSpatialIgnoresMissing(self):
 
@@ -455,16 +444,6 @@ class MetadataPluginTest(unittest.TestCase):
         assert errors == {}
 
     # ##### Field: release_date #####
-
-#    def testFieldValidationReleaseDateTooLong(self):
-#         # TODO: Test does not hit 'string_length_validator' to reject this
-#
-#         data = {'release_date': 'a'*501
-#         }
-#         schema = self.__getSchemaFromMetadataDict__('release_date')
-#
-#         converted_data, errors = df.validate(data, schema)
-#         self.assertEqual(errors, {'release_date':[u'Enter a value not more than 500 characters long']})
 
     def testFieldValidationReleaseDateIgnoresMissing(self):
 
@@ -671,14 +650,14 @@ class MetadataPluginTest(unittest.TestCase):
 
     # ##### Field: access level comment #####
 
-#     def testFieldValidationAccessLevelCommentTooLong(self):
-#         # TODO: Test does not hit 'string_length_validator' to reject this
-#
-#         data = {'access_level_comment': 'a'*256 }
-#         schema = self.__getSchemaFromMetadataDict__('access_level_comment')
-#
-#         converted_data, errors = df.validate(data, schema)
-#         self.assertEqual(errors, {'access_level_comment':[u'Enter a value not more than 255 characters long']})
+    def testFieldValidationAccessLevelCommentTooLong(self):
+
+        data = {'access_level_comment': 'a'*256 }
+        schema = self.__getSchemaFromMetadataDict__('access_level_comment')
+
+        converted_data, errors = df.validate(data, schema)
+        assert type(converted_data['access_level_comment']) == Invalid
+        assert converted_data['access_level_comment'].error == 'Attribute is too long.'
 
     def testFieldValidationAccessLevelCommentIgnoresMissing(self):
 
@@ -698,14 +677,14 @@ class MetadataPluginTest(unittest.TestCase):
 
     # ##### Field: primary it investment uii #####
 
-#     def testFieldValidationInvestmentUIITooLong(self):
-#         # TODO: Test does not hit 'string_length_validator' to reject this
-#
-#         data = {'primary_it_investment_uii': 'a'*256 }
-#         schema = self.__getSchemaFromMetadataDict__('primary_it_investment_uii')
-#
-#         converted_data, errors = df.validate(data, schema)
-#         self.assertEqual(errors, {'primary_it_investment_uii':[u'Enter a value not more than 75 characters long']})
+    def testFieldValidationInvestmentUIITooLong(self):
+
+        data = {'primary_it_investment_uii': '[[' + 'REDACTEDaa'*210  + ']]'}
+        schema = self.__getSchemaFromMetadataDict__('primary_it_investment_uii')
+
+        converted_data, errors = df.validate(data, schema)
+        assert type(converted_data['primary_it_investment_uii']) == Invalid
+        assert converted_data['primary_it_investment_uii'].error == 'Attribute is too long.'
 
     def testFieldValidationInvestmentUIIIgnoresMissing(self):
 
