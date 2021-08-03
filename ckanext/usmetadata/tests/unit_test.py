@@ -147,15 +147,16 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         assert type(converted_data['public_access_level']) == Invalid
 
-#     def testFieldValidationPublicAccessLevelRejectsEmpty(self):
-#
-#         data = {'public_access_level':''
-#         }
-#         schema = self.__getSchemaFromMetadataDict__('public_access_level')
-#
-#         converted_data, errors = df.validate(data, schema)
-#         self.assertEqual(errors, {'public_access_level':[u'Missing value']})
-#
+    def testFieldValidationPublicAccessLevelRejectsEmpty(self):
+
+        data = {'public_access_level': ''}
+        schema = self.__getSchemaFromMetadataDict__('public_access_level')
+
+        converted_data, errors = df.validate(data, schema)
+        # TODO: schema approach was changed, so the correct validation error does not show
+        # self.assertEqual(errors, {'public_access_level':[u'Missing value']})
+        assert type(converted_data['public_access_level']) == Invalid
+
 #     def testFieldValidationPublicAccessLevelRejectsMissing(self):
 #
 #         data = {}
