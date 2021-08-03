@@ -235,14 +235,14 @@ class MetadataPluginTest(unittest.TestCase):
         # self.assertEqual(errors, {'contact_name':[u'Missing value']})
         assert converted_data == {}
 
-#     def testFieldValidationContactRejectsEmpty(self):
-#
-#         data = {'contact_name':''}
-#         schema = self.__getSchemaFromMetadataDict__('contact_name')
-#
-#         converted_data, errors = df.validate(data, schema)
-#         self.assertEqual(errors, {'contact_name':[u'Missing value']})
-#
+    def testFieldValidationContactRejectsEmpty(self):
+
+        data = {'contact_name':''}
+        schema = self.__getSchemaFromMetadataDict__('contact_name')
+
+        converted_data, errors = df.validate(data, schema)
+        self.assertEqual(errors, {'contact_name':[u'Missing value']})
+
 #     ###### Field: contact_email #####
 #
 #     def testFieldValidationContactEmailBasic(self):
