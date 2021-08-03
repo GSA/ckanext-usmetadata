@@ -199,23 +199,23 @@ class MetadataPluginTest(unittest.TestCase):
 
     def testFieldValidationPublisherRejectsEmpty(self):
 
-        data = {'publisher':''}
+        data = {'publisher': ''}
         schema = self.__getSchemaFromMetadataDict__('publisher')
 
         converted_data, errors = df.validate(data, schema)
-        self.assertEqual(errors, {'publisher':[u'Missing value']})
+        assert errors == {'publisher':[u'Missing value']}
 
     ###### Field: contact_name #####
 
-#     def testFieldValidationContactBasic(self):
-#
-#         data = {'contact_name':'jim'
-#         }
-#         schema = self.__getSchemaFromMetadataDict__('contact_name')
-#
-#         converted_data, errors = df.validate(data, schema)
-#         self.assertEqual(errors, {})
-#
+    def testFieldValidationContactBasic(self):
+
+        data = {'contact_name': 'jim'}
+        schema = self.__getSchemaFromMetadataDict__('contact_name')
+
+        converted_data, errors = df.validate(data, schema)
+        assert errors == {}
+        assert data['contact_name'] == converted_data['contact_name']
+
 #     def testFieldValidationContactNameTooLong(self):
 #
 #         data = {'contact_name':'a'*301
