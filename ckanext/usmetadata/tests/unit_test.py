@@ -47,14 +47,14 @@ class MetadataPluginTest(unittest.TestCase):
         expected = {'aardvark':'foo', 'common_core': {'publisher':'usda'}, 'extras':[{'key':'foo', 'value': 'bar'}]}
         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
 
-#     def testLoadDataIntoDictMovesSingleValuedExtrasEntry(self):
-#         """Verify that load_data_into_dict() moves all entries matching required metadata from value of extras key to
-#         be (key:value) pairs of the dict."""
-#         original = {'hi':'there', 'extras':[{'key': 'publisher', 'value':'USGS'}]}
-#         expected = {'hi':'there', 'common_core': {'publisher':'USGS'}, 'extras':[]}
-#         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
-#         MetadataPluginTest.__check_dicts_match__(expected, actual)
-#
+    def testLoadDataIntoDictMovesSingleValuedExtrasEntry(self):
+        """Verify that load_data_into_dict() moves all entries matching required metadata from value of extras key to
+        be (key:value) pairs of the dict."""
+        original = {'hi':'there', 'extras':[{'key': 'publisher', 'value':'USGS'}]}
+        expected = {'hi':'there', 'common_core': {'publisher':'USGS'}, 'extras':[]}
+        actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
+        MetadataPluginTest.__check_dicts_match__(expected, actual)
+
 #     def testLoadDataIntoDictMovesRequiredIfApplicableMetadata(self):
 #         """Verify that load_data_into_dict() moves all entries matching required metadata from value of extras key to
 #         be (key:value) pairs of the dict."""

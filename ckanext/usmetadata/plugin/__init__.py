@@ -306,8 +306,9 @@ class CommonCoreMetadataFormPlugin(MixinPlugin, p.SingletonPlugin, p.toolkit.Def
         new_dict['redacted_json'] = json.dumps(redacted)
 
         # TODO: Figure out if these keys should be kept
-        del new_dict['labels']
-        del new_dict['ordered_common_core']
+        for key in ['parent_dataset_options', 'labels', 'ordered_common_core', 'redacted_json']:
+            if key not in data_dict:
+                del new_dict[key]
         return new_dict
 
         # See ckan.plugins.interfaces.IDatasetForm
