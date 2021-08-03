@@ -157,16 +157,18 @@ class MetadataPluginTest(unittest.TestCase):
         # self.assertEqual(errors, {'public_access_level':[u'Missing value']})
         assert type(converted_data['public_access_level']) == Invalid
 
-#     def testFieldValidationPublicAccessLevelRejectsMissing(self):
-#
-#         data = {}
-#         schema = self.__getSchemaFromMetadataDict__('public_access_level')
-#
-#         converted_data, errors = df.validate(data, schema)
-#         self.assertEqual(errors, {'public_access_level':[u'Missing value']})
-#
-#     ###### Field: publisher #####
-#
+    def testFieldValidationPublicAccessLevelRejectsMissing(self):
+
+        data = {}
+        schema = self.__getSchemaFromMetadataDict__('public_access_level')
+
+        converted_data, errors = df.validate(data, schema)
+        # TODO: schema approach was changed, so we don't care if it's missing right now
+        # self.assertEqual(errors, {'public_access_level':[u'Missing value']})
+        assert converted_data == {}
+
+    ###### Field: publisher #####
+
 #     def testFieldValidationPublisherBasic(self):
 #
 #         data = {'publisher':'an agency'
