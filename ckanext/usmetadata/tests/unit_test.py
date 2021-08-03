@@ -1,35 +1,52 @@
-# import unittest
-# import ckanext.usmetadata.plugin as plugin
-# import ckan.lib.navl.dictization_functions as df
+from flask import g
+import pytest
+import unittest
+import ckan.tests.factories as factories
+import ckan.lib.navl.dictization_functions as df
+from ckan.plugins.toolkit import c
+from ckan.tests.helpers import FunctionalTestBase, reset_db
+
+import ckanext.usmetadata.plugin as plugin
+
+import logging
+
+log = logging.getLogger(__name__)
+
+# This is a stub block to allow me to run unit tests from my IDE without using 'nosetests --with-pylons=/path/to/file
+# from pylons import config
+# from pylons.i18n.translation import set_lang
+# import os
 #
-#
-# import logging
-#
-# log = logging.getLogger(__name__)
-#
-# # This is a stub block to allow me to run unit tests from my IDE without using 'nosetests --with-pylons=/path/to/file
-# # from pylons import config
-# # from pylons.i18n.translation import set_lang
-# # import os
-# #
-# # conf = config.current_conf()
-# # if not conf['pylons.paths']['root']:
-# #     conf['pylons.paths']['root'] = os.path.abspath('.')
-# # if not conf.get('pylons.package'):
-# #     conf['pylons.package'] = 'example' # same as domain above
-# # set_lang('es', pylons_config=conf)
-#
-# class MetadataPluginTest(unittest.TestCase):
-#     """These tests should run fine using a standard testrunner with no database or server backend"""
-#
-#     def testLoadDataIntoDictMovesRequiredMetadata(self):
-#         """Verify that load_data_into_dict() moves all entries matching required metadata from value of extras key to
-#         be (key:value) pairs of the dict."""
-#         original = {'aardvark':'foo', 'extras':[{'key':'foo', 'value': 'bar'}, {'key':'publisher','value':'usda'}] }
-#         expected = {'aardvark':'foo', 'common_core': {'publisher':'usda'}, 'extras':[{'key':'foo', 'value': 'bar'}]}
-#         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
-#         MetadataPluginTest.__check_dicts_match__(expected, actual)
-#
+# conf = config.current_conf()
+# if not conf['pylons.paths']['root']:
+#     conf['pylons.paths']['root'] = os.path.abspath('.')
+# if not conf.get('pylons.package'):
+#     conf['pylons.package'] = 'example' # same as domain above
+# set_lang('es', pylons_config=conf)
+
+class AppUser(object):
+
+    def __init__(self):
+        self.sysadmin = factories.Sysadmin()
+
+@pytest.mark.usefixtures("with_request_context")
+class MetadataPluginTest(unittest.TestCase):
+    """These tests should run fine using a standard testrunner with no database or server backend"""
+
+    def setUp(cls):
+        reset_db()
+        if not getattr(c, u'user', None):
+            c.user = AppUser()
+            g.userobj = AppUser()
+
+    def test_LoadDataIntoDictMovesRequiredMetadata(self):
+        """Verify that load_data_into_dict() moves all entries matching required metadata from value of extras key to
+        be (key:value) pairs of the dict."""
+
+        original = {'aardvark':'foo', 'extras':[{'key':'foo', 'value': 'bar'}, {'key':'publisher','value':'usda'}] }
+        expected = {'aardvark':'foo', 'common_core': {'publisher':'usda'}, 'extras':[{'key':'foo', 'value': 'bar'}]}
+        actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
+
 #     def testLoadDataIntoDictMovesSingleValuedExtrasEntry(self):
 #         """Verify that load_data_into_dict() moves all entries matching required metadata from value of extras key to
 #         be (key:value) pairs of the dict."""
@@ -719,8 +736,8 @@
 #                 return {scheme['id']:scheme['validators']}
 #         return {}
 #
-#     @classmethod
-#     def __check_dicts_match__(cls, dict1, dict2):
-#         """helper function to compare two dicts to ensure that they match"""
-#         assert set(dict1) - set(dict2) == set([])
-#         assert set(dict2) - set(dict1) == set([])
+    @classmethod
+    def __check_dicts_match__(cls, dict1, dict2):
+        """helper function to compare two dicts to ensure that they match"""
+        assert set(dict1) - set(dict2) == set([])
+        assert set(dict2) - set(dict1) == set([])
