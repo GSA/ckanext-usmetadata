@@ -68,16 +68,16 @@ class MetadataPluginTest(unittest.TestCase):
         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
         MetadataPluginTest.__check_dicts_match__(expected, actual)
 
-#     def testLoadDataIntoDictFailsGracefully(self):
-#         """Verify that load_data_into_dict() doesn't generate an error if extras not found"""
-#         original = {'aardvark':'foo', '__extras':[{'key':'foo', 'value': 'bar'}, {'key':'publisher','value':'usda'}] }
-#         expected = {'aardvark':'foo',
-#                     'common_core':{},
-#                     '__extras':[{'key':'foo', 'value': 'bar'},
-#                                 {'key':'publisher','value':'usda'}] }
-#         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
-#         MetadataPluginTest.__check_dicts_match__(expected, actual)
-#
+    def testLoadDataIntoDictFailsGracefully(self):
+        """Verify that load_data_into_dict() doesn't generate an error if extras not found"""
+        original = {'aardvark':'foo', '__extras':[{'key':'foo', 'value': 'bar'}, {'key':'publisher','value':'usda'}] }
+        expected = {'aardvark':'foo',
+                    'common_core':{},
+                    '__extras':[{'key':'foo', 'value': 'bar'},
+                                {'key':'publisher','value':'usda'}] }
+        actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
+        MetadataPluginTest.__check_dicts_match__(expected, actual)
+
 #     def testLoadDataIntoDictLarge(self):
 #          original = {'aardvark':'foo',
 #                      'extras': [{u'value': u'daily', u'key': u'accrual_periodicity',
