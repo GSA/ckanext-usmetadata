@@ -87,13 +87,17 @@ def primary_it_investment_uii_validator(regex_candidate):
         return regex_candidate
     return p.toolkit.Invalid("Doesn't match primary it investment uii format.")
 
-
 def string_length_validator(max=100):
     def string_validator(value):
-        if len(value) <= max:
+        try:
+            if len(value) <= max:
+                return value
+            else:
+                return p.toolkit.Invalid("Attribute is too long.")
+        except TypeError:
+            # The given value is already invalid from another validator
             return value
-        else:
-            return p.toolkit.Invalid("Attribute is too long.")
+            
     return string_validator
 
 
@@ -101,15 +105,15 @@ def string_length_validator(max=100):
 required_metadata = (
     {'id': 'title', 'validators': [p.toolkit.get_validator('not_empty'), str]},
     {'id': 'notes', 'validators': [p.toolkit.get_validator('not_empty'), str]},
-    {'id': 'publisher', 'validators': [p.toolkit.get_validator('not_empty'), str]},
-    {'id': 'contact_name', 'validators': [p.toolkit.get_validator('not_empty'), str]},
-    {'id': 'contact_email', 'validators': [p.toolkit.get_validator('not_empty'), str]},
+    {'id': 'publisher', 'validators': [p.toolkit.get_validator('not_empty'), str, string_length_validator(max=300)]},
+    {'id': 'contact_name', 'validators': [p.toolkit.get_validator('not_empty'), str, string_length_validator(max=300)]},
+    {'id': 'contact_email', 'validators': [p.toolkit.get_validator('not_empty'), str, string_length_validator(max=200)]},
     # TODO should this unique_id be validated against any other unique IDs for this agency?
-    {'id': 'unique_id', 'validators': [p.toolkit.get_validator('not_empty'), str]},
-    {'id': 'modified', 'validators': [p.toolkit.get_validator('not_empty'), str]},
+    {'id': 'unique_id', 'validators': [p.toolkit.get_validator('not_empty'), str, string_length_validator(max=100)]},
+    {'id': 'modified', 'validators': [p.toolkit.get_validator('not_empty'), str, string_length_validator(max=100)]},
     {'id': 'public_access_level', 'validators': [public_access_level_validator]},
-    {'id': 'bureau_code', 'validators': [bureau_code_validator]},
-    {'id': 'program_code', 'validators': [program_code_validator]}
+    {'id': 'bureau_code', 'validators': [bureau_code_validator, string_length_validator(max=2100)]},
+    {'id': 'program_code', 'validators': [program_code_validator, string_length_validator(max=2100)]}
 )
 
 
@@ -129,7 +133,7 @@ required_metadata_update = (
 # some of these could be excluded (e.g. related_documents) which can be captured from other ckan default data
 expanded_metadata = (
     # issued
-    {'id': 'release_date', 'validators': [release_date_validator, string_length_validator(max=500)]},
+    {'id': 'release_date', 'validators': [release_date_validator]},
     {'id': 'accrual_periodicity', 'validators': [accrual_periodicity_validator]},
     {'id': 'language', 'validators': [language_validator]},
     {'id': 'data_quality', 'validators': [string_length_validator(max=1000)]},
@@ -183,27 +187,12 @@ for field in exempt_allowed:
 
 # excluded download_url, endpoint, format and license as they may be discoverable
 required_if_applicable_metadata = (
-    {'id': 'data_dictionary', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'data_dictionary', 'validators': [string_length_validator(max=2048)]},
     {'id': 'data_dictionary_type', 'validators': [string_length_validator(max=2100)]},
     {'id': 'spatial', 'validators': [string_length_validator(max=500)]},
     {'id': 'temporal', 'validators': [temporal_validator]},
     {'id': 'access_level_comment', 'validators': [string_length_validator(max=255)]},
     {'id': 'license_new', 'validators': [string_length_validator(max=2100)]}
-)
-
-# used for by passing API validation
-required_metadata_by_pass_validation = (
-    {'id': 'title', 'validators': [p.toolkit.get_validator('not_empty'), str]},
-    {'id': 'notes', 'validators': [p.toolkit.get_validator('not_empty'), str]},
-    {'id': 'public_access_level', 'validators': [string_length_validator(max=2100)]},
-    {'id': 'publisher', 'validators': [string_length_validator(max=300)]},
-    {'id': 'contact_name', 'validators': [string_length_validator(max=2100)]},
-    {'id': 'contact_email', 'validators': [string_length_validator(max=2100)]},
-    # TODO should this unique_id be validated against any other unique IDs for this agency?
-    {'id': 'unique_id', 'validators': [string_length_validator(max=100)]},
-    {'id': 'modified', 'validators': [string_length_validator(max=100)]},
-    {'id': 'bureau_code', 'validators': [string_length_validator(max=2100)]},
-    {'id': 'program_code', 'validators': [string_length_validator(max=2100)]}
 )
 
 # used for by passing API validation
@@ -236,7 +225,7 @@ expanded_metadata_by_pass_validation = (
 
 # used for by passing API validation
 required_if_applicable_metadata_by_pass_validation = (
-    {'id': 'data_dictionary', 'validators': [string_length_validator(max=2100)]},
+    {'id': 'data_dictionary', 'validators': [string_length_validator(max=2048)]},
     {'id': 'data_dictionary_type', 'validators': [string_length_validator(max=2100)]},
     {'id': 'endpoint', 'validators': [string_length_validator(max=2100)]},
     {'id': 'spatial', 'validators': [string_length_validator(max=500)]},
@@ -303,14 +292,6 @@ def get_req_metadata_for_show_update():
     return new_req_meta
 
 
-def get_req_metadata_for_api_create():
-    new_req_meta = copy.copy(required_metadata_by_pass_validation)
-    validator = p.toolkit.get_validator('not_empty')
-    for meta in new_req_meta:
-        meta['validators'].append(validator)
-    return new_req_meta
-
-
 for meta in required_if_applicable_metadata:
     meta['validators'].insert(0, p.toolkit.get_validator('ignore_missing'))
 
@@ -331,6 +312,4 @@ schema_updates_for_show = [{meta['id']: meta['validators'] + [p.toolkit.get_conv
                            in
                            (get_req_metadata_for_show_update() + required_if_applicable_metadata + expanded_metadata)]
 schema_api_for_create = [{meta['id']: meta['validators'] + [p.toolkit.get_converter('convert_to_extras')]} for meta
-                         in (get_req_metadata_for_api_create() +  # NOQA
-                             required_if_applicable_metadata_by_pass_validation +  # NOQA
-                             expanded_metadata_by_pass_validation)]
+                         in (required_if_applicable_metadata_by_pass_validation + expanded_metadata_by_pass_validation)]
