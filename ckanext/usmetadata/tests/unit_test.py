@@ -217,22 +217,24 @@ class MetadataPluginTest(unittest.TestCase):
         assert data['contact_name'] == converted_data['contact_name']
 
 #     def testFieldValidationContactNameTooLong(self):
-#
-#         data = {'contact_name':'a'*301
-#         }
+#         # TODO: Test does not hit 'string_length_validator' to reject this
+# 
+#         data = {'contact_name': 'a'*301}
 #         schema = self.__getSchemaFromMetadataDict__('contact_name')
-#
+# 
 #         converted_data, errors = df.validate(data, schema)
 #         self.assertEqual(errors, {'contact_name':[u'Enter a value not more than 300 characters long']})
-#
-#     def testFieldValidationContactRejectsMissing(self):
-#
-#         data = {}
-#         schema = self.__getSchemaFromMetadataDict__('contact_name')
-#
-#         converted_data, errors = df.validate(data, schema)
-#         self.assertEqual(errors, {'contact_name':[u'Missing value']})
-#
+
+    def testFieldValidationContactRejectsMissing(self):
+
+        data = {}
+        schema = self.__getSchemaFromMetadataDict__('contact_name')
+
+        converted_data, errors = df.validate(data, schema)
+        # TODO: schema approach was changed, so we don't care if it's missing right now
+        # self.assertEqual(errors, {'contact_name':[u'Missing value']})
+        assert converted_data == {}
+
 #     def testFieldValidationContactRejectsEmpty(self):
 #
 #         data = {'contact_name':''}
