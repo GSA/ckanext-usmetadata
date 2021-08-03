@@ -55,19 +55,19 @@ class MetadataPluginTest(unittest.TestCase):
         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
         MetadataPluginTest.__check_dicts_match__(expected, actual)
 
-#     def testLoadDataIntoDictMovesRequiredIfApplicableMetadata(self):
-#         """Verify that load_data_into_dict() moves all entries matching required metadata from value of extras key to
-#         be (key:value) pairs of the dict."""
-#         original = {'aardvark':'foo',
-#                     'extras':[{'key':'spatial','value':'wayoutthere'},
-#                               {'key':'foo', 'value': 'bar'},
-#                               {'key':'publisher','value':'usda'}] }
-#         expected = {'aardvark':'foo',
-#                     'common_core': {'publisher':'usda', 'spatial':'wayoutthere'},
-#                     'extras':[{'key':'foo', 'value': 'bar'}]}
-#         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
-#         MetadataPluginTest.__check_dicts_match__(expected, actual)
-#
+    def testLoadDataIntoDictMovesRequiredIfApplicableMetadata(self):
+        """Verify that load_data_into_dict() moves all entries matching required metadata from value of extras key to
+        be (key:value) pairs of the dict."""
+        original = {'aardvark':'foo',
+                    'extras':[{'key':'spatial','value':'wayoutthere'},
+                              {'key':'foo', 'value': 'bar'},
+                              {'key':'publisher','value':'usda'}] }
+        expected = {'aardvark':'foo',
+                    'common_core': {'publisher':'usda', 'spatial':'wayoutthere'},
+                    'extras':[{'key':'foo', 'value': 'bar'}]}
+        actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
+        MetadataPluginTest.__check_dicts_match__(expected, actual)
+
 #     def testLoadDataIntoDictFailsGracefully(self):
 #         """Verify that load_data_into_dict() doesn't generate an error if extras not found"""
 #         original = {'aardvark':'foo', '__extras':[{'key':'foo', 'value': 'bar'}, {'key':'publisher','value':'usda'}] }
