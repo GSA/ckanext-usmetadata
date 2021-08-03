@@ -97,28 +97,28 @@ class MetadataPluginTest(unittest.TestCase):
         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
         MetadataPluginTest.__check_dicts_match__(expected, actual)
 
-#     def testLoadDataIntoDictNoExtra(self):
-#         """Verify that when no '__extras' key exist, load_data_into_dict()
-#            will move any DCAT-US metadata in key value pairs into a dict under
-#            the key 'common_core'"""
-#         original = {'foo':'bar',
-#                     'publisher':'somename',
-#                     'foo2':'bar2',
-#                     'data_dictionary':'something',
-#                     'system_of_records':'somesystem'}
-#         expected = {'foo':'bar',
-#                     'common_core': {'data_dictionary':'something',
-#                                     'publisher':'somename',
-#                                     'system_of_records':'somesystem'},
-#                     'foo2':'bar2'}
-#         actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
-#
-#         log.debug('actual: {0}'.format(actual))
-#         MetadataPluginTest.__check_dicts_match__(expected, actu   al)
-#
-#
-#     ###### Field: public_access_level #####
-#
+    def testLoadDataIntoDictNoExtra(self):
+        """Verify that when no '__extras' key exist, load_data_into_dict()
+           will move any DCAT-US metadata in key value pairs into a dict under
+           the key 'common_core'"""
+        original = {'foo':'bar',
+                    'publisher':'somename',
+                    'foo2':'bar2',
+                    'data_dictionary':'something',
+                    'system_of_records':'somesystem'}
+        expected = {'foo':'bar',
+                    'common_core': {'data_dictionary':'something',
+                                    'publisher':'somename',
+                                    'system_of_records':'somesystem'},
+                    'foo2':'bar2'}
+        actual = plugin.CommonCoreMetadataFormPlugin().get_helpers()['load_data_into_dict'](original)
+
+        log.debug('actual: {0}'.format(actual))
+        MetadataPluginTest.__check_dicts_match__(expected, actual)
+
+
+    ###### Field: public_access_level #####
+
 #     def testFieldValidationPublicAccessLevelPublic(self):
 #
 #         data = {'public_access_level':'public'
