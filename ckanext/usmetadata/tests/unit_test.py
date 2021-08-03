@@ -3,7 +3,7 @@ import pytest
 import unittest
 import ckan.tests.factories as factories
 import ckan.lib.navl.dictization_functions as df
-from ckan.plugins.toolkit import c
+from ckan.plugins.toolkit import c, Invalid
 from ckan.tests.helpers import FunctionalTestBase, reset_db
 
 import ckanext.usmetadata.plugin as plugin
@@ -139,15 +139,14 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
         self.assertEqual(errors, {})
 
-#     def testFieldValidationPublicAccessLevelBadValue(self):
-#
-#         data = {'public_access_level':'BadValue'
-#         }
-#         schema = self.__getSchemaFromMetadataDict__('public_access_level')
-#
-#         converted_data, errors = df.validate(data, schema)
-#         self.assertEqual(errors, {'public_access_level':[u'The input is not valid']})
-#
+    def testFieldValidationPublicAccessLevelBadValue(self):
+
+        data = {'public_access_level': 'BadValue'}
+        schema = self.__getSchemaFromMetadataDict__('public_access_level')
+
+        converted_data, errors = df.validate(data, schema)
+        assert type(converted_data['public_access_level']) == Invalid
+
 #     def testFieldValidationPublicAccessLevelRejectsEmpty(self):
 #
 #         data = {'public_access_level':''
