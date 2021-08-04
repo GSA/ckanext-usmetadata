@@ -174,7 +174,7 @@ class MetadataPluginTest(unittest.TestCase):
 
         converted_data, errors = df.validate(data, schema)
         assert type(converted_data['publisher']) == Invalid
-        assert converted_data['publisher'].error == 'Attribute is too long.'
+        assert converted_data['publisher'].error == 'Attribute is too long. (character limit = 300)'
 
     def testFieldValidationPublisherRejectsMissing(self):
 
@@ -213,7 +213,7 @@ class MetadataPluginTest(unittest.TestCase):
 
         converted_data, errors = df.validate(data, schema)
         assert type(converted_data['contact_name']) == Invalid
-        assert converted_data['contact_name'].error == 'Attribute is too long.'
+        assert converted_data['contact_name'].error == 'Attribute is too long. (character limit = 300)'
 
     def testFieldValidationContactRejectsMissing(self):
 
@@ -250,7 +250,7 @@ class MetadataPluginTest(unittest.TestCase):
 
         converted_data, errors = df.validate(data, schema)
         assert type(converted_data['contact_email']) == Invalid
-        assert converted_data['contact_email'].error == 'Attribute is too long.'
+        assert converted_data['contact_email'].error == 'Attribute is too long. (character limit = 200)'
 
     def testFieldValidationContactEmailRejectsMissing(self):
 
@@ -288,7 +288,7 @@ class MetadataPluginTest(unittest.TestCase):
 
         converted_data, errors = df.validate(data, schema)
         assert type(converted_data['unique_id']) == Invalid
-        assert converted_data['unique_id'].error == 'Attribute is too long.'
+        assert converted_data['unique_id'].error == 'Attribute is too long. (character limit = 100)'
 
     def testFieldValidationUIDRejectsMissing(self):
 
@@ -336,7 +336,7 @@ class MetadataPluginTest(unittest.TestCase):
 
         converted_data, errors = df.validate(data, schema)
         assert type(converted_data['data_dictionary']) == Invalid
-        assert converted_data['data_dictionary'].error == 'Attribute is too long.'
+        assert converted_data['data_dictionary'].error == 'Attribute is too long. (character limit = 2048)'
 
     def testFieldValidationDataDictionaryIgnoresMissing(self):
 
@@ -407,7 +407,7 @@ class MetadataPluginTest(unittest.TestCase):
 
         converted_data, errors = df.validate(data, schema)
         assert type(converted_data['spatial']) == Invalid
-        assert converted_data['spatial'].error == 'Attribute is too long.'
+        assert converted_data['spatial'].error == 'Attribute is too long. (character limit = 500)'
 
     def testFieldValidationSpatialIgnoresMissing(self):
 
@@ -657,7 +657,7 @@ class MetadataPluginTest(unittest.TestCase):
 
         converted_data, errors = df.validate(data, schema)
         assert type(converted_data['access_level_comment']) == Invalid
-        assert converted_data['access_level_comment'].error == 'Attribute is too long.'
+        assert converted_data['access_level_comment'].error == 'Attribute is too long. (character limit = 255)'
 
     def testFieldValidationAccessLevelCommentIgnoresMissing(self):
 
@@ -679,12 +679,12 @@ class MetadataPluginTest(unittest.TestCase):
 
     def testFieldValidationInvestmentUIITooLong(self):
 
-        data = {'primary_it_investment_uii': '[[' + 'REDACTEDaa' * 210 + ']]'}
+        data = {'primary_it_investment_uii': '[[' + ('REDACTEDaa' * 210) + ']]'}
         schema = self.__getSchemaFromMetadataDict__('primary_it_investment_uii')
 
         converted_data, errors = df.validate(data, schema)
         assert type(converted_data['primary_it_investment_uii']) == Invalid
-        assert converted_data['primary_it_investment_uii'].error == 'Attribute is too long.'
+        assert converted_data['primary_it_investment_uii'].error == 'Attribute is too long. (character limit = 2100)'
 
     def testFieldValidationInvestmentUIIIgnoresMissing(self):
 

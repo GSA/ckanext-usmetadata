@@ -94,7 +94,7 @@ def string_length_validator(max=100):
             if len(value) <= max:
                 return value
             else:
-                return p.toolkit.Invalid("Attribute is too long.")
+                return p.toolkit.Invalid(("Attribute is too long. (character limit = %s)" % str(max)))
         except TypeError:
             # The given value is already invalid from another validator
             return value
@@ -148,7 +148,8 @@ expanded_metadata = (
     {'id': 'conforms_to', 'validators': [string_length_validator(max=2100)]},
     {'id': 'homepage_url', 'validators': [string_length_validator(max=2100)]},
     {'id': 'system_of_records', 'validators': [string_length_validator(max=2100)]},
-    {'id': 'primary_it_investment_uii', 'validators': [primary_it_investment_uii_validator]},
+    {'id': 'primary_it_investment_uii', 'validators': [primary_it_investment_uii_validator,
+                                                       string_length_validator(max=2100)]},
     {'id': 'publisher_1', 'validators': [string_length_validator(max=300)]},
     {'id': 'publisher_2', 'validators': [string_length_validator(max=300)]},
     {'id': 'publisher_3', 'validators': [string_length_validator(max=300)]},
