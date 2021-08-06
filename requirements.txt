@@ -1,7 +1,1 @@
-flake8
 future
-mock==1.0.1
-pycodestyle
-pytest
-pytest-ckan
-pytest-cov
