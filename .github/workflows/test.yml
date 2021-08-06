@@ -53,6 +53,7 @@ jobs:
     - name: Install requirements
       run: |
         pip install -r requirements.txt
+        pip install -r dev-requirements.txt
         pip install -e .
     - name: Setup extension (CKAN >= 2.9)
       if: ${{ matrix.ckan-version != '2.8' }}
