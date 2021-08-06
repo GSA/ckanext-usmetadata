@@ -144,6 +144,8 @@ class MetadataPluginTest(unittest.TestCase):
 
         converted_data, errors = df.validate(data, schema)
         # TODO: schema approach was changed, so the correct validation error does not show
+        # We want to update the schema to have this test reject empty parameters again
+        # When updated, the assertion should be similar to the below comment
         # self.assertEqual(errors, {'public_access_level':[u'Missing value']})
         assert type(converted_data['public_access_level']) == Invalid
 
@@ -154,6 +156,8 @@ class MetadataPluginTest(unittest.TestCase):
 
         converted_data, errors = df.validate(data, schema)
         # TODO: schema approach was changed, so we don't care if it's missing right now
+        # We want to update the schema to have this test reject missing parameters again
+        # When updated, the assertion should be similar to the below comment
         # self.assertEqual(errors, {'public_access_level':[u'Missing value']})
         assert converted_data == {}
 
@@ -184,6 +188,8 @@ class MetadataPluginTest(unittest.TestCase):
         converted_data, errors = df.validate(data, schema)
 
         # TODO: schema approach was changed, so we don't care if it's missing right now
+        # We want to update the schema to have this test reject missing parameters again
+        # When updated, the assertion should be similar to the below comment
         # self.assertEqual(errors, {'publisher':[u'Missing value']})
         assert converted_data == {}
 
@@ -222,6 +228,8 @@ class MetadataPluginTest(unittest.TestCase):
 
         converted_data, errors = df.validate(data, schema)
         # TODO: schema approach was changed, so we don't care if it's missing right now
+        # We want to update the schema to have this test reject missing parameters again
+        # When updated, the assertion should be similar to the below comment
         # self.assertEqual(errors, {'contact_name':[u'Missing value']})
         assert converted_data == {}
 
@@ -259,6 +267,8 @@ class MetadataPluginTest(unittest.TestCase):
 
         converted_data, errors = df.validate(data, schema)
         # TODO: schema approach was changed, so we don't care if it's missing right now
+        # We want to update the schema to have this test reject missing parameters again
+        # When updated, the assertion should be similar to the below comment
         # self.assertEqual(errors, {'contact_email':[u'Missing value']})
         assert converted_data == {}
 
@@ -297,6 +307,8 @@ class MetadataPluginTest(unittest.TestCase):
 
         converted_data, errors = df.validate(data, schema)
         # TODO: schema approach was changed, so we don't care if it's missing right now
+        # We want to update the schema to have this test reject missing parameters again
+        # When updated, the assertion should be similar to the below comment
         # self.assertEqual(errors, {'unique_id':[u'Missing value']})
         assert converted_data == {}
 
@@ -319,7 +331,8 @@ class MetadataPluginTest(unittest.TestCase):
         assert errors == {}
 
 #     def testFieldValidationDataDictionaryBadURL(self):
-#         # TODO: This isn't validated...
+#         # TODO: This test needs to be fixed so this form of bad url is rejected
+#         # for the correct reason (i.e. it is not a url format)
 #
 #         data = {'data_dictionary': 'wow this isnt a valid url'}
 #         schema = self.__getSchemaFromMetadataDict__('data_dictionary')
@@ -365,7 +378,8 @@ class MetadataPluginTest(unittest.TestCase):
         assert errors == {}
 
 #     def testFieldValidationEndpointBadURL1(self):
-#         # TODO: This isn't validated...
+#         # TODO: This test needs to be fixed so this form of bad url is rejected
+#         # for the correct reason (i.e. it is not a url format)
 #
 #         data = {'endpoint': 'wow this isnt a valid url'}
 #         schema = self.__getSchemaFromMetadataDict__('endpoint')
@@ -374,7 +388,8 @@ class MetadataPluginTest(unittest.TestCase):
 #         self.assertEqual(errors, {'endpoint':[u'That is not a valid URL']})
 
 #     def testFieldValidationEndpointBadURL2(self):
-#         # TODO: This isn't validated...
+#         # TODO: This test needs to be fixed so this form of bad url is rejected
+#         # for the correct reason (i.e. it is not a url format)
 #
 #         data = {'endpoint': 'wowthisisntavalidurl'}
 #         schema = self.__getSchemaFromMetadataDict__('endpoint')
@@ -454,7 +469,7 @@ class MetadataPluginTest(unittest.TestCase):
         assert errors == {}
 
 #     def testFieldValidationReleaseDateIgnoresEmpty(self):
-#         # TODO: Does not ignore empty ...
+#         # TODO: Fix validation schema to ignore empty strings for this parameter
 #
 #         data = {'release_date':''}
 #         schema = self.__getSchemaFromMetadataDict__('release_date')
