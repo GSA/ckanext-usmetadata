@@ -1,3 +1,5 @@
+from builtins import str
+import six
 __author__ = 'ykhadilkar'
 
 import ckan.model as model
@@ -5,8 +7,8 @@ import ckan.model as model
 cached_tables = {}
 
 
-def get_organization_title(id):
-    query = "select id, title from package where package.id = '" + id + "'"
+def get_organization_title(dataset_id):
+    query = "select id, title from package where package.id = '" + dataset_id + "'"
     connection = model.Session.connection()
     res = connection.execute(query).fetchone()
     return res._row[1]
@@ -27,7 +29,10 @@ def get_parent_organizations(c):
         ids = []
 
         for id in userGroupsIds:
-            ids.append(id.encode('ascii', 'ignore'))
+            if six.PY2:
+                ids.append(id.encode('ascii', 'ignore'))
+            else:
+                ids.append(id)
 
         # Ugly hack - If user has access to only one organization then SQL query blows up because IN statement ends up with
         # dangling comma at the end. Adding dumy id should fix that.

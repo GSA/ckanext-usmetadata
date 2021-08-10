@@ -1,7 +1,7 @@
-__init__.py
 ckanext/usmetadata/tests/__init__.py
 ckanext_usmetadata.egg-info/
 *.pyc
+.coverage
 
 # OS generated files #
 ######################
@@ -11,3 +11,5 @@ ckanext_usmetadata.egg-info/
 .Trashes
 *ehthumbs.db
 *Thumbs.db
+*.swp
+*.bak
