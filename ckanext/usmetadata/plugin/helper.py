@@ -112,31 +112,31 @@ required_metadata = (
     # TODO should this unique_id be validated against any other unique IDs for this agency?
     {'id': 'unique_id', 'validators': [p.toolkit.get_validator('not_empty'), str, string_length_validator(max=100)]},
     {'id': 'modified', 'validators': [p.toolkit.get_validator('not_empty'), str, string_length_validator(max=100)]},
-    {'id': 'public_access_level', 'validators': [public_access_level_validator]},
-    {'id': 'bureau_code', 'validators': [bureau_code_validator, string_length_validator(max=2100)]},
-    {'id': 'program_code', 'validators': [program_code_validator, string_length_validator(max=2100)]}
+    {'id': 'public_access_level', 'validators': [str, public_access_level_validator]},
+    {'id': 'bureau_code', 'validators': [str, bureau_code_validator, string_length_validator(max=2100)]},
+    {'id': 'program_code', 'validators': [str, program_code_validator, string_length_validator(max=2100)]}
 )
 
 
 # used to bypass validation on create
 required_metadata_update = (
-    {'id': 'public_access_level', 'validators': [public_access_level_validator]},
+    {'id': 'public_access_level', 'validators': [str, public_access_level_validator]},
     {'id': 'publisher', 'validators': [string_length_validator(max=300)]},
     {'id': 'contact_name', 'validators': [string_length_validator(max=300)]},
     {'id': 'contact_email', 'validators': [string_length_validator(max=200)]},
     # TODO should this unique_id be validated against any other unique IDs for this agency?
     {'id': 'unique_id', 'validators': [string_length_validator(max=100)]},
     {'id': 'modified', 'validators': [string_length_validator(max=100)]},
-    {'id': 'bureau_code', 'validators': [bureau_code_validator]},
-    {'id': 'program_code', 'validators': [program_code_validator]}
+    {'id': 'bureau_code', 'validators': [str, bureau_code_validator]},
+    {'id': 'program_code', 'validators': [str, program_code_validator]}
 )
 
 # some of these could be excluded (e.g. related_documents) which can be captured from other ckan default data
 expanded_metadata = (
     # issued
-    {'id': 'release_date', 'validators': [release_date_validator]},
-    {'id': 'accrual_periodicity', 'validators': [accrual_periodicity_validator]},
-    {'id': 'language', 'validators': [language_validator]},
+    {'id': 'release_date', 'validators': [str, release_date_validator]},
+    {'id': 'accrual_periodicity', 'validators': [str, accrual_periodicity_validator]},
+    {'id': 'language', 'validators': [str, language_validator]},
     {'id': 'data_quality', 'validators': [string_length_validator(max=1000)]},
     {'id': 'publishing_status', 'validators': [string_length_validator(max=1000)]},
     {'id': 'is_parent', 'validators': [string_length_validator(max=1000)]},
