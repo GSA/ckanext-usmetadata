@@ -22,10 +22,12 @@ def public_access_level_validator(regex_candidate):
 
 
 def bureau_code_validator(regex_candidate):
-    validator = re.compile(r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$')
-    if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
-        return regex_candidate
-    return p.toolkit.Invalid("Doesn't match bureau code format.")
+    if type(regex_candidate) == str:
+        validator = re.compile(r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$')
+        if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
+            return regex_candidate
+        return p.toolkit.Invalid("Doesn't match bureau code format.")
+    return p.toolkit.Invalid("Can't parse Regex")
 
 
 def program_code_validator(regex_candidate):
