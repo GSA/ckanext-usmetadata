@@ -20,7 +20,9 @@ def public_access_level_validator(regex_candidate):
         if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
             return regex_candidate
         return p.toolkit.Invalid("Doesn't match public access level validators.")
-    return p.toolkit.Invalid("Can't parse Regex")
+
+    # The regex_candidate already has validation errors, so just pass the errors through
+    return regex_candidate
 
 
 def bureau_code_validator(regex_candidate):
@@ -29,7 +31,9 @@ def bureau_code_validator(regex_candidate):
         if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
             return regex_candidate
         return p.toolkit.Invalid("Doesn't match bureau code format.")
-    return p.toolkit.Invalid("Can't parse Regex")
+
+    # The regex_candidate already has validation errors, so just pass the errors through
+    return regex_candidate
 
 
 def program_code_validator(regex_candidate):
@@ -38,7 +42,9 @@ def program_code_validator(regex_candidate):
         if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
             return regex_candidate
         return p.toolkit.Invalid("Doesn't match program code format.")
-    return p.toolkit.Invalid("Can't parse Regex")
+
+    # The regex_candidate already has validation errors, so just pass the errors through
+    return regex_candidate
 
 
 def temporal_validator(regex_candidate):
@@ -47,7 +53,9 @@ def temporal_validator(regex_candidate):
         if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
             return regex_candidate
         return p.toolkit.Invalid("Doesn't match temporal format.")
-    return p.toolkit.Invalid("Can't parse Regex")
+
+    # The regex_candidate already has validation errors, so just pass the errors through
+    return regex_candidate
 
 
 def release_date_validator(regex_candidate):
@@ -60,7 +68,9 @@ def release_date_validator(regex_candidate):
         if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
             return regex_candidate
         return p.toolkit.Invalid("Doesn't match release date format.")
-    return p.toolkit.Invalid("Can't parse Regex")
+
+    # The regex_candidate already has validation errors, so just pass the errors through
+    return regex_candidate
 
 
 def accrual_periodicity_validator(regex_candidate):
@@ -76,7 +86,9 @@ def accrual_periodicity_validator(regex_candidate):
         if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
             return regex_candidate
         return p.toolkit.Invalid("Doesn't match accrual periodicity format.")
-    return p.toolkit.Invalid("Can't parse Regex")
+
+    # The regex_candidate already has validation errors, so just pass the errors through
+    return regex_candidate
 
 
 def language_validator(regex_candidate):
@@ -92,7 +104,9 @@ def language_validator(regex_candidate):
         if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
             return regex_candidate
         return p.toolkit.Invalid("Doesn't match language format.")
-    return p.toolkit.Invalid("Can't parse Regex")
+
+    # The regex_candidate already has validation errors, so just pass the errors through
+    return regex_candidate
 
 
 def primary_it_investment_uii_validator(regex_candidate):
@@ -101,7 +115,9 @@ def primary_it_investment_uii_validator(regex_candidate):
         if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
             return regex_candidate
         return p.toolkit.Invalid("Doesn't match primary it investment uii format.")
-    return p.toolkit.Invalid("Can't parse Regex")
+
+    # The regex_candidate already has validation errors, so just pass the errors through
+    return regex_candidate
 
 
 def string_length_validator(max=100):
