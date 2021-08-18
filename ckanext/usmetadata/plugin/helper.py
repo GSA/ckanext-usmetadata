@@ -1,5 +1,9 @@
 from __future__ import absolute_import
+
+# 'str' function for py2 throws an error since it's different than py3
+old_str = str
 from builtins import str
+
 import copy
 from logging import getLogger
 import re
@@ -15,77 +19,109 @@ REDACTION_STROKE_REGEX = re.compile(
 
 
 def public_access_level_validator(regex_candidate):
-    validator = re.compile(r'^(public)|(restricted public)|(non-public)$')
-    if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
-        return regex_candidate
-    return p.toolkit.Invalid("Doesn't match public access level validators.")
+    if type(regex_candidate) in [str, old_str]:
+        validator = re.compile(r'^(public)|(restricted public)|(non-public)$')
+        if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
+            return regex_candidate
+        return p.toolkit.Invalid("Doesn't match public access level validators.")
+
+    # The regex_candidate already has validation errors, so just pass the errors through
+    return regex_candidate
 
 
 def bureau_code_validator(regex_candidate):
-    validator = re.compile(r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$')
-    if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
-        return regex_candidate
-    return p.toolkit.Invalid("Doesn't match bureau code format.")
+    if type(regex_candidate) in [str, old_str]:
+        validator = re.compile(r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$')
+        if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
+            return regex_candidate
+        return p.toolkit.Invalid("Doesn't match bureau code format.")
+
+    # The regex_candidate already has validation errors, so just pass the errors through
+    return regex_candidate
 
 
 def program_code_validator(regex_candidate):
-    validator = re.compile(r'^\d{3}:\d{3}(\s*,\s*\d{3}:\d{3}\s*)*$')
-    if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
-        return regex_candidate
-    return p.toolkit.Invalid("Doesn't match program code format.")
+    if type(regex_candidate) in [str, old_str]:
+        validator = re.compile(r'^\d{3}:\d{3}(\s*,\s*\d{3}:\d{3}\s*)*$')
+        if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
+            return regex_candidate
+        return p.toolkit.Invalid("Doesn't match program code format.")
+
+    # The regex_candidate already has validation errors, so just pass the errors through
+    return regex_candidate
 
 
 def temporal_validator(regex_candidate):
-    validator = re.compile(r'^([\-\dTWRZP/YMWDHMS:\+]{3,}/[\-\dTWRZP/YMWDHMS:\+]{3,})|(\[\[REDACTED).*?(\]\])$')
-    if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
-        return regex_candidate
-    return p.toolkit.Invalid("Doesn't match temporal format.")
+    if type(regex_candidate) in [str, old_str]:
+        validator = re.compile(r'^([\-\dTWRZP/YMWDHMS:\+]{3,}/[\-\dTWRZP/YMWDHMS:\+]{3,})|(\[\[REDACTED).*?(\]\])$')
+        if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
+            return regex_candidate
+        return p.toolkit.Invalid("Doesn't match temporal format.")
+
+    # The regex_candidate already has validation errors, so just pass the errors through
+    return regex_candidate
 
 
 def release_date_validator(regex_candidate):
-    validator = re.compile(
-        r'^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?'
-        r'|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]'
-        r'\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?|(\[\[REDACTED).*?(\]\])$'
-    )
-    if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
-        return regex_candidate
-    return p.toolkit.Invalid("Doesn't match release date format.")
+    if type(regex_candidate) in [str, old_str]:
+        validator = re.compile(
+            r'^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?'
+            r'|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]'
+            r'\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?|(\[\[REDACTED).*?(\]\])$'
+        )
+        if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
+            return regex_candidate
+        return p.toolkit.Invalid("Doesn't match release date format.")
+
+    # The regex_candidate already has validation errors, so just pass the errors through
+    return regex_candidate
 
 
 def accrual_periodicity_validator(regex_candidate):
-    validator = re.compile(
-        r'^([Dd]ecennial)|([Qq]uadrennial)|([Aa]nnual)|([Bb]imonthly)|([Ss]emiweekly)|([Dd]aily)|([Bb]iweekly)'
-        r'|([Ss]emiannual)|([Bb]iennial)|([Tt]riennial)|([Tt]hree times a week)|([Tt]hree times a month)'
-        r'|(Continuously updated)|([Mm]onthly)|([Qq]uarterly)|([Ss]emimonthly)|([Tt]hree times a year)'
-        r'|R\/P(?:(\d+(?:[\.,]\d+)?)Y)?(?:(\d+(?:[\.,]\d+)?)M)?(?:(\d+(?:[\.,]\d+)?)D)?(?:T(?:(\d+(?:[\.,]\d+)'
-        r'?)H)?(?:(\d+(?:[\.,]\d+)?)M)?(?:(\d+(?:[\.,]\d+)?)S)?)?$'  # ISO 8601 duration
-        r'|([Ww]eekly)|([Hh]ourly)|([Cc]ompletely irregular)|([Ii]rregular)|(\[\[REDACTED).*?(\]\])$'
-    )
-    if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
-        return regex_candidate
-    return p.toolkit.Invalid("Doesn't match accrual periodicity format.")
+    if type(regex_candidate) in [str, old_str]:
+        validator = re.compile(
+            r'^([Dd]ecennial)|([Qq]uadrennial)|([Aa]nnual)|([Bb]imonthly)|([Ss]emiweekly)|([Dd]aily)|([Bb]iweekly)'
+            r'|([Ss]emiannual)|([Bb]iennial)|([Tt]riennial)|([Tt]hree times a week)|([Tt]hree times a month)'
+            r'|(Continuously updated)|([Mm]onthly)|([Qq]uarterly)|([Ss]emimonthly)|([Tt]hree times a year)'
+            r'|R\/P(?:(\d+(?:[\.,]\d+)?)Y)?(?:(\d+(?:[\.,]\d+)?)M)?(?:(\d+(?:[\.,]\d+)?)D)?(?:T(?:(\d+(?:[\.,]\d+)'
+            r'?)H)?(?:(\d+(?:[\.,]\d+)?)M)?(?:(\d+(?:[\.,]\d+)?)S)?)?$'  # ISO 8601 duration
+            r'|([Ww]eekly)|([Hh]ourly)|([Cc]ompletely irregular)|([Ii]rregular)|(\[\[REDACTED).*?(\]\])$'
+        )
+        if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
+            return regex_candidate
+        return p.toolkit.Invalid("Doesn't match accrual periodicity format.")
+
+    # The regex_candidate already has validation errors, so just pass the errors through
+    return regex_candidate
 
 
 def language_validator(regex_candidate):
-    validator = re.compile(
-        r'^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?'
-        r'(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z]'
-        r'(-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed'
-        r'|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu'
-        r'|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min'
-        r'|zh-min-nan|zh-xiang)))$'
-    )
-    if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
-        return regex_candidate
-    return p.toolkit.Invalid("Doesn't match language format.")
+    if type(regex_candidate) in [str, old_str]:
+        validator = re.compile(
+            r'^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?'
+            r'(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z]'
+            r'(-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed'
+            r'|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu'
+            r'|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min'
+            r'|zh-min-nan|zh-xiang)))$'
+        )
+        if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
+            return regex_candidate
+        return p.toolkit.Invalid("Doesn't match language format.")
+
+    # The regex_candidate already has validation errors, so just pass the errors through
+    return regex_candidate
 
 
 def primary_it_investment_uii_validator(regex_candidate):
-    validator = re.compile(r'^([0-9]{3}-[0-9]{9})|(\[\[REDACTED).*?(\]\])$')
-    if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
-        return regex_candidate
-    return p.toolkit.Invalid("Doesn't match primary it investment uii format.")
+    if type(regex_candidate) in [str, old_str]:
+        validator = re.compile(r'^([0-9]{3}-[0-9]{9})|(\[\[REDACTED).*?(\]\])$')
+        if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
+            return regex_candidate
+        return p.toolkit.Invalid("Doesn't match primary it investment uii format.")
+
+    # The regex_candidate already has validation errors, so just pass the errors through
+    return regex_candidate
 
 
 def string_length_validator(max=100):
@@ -112,31 +148,31 @@ required_metadata = (
     # TODO should this unique_id be validated against any other unique IDs for this agency?
     {'id': 'unique_id', 'validators': [p.toolkit.get_validator('not_empty'), str, string_length_validator(max=100)]},
     {'id': 'modified', 'validators': [p.toolkit.get_validator('not_empty'), str, string_length_validator(max=100)]},
-    {'id': 'public_access_level', 'validators': [public_access_level_validator]},
-    {'id': 'bureau_code', 'validators': [bureau_code_validator, string_length_validator(max=2100)]},
-    {'id': 'program_code', 'validators': [program_code_validator, string_length_validator(max=2100)]}
+    {'id': 'public_access_level', 'validators': [str, public_access_level_validator]},
+    {'id': 'bureau_code', 'validators': [str, bureau_code_validator, string_length_validator(max=2100)]},
+    {'id': 'program_code', 'validators': [str, program_code_validator, string_length_validator(max=2100)]}
 )
 
 
 # used to bypass validation on create
 required_metadata_update = (
-    {'id': 'public_access_level', 'validators': [public_access_level_validator]},
+    {'id': 'public_access_level', 'validators': [str, public_access_level_validator]},
     {'id': 'publisher', 'validators': [string_length_validator(max=300)]},
     {'id': 'contact_name', 'validators': [string_length_validator(max=300)]},
     {'id': 'contact_email', 'validators': [string_length_validator(max=200)]},
     # TODO should this unique_id be validated against any other unique IDs for this agency?
     {'id': 'unique_id', 'validators': [string_length_validator(max=100)]},
     {'id': 'modified', 'validators': [string_length_validator(max=100)]},
-    {'id': 'bureau_code', 'validators': [bureau_code_validator]},
-    {'id': 'program_code', 'validators': [program_code_validator]}
+    {'id': 'bureau_code', 'validators': [str, bureau_code_validator]},
+    {'id': 'program_code', 'validators': [str, program_code_validator]}
 )
 
 # some of these could be excluded (e.g. related_documents) which can be captured from other ckan default data
 expanded_metadata = (
     # issued
-    {'id': 'release_date', 'validators': [release_date_validator]},
-    {'id': 'accrual_periodicity', 'validators': [accrual_periodicity_validator]},
-    {'id': 'language', 'validators': [language_validator]},
+    {'id': 'release_date', 'validators': [str, release_date_validator]},
+    {'id': 'accrual_periodicity', 'validators': [str, accrual_periodicity_validator]},
+    {'id': 'language', 'validators': [str, language_validator]},
     {'id': 'data_quality', 'validators': [string_length_validator(max=1000)]},
     {'id': 'publishing_status', 'validators': [string_length_validator(max=1000)]},
     {'id': 'is_parent', 'validators': [string_length_validator(max=1000)]},
