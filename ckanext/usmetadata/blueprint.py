@@ -658,11 +658,11 @@ def lc_get_license_url():
     return json.dumps({'ResultSet': {'Result': retval}})
 
 
-datapusher.add_url_rule('/dataset/new_resource/{id}',
+datapusher.add_url_rule('/dataset/new_resource/<id>',
                         view_func=new_resource_usmetadata)
 datapusher.add_url_rule('/api/2/util/resource/license_url_autocomplete',
                         view_func=lc_get_license_url)
-datapusher.add_url_rule('/dataset/{id}/clone',
+datapusher.add_url_rule('/dataset/<id>/clone',
                         view_func=cc_clone_dataset_metadata)
 
 datapusher.add_url_rule('/api/2/util/resource/media_autocomplete',
