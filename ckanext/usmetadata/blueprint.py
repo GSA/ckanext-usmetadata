@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from builtins import str
 import cgi
 import datetime
 from flask import Blueprint
@@ -22,7 +24,7 @@ try:
     requires_ckan_version("2.9")
 except CkanVersionException:
     from ckan.common import response
-    from plugin import helper as local_helper
+    from .plugin import helper as local_helper
 else:
     from flask.wrappers import Response as response
     from ckanext.usmetadata.plugin import helper as local_helper
@@ -152,8 +154,8 @@ def map_old_keys(error_summary):
     replace = {
         'Format': 'Media Type'
     }
-    for old_key, new_key in replace.items():
-        if old_key in error_summary.keys():
+    for old_key, new_key in list(replace.items()):
+        if old_key in list(error_summary.keys()):
             error_summary[new_key] = error_summary[old_key]
             del error_summary[old_key]
     return error_summary
@@ -186,7 +188,7 @@ def new_resource_usmetadata(id, data=None, errors=None, error_summary=None):
 
         # see if we have any data that we are trying to save
         data_provided = False
-        for key, value in data.iteritems():
+        for key, value in data.items():
             if ((value or isinstance(value, cgi.FieldStorage)) and key != 'resource_type'):
                 data_provided = True
                 break
@@ -334,7 +336,7 @@ def dv_get_packages(owner_org):
                 for sub_package in sub_packages:
                     packages.append(sub_package)
     else:
-        if 'sub-agencies' in sub_agency.extras.col.keys() \
+        if 'sub-agencies' in list(sub_agency.extras.col.keys()) \
                 and sub_agency.extras.col['sub-agencies'].state == 'active':
             sub_agencies = sub_agency.extras.col['sub-agencies'].value
             sub_agencies_list = sub_agencies.split(",")
@@ -553,7 +555,7 @@ def cc_clone_dataset_metadata(id):
 
     del pkg_dict['extras']
     pkg_dict['extras'] = []
-    for key, value in temp.iteritems():
+    for key, value in temp.items():
         if key != 'title':
             pkg_dict[key] = value
 
@@ -632,7 +634,7 @@ def mc_get_media_types():
     if q in local_helper.media_types_dict:
         retval.append(local_helper.media_types_dict[q][1])
 
-    media_keys = local_helper.media_types_dict.keys()
+    media_keys = list(local_helper.media_types_dict.keys())
     for media_type in media_keys:
         if q in media_type.lower() and local_helper.media_types_dict[media_type][1] not in retval:
             retval.append(local_helper.media_types_dict[media_type][1])
