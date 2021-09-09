@@ -19,9 +19,9 @@ set -o pipefail
 function ckan_wrapper () {
   if command -v ckan > /dev/null; then
     shift  # drop the --plugin= argument
-    ckan -c test.ini "$@"
+    ckan -c /app/test.ini "$@"
   else
-    paster "$@" -c test.ini
+    paster "$@" -c /app/test.ini
   fi
 }
 
@@ -31,4 +31,4 @@ while ! ckan_wrapper --plugin=ckan db init; do
   sleep 5
 done
 
-pytest --ckan-ini=test.ini --cov=ckanext.usmetadata --disable-warnings ckanext/usmetadata/tests/
+pytest --ckan-ini=/app/test.ini --cov=ckanext.usmetadata --disable-warnings /app/ckanext/usmetadata/tests/
