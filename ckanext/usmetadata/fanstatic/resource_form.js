@@ -226,7 +226,7 @@ var DatasetResourceForm = new function () {
 
 $().ready(function () {
     //to be sure we are editing a resource
-    if ($('form.dataset-resource-form').length()) {
+    if ($('form.dataset-resource-form').length) {
 
         DatasetResourceForm.bootstrap();
     }

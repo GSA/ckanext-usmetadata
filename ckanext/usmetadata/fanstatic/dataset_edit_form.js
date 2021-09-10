@@ -117,7 +117,7 @@ var DatasetForm = new function () {
 }();
 
 $().ready(function () {
-    if ($('form.dataset-form').length() && $(':input[name="pkg_name"]').length()) {
+    if ($('form.dataset-form').length && $(':input[name="pkg_name"]').length) {
         DatasetForm.bootstrap();
     }
 });
