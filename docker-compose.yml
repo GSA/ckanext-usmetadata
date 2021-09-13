@@ -15,7 +15,6 @@ services:
       CKAN_DATAPUSHER_URL: http://localhost:8080/  # datapusher is not really enabled
       CKAN__PLUGINS: usmetadata
       PYTHONDONTWRITEBYTECODE: 1
-    working_dir: /app
     ports:
       - "5000:5000"
     depends_on:

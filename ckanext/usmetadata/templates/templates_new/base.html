@@ -1,6 +1,6 @@
 {% ckan_extends %}
 
-{% block styles %}
+{% block body_extras %}
   {{ super() }}
 
   {# Import example_theme.css using Fanstatic.
@@ -8,5 +8,6 @@
      was registered with when the toolkit.add_resource() function was called.
      'example_theme.css' is the path to the CSS file, relative to the root of
      the fanstatic directory. #}
-  {% asset 'dataset_url/js' %}
+  {% asset 'base/vendor/jquery.js' %}
+  {% asset 'usmetadata/js' %}
 {% endblock %}

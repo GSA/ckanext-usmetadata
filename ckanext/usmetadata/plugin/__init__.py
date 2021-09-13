@@ -8,6 +8,7 @@ from logging import getLogger
 from ckan.common import json
 import ckan.lib.helpers as h
 import ckan.lib.base as base
+import ckan.logic as logic
 import ckan.plugins as p
 from ckan.plugins.toolkit import requires_ckan_version, CkanVersionException, c
 from .. import db_utils
@@ -310,10 +311,6 @@ class CommonCoreMetadataFormPlugin(MixinPlugin, p.SingletonPlugin, p.toolkit.Def
                 redacted[redacted_key] = new_dict['common_core'][redacted_key]
         new_dict['redacted_json'] = json.dumps(redacted)
 
-        # TODO: Figure out if these keys should be kept
-        for key in ['parent_dataset_options', 'labels', 'ordered_common_core', 'redacted_json']:
-            if key not in data_dict:
-                del new_dict[key]
         return new_dict
 
         # See ckan.plugins.interfaces.IDatasetForm
@@ -453,7 +450,8 @@ class CommonCoreMetadataFormPlugin(MixinPlugin, p.SingletonPlugin, p.toolkit.Def
             'usmetadata_filter': self.usmetadata_filter,
             'usmetadata_shorten': self.usmetadata_shorten,
             'redacted_icon': self.redacted_icon,
-            'resource_redacted_icon': self.resource_redacted_icon
+            'resource_redacted_icon': self.resource_redacted_icon,
+            'get_action': logic.get_action
         }
 
     def get_blueprint(self):

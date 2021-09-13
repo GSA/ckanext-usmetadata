@@ -5,8 +5,5 @@ ARG CKAN_VERSION
 RUN pip install --upgrade pip
 
 COPY . /app
-WORKDIR /app
 
-RUN pip install -r requirements.txt -r dev-requirements.txt -e .
-
-WORKDIR /srv/app
+RUN pip install -r /app/requirements.txt -r /app/dev-requirements.txt -e /app
