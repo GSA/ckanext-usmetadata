@@ -343,14 +343,16 @@ class CommonCoreMetadataFormPlugin(MixinPlugin, p.SingletonPlugin, p.toolkit.Def
     # See ckan.plugins.interfaces.IDatasetForm
     def _create_package_schema(self, schema):
         log.debug("_create_package_schema called")
-        if base.request.path == u'/api/3/action/package_create':
-            # This is called when the api is explicitly used
-            for update in local_helper.schema_api_for_create:
-                schema.update(update)
-        elif base.request.path == '/api/3/action/resource_create':
-            for update in local_helper.schema_api_for_create:
-                schema.update(update)
-        else:
+        try:
+            base_path = base.request.path
+            if base_path == u'/api/3/action/package_create':
+                # This is called when the api is explicitly used
+                for update in local_helper.schema_api_for_create:
+                    schema.update(update)
+            elif base_path == '/api/3/action/resource_create':
+                for update in local_helper.schema_api_for_create:
+                    schema.update(update)
+        except RuntimeError:
             # This is called when 'factories.dataset' creates the dataset
             for update in local_helper.schema_updates_for_create:
                 schema.update(update)
