@@ -120,7 +120,7 @@
                         </th>
                         <td>
                             {{ h.resource_redacted_icon(c.package,res,key)|safe }}
-                            <span class="redacted-md">{{ h.usmetadata_filter(value) }}</span>
+                            <span class="redacted-md">{{ h.usmetadata_filter(value|string) }}</span>
                         </td>
                     </tr>
                   {% else %}
@@ -128,7 +128,7 @@
                         <th scope="row">{{ key }}</th>
                         <td>
                             {{ h.resource_redacted_icon(c.package,res,key)|safe }}
-                            <span class="redacted-md">{{ h.usmetadata_filter(value) }}</span>
+                            <span class="redacted-md">{{ h.usmetadata_filter(value|string) }}</span>
                         </td>
                     </tr>
                   {% endif %}
