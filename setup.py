@@ -13,6 +13,7 @@ setup(
     version='0.2.1',
     description='US Metadata Plugin for CKAN',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     classifiers=[
         'Programming Language :: Python :: 3'
     ],  # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
