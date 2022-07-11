@@ -1,23 +1,34 @@
 from setuptools import setup, find_packages
+from codecs import open  # To use a consistent encoding
+from os import path
 
-version = '0.2.1'
+here = path.abspath(path.dirname(__file__))
+
+# Get the long description from the relevant file
+with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
 
 setup(
     name='ckanext-usmetadata',
-    version=version,
-    description='US Metadata Plugin',
-    long_description='',
-    classifiers=[],  # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
+    version='0.2.1',
+    description='US Metadata Plugin for CKAN',
+    long_description=long_description,
+    classifiers=[
+        'Programming Language :: Python :: 3'
+    ],  # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
     keywords='',
-    author='Sean Herron, created by Marina Martin',
-    author_email='sean.herron@fda.hhs.gov',
-    url='',
-    license='',
+    author='Data.gov',
+    author_email='datagovhelp@gsa.gov',
+    url='https://github.com/GSA/ckanext-usmetadata',
+    license='Public Domain',
     packages=find_packages(),
     namespace_packages=['ckanext', 'ckanext.usmetadata'],
     include_package_data=True,
     zip_safe=False,
-    install_requires=[],
+    install_requires=[
+        'future',
+    ],
+    setup_requires=['wheel'],
     entry_points="""
         [ckan.plugins]
             usmetadata=ckanext.usmetadata.plugin:CommonCoreMetadataFormPlugin
