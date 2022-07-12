@@ -1,6 +1,7 @@
 # ckanext-usmetadata
 
 ![Github Actions](https://github.com/GSA/ckanext-usmetadata/actions/workflows/test.yml/badge.svg)
+[![PyPI version](https://badge.fury.io/py/ckanext-usmetadata.svg)](https://badge.fury.io/py/ckanext-usmetadata)
 
 This CKAN Extension expands CKAN to offer a number of custom fields related to the [DCAT-US Schema](https://resources.data.gov/schemas/dcat-us/v1.1/)
 
