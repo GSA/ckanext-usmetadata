@@ -24,26 +24,13 @@ This extension is compatible with these versions of CKAN.
 
 CKAN version | Compatibility
 ------------ | -------------
-<=2.7        | no
-2.8          | yes
-2.9          | [in progress](https://github.com/GSA/datagov-ckan-multi/issues/581)
+<=2.8        | no
+2.9          | yes
 
 ### Development
 
 You may also install by cloning the git repo, then running ''python setup.py develop'' from the root of your source
-directory, which will install an egg link so that you can modify the code and see results without reinstalling
-
-### Setup
-
-Build the docker containers.
-
-    $ make build
-
-Start the docker containers.
-
-    $ make up
-
-CKAN will start at [localhost:5000](http://localhost:5000/).
+directory, which will install an egg link so that you can modify the code and see results without yest [localhost:5000](http://localhost:5000/).
 
 Clean up any containers and volumes.
 
@@ -64,7 +51,7 @@ For additional make targets, see the help.
 ### Testing
 
 They follow the guidelines for [testing CKAN
-extensions](https://docs.ckan.org/en/2.8/extensions/testing-extensions.html#testing-extensions).
+extensions](https://docs.ckan.org/en/2.9/extensions/testing-extensions.html#testing-extensions).
 
 To run the extension tests, start the containers with `make up`, then:
 
@@ -81,7 +68,6 @@ In order to support multiple versions of CKAN, or even upgrade to new versions
 of CKAN, we support development and testing through the `CKAN_VERSION`
 environment variable.
 
-    $ make CKAN_VERSION=2.8 test
     $ make CKAN_VERSION=2.9 test
     
 ## Credit / Copying

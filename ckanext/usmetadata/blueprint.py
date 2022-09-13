@@ -4,9 +4,9 @@ import cgi
 import datetime
 from flask import Blueprint
 from flask import redirect
+from flask.wrappers import Response as response
 from logging import getLogger
 import re
-import six
 import requests
 
 from ckan.common import _, json, g
@@ -18,16 +18,10 @@ import ckan.lib.plugins
 import ckan.logic as logic
 import ckan.model as model
 from ckan.plugins.toolkit import c, config, request, requires_ckan_version, CkanVersionException
+from ckanext.usmetadata.plugin import helper as local_helper
 
 
-try:
-    requires_ckan_version("2.9")
-except CkanVersionException:
-    from ckan.common import response
-    from .plugin import helper as local_helper
-else:
-    from flask.wrappers import Response as response
-    from ckanext.usmetadata.plugin import helper as local_helper
+requires_ckan_version("2.9")
 
 datapusher = Blueprint('usmetadata', __name__)
 log = getLogger(__name__)
@@ -326,24 +320,14 @@ def dv_get_packages(owner_org):
     packages = dv_get_all_group_packages(group_id=owner_org)
     # get packages for sub-agencies.
     sub_agency = model.Group.get(owner_org)
-    if six.PY2:
-        if 'sub-agencies' in sub_agency.extras.col.target \
-                and sub_agency.extras.col.target['sub-agencies'].state == 'active':
-            sub_agencies = sub_agency.extras.col.target['sub-agencies'].value
-            sub_agencies_list = sub_agencies.split(",")
-            for sub in sub_agencies_list:
-                sub_packages = dv_get_all_group_packages(group_id=sub)
-                for sub_package in sub_packages:
-                    packages.append(sub_package)
-    else:
-        if 'sub-agencies' in list(sub_agency.extras.col.keys()) \
-                and sub_agency.extras.col['sub-agencies'].state == 'active':
-            sub_agencies = sub_agency.extras.col['sub-agencies'].value
-            sub_agencies_list = sub_agencies.split(",")
-            for sub in sub_agencies_list:
-                sub_packages = dv_get_all_group_packages(group_id=sub)
-                for sub_package in sub_packages:
-                    packages.append(sub_package)
+    if 'sub-agencies' in list(sub_agency.extras.col.keys()) \
+            and sub_agency.extras.col['sub-agencies'].state == 'active':
+        sub_agencies = sub_agency.extras.col['sub-agencies'].value
+        sub_agencies_list = sub_agencies.split(",")
+        for sub in sub_agencies_list:
+            sub_packages = dv_get_all_group_packages(group_id=sub)
+            for sub_package in sub_packages:
+                packages.append(sub_package)
 
     return packages
 

@@ -4,7 +4,6 @@
 from builtins import object
 import json
 import pytest
-import six
 from ckanext.usmetadata import db_utils
 from ckan.tests.helpers import FunctionalTestBase, reset_db
 from ckan.tests import factories
@@ -26,12 +25,8 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         self.sysadmin = factories.Sysadmin(name='admin')
         self.user = factories.User()
         self.organization = factories.Organization()
-        if six.PY2:
-            self.extra_environ = {'REMOTE_USER': self.sysadmin['name'].encode('ascii')}
-            self.extra_environ_user = {'REMOTE_USER': self.user['name'].encode('ascii')}
-        else:
-            self.extra_environ = {'REMOTE_USER': self.sysadmin['name']}
-            self.extra_environ_user = {'REMOTE_USER': self.user['name']}
+        self.extra_environ = {'REMOTE_USER': self.sysadmin['name']}
+        self.extra_environ_user = {'REMOTE_USER': self.user['name']}
         # token_dict = call_action('api_token_create')
         # print(token_dict)
 

@@ -8,25 +8,8 @@
 set -o errexit
 set -o pipefail
 
-# Wrapper for paster/ckan.
-# CKAN 2.9 replaces paster with ckan CLI. This wrapper abstracts which comand
-# is called.
-#
-# In order to keep the parsing simple, the first argument MUST be
-# --plugin=plugin-name. The config option -c is assumed to be
-# test.ini because the argument ordering matters to paster and
-# ckan, and again, we want to keep the parsing simple.
-function ckan_wrapper () {
-  if command -v ckan > /dev/null; then
-    shift  # drop the --plugin= argument
-    ckan -c /app/test.ini "$@"
-  else
-    paster "$@" -c /app/test.ini
-  fi
-}
-
 # Database is listening, but still unavailable. Just keep trying...
-while ! ckan_wrapper --plugin=ckan db init; do 
+while ! ckan -c /app/test.ini db init; do 
   echo Retrying in 5 seconds...
   sleep 5
 done

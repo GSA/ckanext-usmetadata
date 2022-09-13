@@ -1,4 +1,4 @@
-CKAN_VERSION ?= 2.8
+CKAN_VERSION ?= 2.9
 COMPOSE_FILE ?= docker-compose.yml
 
 build: ## Build the docker containers
@@ -21,7 +21,7 @@ up: ## Start the containers
 
 
 .DEFAULT_GOAL := help
-.PHONY: build clean help lint test test-legacy up
+.PHONY: build clean help lint test up
 
 # Output documentation for top-level targets
 # Thanks to https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
