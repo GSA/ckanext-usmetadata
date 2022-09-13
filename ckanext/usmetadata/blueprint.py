@@ -18,7 +18,7 @@ import ckan.lib.plugins
 import ckan.logic as logic
 import ckan.model as model
 from ckan.plugins.toolkit import c, config, request, requires_ckan_version
-from ckanext.usmetadata.plugin import helper as local_helper
+from ckanext.usmetadata import helper as local_helper
 
 
 requires_ckan_version("2.9")
