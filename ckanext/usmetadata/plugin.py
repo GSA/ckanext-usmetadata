@@ -10,7 +10,7 @@ import ckan.lib.helpers as h
 import ckan.lib.base as base
 import ckan.logic as logic
 import ckan.plugins as p
-from ckan.plugins.toolkit import requires_ckan_version, CkanVersionException, c
+from ckan.plugins.toolkit import requires_ckan_version, c
 from . import db_utils
 from . import blueprint
 from . import helper as local_helper
