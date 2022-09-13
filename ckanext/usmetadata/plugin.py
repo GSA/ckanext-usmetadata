@@ -11,22 +11,17 @@ import ckan.lib.base as base
 import ckan.logic as logic
 import ckan.plugins as p
 from ckan.plugins.toolkit import requires_ckan_version, CkanVersionException, c
-from .. import db_utils
-from .. import blueprint
+from . import db_utils
+from . import blueprint
 from . import helper as local_helper
 
-try:
-    requires_ckan_version("2.9")
-except CkanVersionException:
-    from ckanext.usmetadata.plugin.pylons_plugin import MixinPlugin
-else:
-    from ckanext.usmetadata.plugin.flask_plugin import MixinPlugin
+requires_ckan_version("2.9")
 
 
 log = getLogger(__name__)
 
 
-class CommonCoreMetadataFormPlugin(MixinPlugin, p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
+class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
     """
     This plugin adds fields for the metadata (known as the DCAT-US) defined at
     https://resources.data.gov/schemas/dcat-us/v1.1/
@@ -40,6 +35,18 @@ class CommonCoreMetadataFormPlugin(MixinPlugin, p.SingletonPlugin, p.toolkit.Def
     p.implements(p.interfaces.IOrganizationController, inherit=True)
     p.implements(p.IFacets, inherit=True)
     p.implements(p.IBlueprint)
+
+    # IConfigurer
+    def update_config(self, config):
+        # TODO remove template/templates_2_8 and move templates/templates_new
+        # to templates once we're off of CKAN 2.8.
+        #
+        # Using a separate dir for templates avoids having to maintain
+        # backwards compatibility using a sprinkling of conditionals. We don't
+        # anticipate adding new features to the existing 2.8 templates.
+        p.toolkit.add_template_directory(config, '../templates/templates_new')
+        p.toolkit.add_resource('../fanstatic', 'usmetadata')
+        p.toolkit.add_public_directory(config, '../public')
 
     def validate(self, context, data_dict, schema, action):
         """
