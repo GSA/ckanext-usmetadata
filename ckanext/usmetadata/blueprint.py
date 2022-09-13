@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-from builtins import str
 import cgi
 import datetime
 from flask import Blueprint

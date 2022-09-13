@@ -1,9 +1,3 @@
-from __future__ import absolute_import
-
-# 'str' function for py2 throws an error since it's different than py3
-old_str = str
-from builtins import str
-
 import copy
 from logging import getLogger
 import re

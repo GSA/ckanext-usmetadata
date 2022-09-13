@@ -1,8 +1,5 @@
-from __future__ import absolute_import
-from builtins import str
 import collections
 import re
-import six
 from logging import getLogger
 
 from ckan.common import json
@@ -267,12 +264,8 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
             new_dict['extras'] = reduced_extras
         except KeyError as ex:
-            if six.PY2:
-                log.debug('''Expected key ['%s'] not found, attempting to move DCAT-US keys to subdictionary''',
-                          ex.message)
-            else:
-                log.debug('''Expected key ['%s'] not found, attempting to move DCAT-US keys to subdictionary''',
-                          ex)
+            log.debug('''Expected key ['%s'] not found, attempting to move DCAT-US keys to subdictionary''',
+                      ex)
             # this can happen when a form fails validation, as all the data will now be as key,
             # value pairs, not under extras, so we'll move them to the expected point again to fill in the values
             # e.g.

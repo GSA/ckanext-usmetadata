@@ -1,7 +1,6 @@
 '''Tests for the ckanext.example_iauthfunctions extension.
 
 '''
-from builtins import object
 import json
 import pytest
 from ckanext.usmetadata import db_utils
