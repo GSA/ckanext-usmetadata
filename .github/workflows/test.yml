@@ -1,6 +1,6 @@
 name: Tests
 
-on: [pull_request, push]
+on: [push]
 env:
   CODE_COVERAGE_THRESHOLD_REQUIRED: 33
 
