@@ -7,6 +7,7 @@ from ckan.plugins.toolkit import c, Invalid
 from ckan.tests.helpers import reset_db
 
 import ckanext.usmetadata.plugin as plugin
+import ckanext.usmetadata.helper as p_helper
 
 import logging
 
@@ -722,9 +723,9 @@ class MetadataPluginTest(unittest.TestCase):
     @classmethod
     def __getSchemaFromMetadataDict__(cls, id_value):
         """Convenience function to extract the schema for a given field"""
-        for scheme in (plugin.helper.required_metadata +  # NOQA
-                       plugin.helper.required_if_applicable_metadata +  # NOQA
-                       plugin.helper.expanded_metadata):
+        for scheme in (p_helper.required_metadata +  # NOQA
+                       p_helper.required_if_applicable_metadata +  # NOQA
+                       p_helper.expanded_metadata):
             if scheme['id'] == id_value:
                 return {scheme['id']: scheme['validators']}
         return {}

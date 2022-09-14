@@ -1,6 +1,6 @@
 from __future__ import print_function
 from ckan.lib.navl.dictization_functions import Invalid
-from ckanext.usmetadata.plugin.helper import expanded_metadata, \
+from ckanext.usmetadata.helper import expanded_metadata, \
     release_date_validator, accrual_periodicity_validator, language_validator
 
 
