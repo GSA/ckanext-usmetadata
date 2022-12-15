@@ -4,7 +4,7 @@ on: [push]
 jobs:
   lint-test:
     name: Lint + Test
-    uses: gsa/data.gov/.github/workflows/ckan-test.yml@ckan-reusable-workflow
+    uses: gsa/data.gov/.github/workflows/ckan-test.yml@main
     with:
       ext_name: usmetadata
       plugins: usmetadata
