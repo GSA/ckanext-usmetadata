@@ -1,4 +1,4 @@
-this.ckan.module('usmetadata-slug-preview-slug', function (jQuery, _) {
+this.ckan.module('usmetadata-slug-preview-slug', function (_) {
     return {
         options: {
             prefix: '',
@@ -43,20 +43,6 @@ this.ckan.module('usmetadata-slug-preview-slug', function (jQuery, _) {
                 });
 
                 sandbox.publish('slug-preview-created', preview[0]);
-
-                // Horrible hack to make sure that IE7 rerenders the subsequent
-                // DOM children correctly now that we've render the slug preview element
-                // We should drop this horrible hack ASAP
-                if (jQuery('html').hasClass('ie7')) {
-                    jQuery('.btn').on('click', preview, function () {
-                        jQuery('.controls').ie7redraw();
-                    });
-                    preview.hide();
-                    setTimeout(function () {
-                        preview.show();
-                        jQuery('.controls').ie7redraw();
-                    }, 10);
-                }
             }
 
             // Watch for updates to the target field and update the hidden slug field
@@ -64,16 +50,6 @@ this.ckan.module('usmetadata-slug-preview-slug', function (jQuery, _) {
             sandbox.subscribe('slug-target-changed', function (value) {
                 slug.val(value).trigger('change');
             });
-            //Hiding preview - Issue # 71
-            if (jQuery("#dataset_status_id").val() !== 'draft') {
-                preview.hide();
-            }
         }
     };
 });
-
-//Bug fix Github # 166
-//Inventory_user is navigated to the Error 404 page_when last breadcrumb is selected on the resource uplaod page in IE.
-window.onload = function () {
-    jQuery("#content .toolbar .breadcrumb .active a").prop("href", document.URL)
-};
