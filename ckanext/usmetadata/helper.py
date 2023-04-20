@@ -132,8 +132,10 @@ def string_length_validator(max=100):
 
     return string_validator
 
+
 def string(value):
     return str(value)
+
 
 # excluded title, description, tags and last update as they're part of the default ckan dataset metadata
 required_metadata = (
