@@ -24,8 +24,6 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         self.sysadmin = factories.SysadminWithToken()
         self.user = factories.User()
         self.organization = factories.Organization()
-        self.extra_environ = {'REMOTE_USER': self.sysadmin['name']}
-        self.extra_environ_user = {'REMOTE_USER': self.user['name']}
         # token_dict = call_action('api_token_create')
         # print(token_dict)
 
@@ -111,7 +109,7 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         # This test relies on 'factories.dataset' creating the dataset and this 'get'
         # validates that the dataset was created properly
         package_dict = self.app.get('/api/3/action/package_show?id=my_package_000',
-                                    extra_environ=self.extra_environ)
+                                    headers={'Authorization': self.sysadmin["token"]})
 
         result = json.loads(package_dict.body)['result']
         assert result['name'] == 'my_package_000'
@@ -128,8 +126,7 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         package_dict = self.app.post('/api/3/action/package_create',
                                      headers={'Authorization': self.sysadmin["token"],
                                               'Content-type': 'application/json'},
-                                     params=json.dumps(self.dataset2),
-                                     extra_environ=self.extra_environ)
+                                     params=json.dumps(self.dataset2))
 
         result = json.loads(package_dict.body)['result']
         assert result['name'] == 'my_package_001'
@@ -145,8 +142,7 @@ class TestUsmetadataPlugin(FunctionalTestBase):
 
         resource_dict = self.app.post('/api/3/action/resource_create',
                                       params=dataset2b,
-                                      headers={'Authorization': self.sysadmin["token"]},
-                                      extra_environ=self.extra_environ)
+                                      headers={'Authorization': self.sysadmin["token"]})
 
         result = json.loads(resource_dict.body)['result']
         assert result['name'] == 'my_resource_2b'
@@ -176,8 +172,7 @@ class TestUsmetadataPlugin(FunctionalTestBase):
 
         package_dict_update = self.app.post('/api/3/action/package_update',
                                             params=update_dict,
-                                            headers={'Authorization': self.sysadmin["token"]},
-                                            extra_environ=self.extra_environ)
+                                            headers={'Authorization': self.sysadmin["token"]})
 
         result = json.loads(package_dict_update.body)['result']
         assert result['title'] == 'my package update'
@@ -236,7 +231,7 @@ class TestUsmetadataPlugin(FunctionalTestBase):
                'unique_id=%s&rights=&license_url=&temporal=&described_by=&described_by_type=&conforms'
                '_to=&landing_page=&language=&investment_uii=&references=&issued=&system_of_records=' %
                test_input)
-        res = self.app.get(url, extra_environ=self.extra_environ)
+        res = self.app.get(url, headers={'Authorization': self.sysadmin["token"]})
         assert 'Success' in res
 
         # Test 'rights'
@@ -244,7 +239,7 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
                'unique_id=&rights=%s&license_url=&temporal=&described_by=&described_by_type=&conforms_to='
                '&landing_page=&language=&investment_uii=&references=&issued=&system_of_records=' % test_input)
-        res = self.app.get(url, extra_environ=self.extra_environ)
+        res = self.app.get(url, headers={'Authorization': self.sysadmin["token"]})
         assert 'Success' in res
 
         # Test 'license_url'
@@ -252,7 +247,7 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
                'unique_id=&rights=&license_url=%s&temporal=&described_by=&described_by_type=&conforms_to='
                '&landing_page=&language=&investment_uii=&references=&issued=&system_of_records=' % test_input)
-        res = self.app.get(url, extra_environ=self.extra_environ)
+        res = self.app.get(url, headers={'Authorization': self.sysadmin["token"]})
         assert 'Success' in res
 
         # Test 'temporal'
@@ -260,7 +255,7 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
                'unique_id=&rights=&license_url=&temporal=%s&described_by=&described_by_type=&conforms_to='
                '&landing_page=&language=&investment_uii=&references=&issued=&system_of_records=' % test_input)
-        res = self.app.get(url, extra_environ=self.extra_environ)
+        res = self.app.get(url, headers={'Authorization': self.sysadmin["token"]})
         assert 'Success' in res
 
         # Test 'described_by'
@@ -268,7 +263,7 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
                'unique_id=&rights=&license_url=&temporal=&described_by=%s&described_by_type=&conforms_to='
                '&landing_page=&language=&investment_uii=&references=&issued=&system_of_records=' % test_input)
-        res = self.app.get(url, extra_environ=self.extra_environ)
+        res = self.app.get(url, headers={'Authorization': self.sysadmin["token"]})
         assert 'Success' in res
 
         # Test 'described_by_type'
@@ -276,7 +271,7 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
                'unique_id=&rights=&license_url=&temporal=&described_by=&described_by_type=%s&conforms_to='
                '&landing_page=&language=&investment_uii=&references=&issued=&system_of_records=' % test_input)
-        res = self.app.get(url, extra_environ=self.extra_environ)
+        res = self.app.get(url, headers={'Authorization': self.sysadmin["token"]})
         assert 'Success' in res
 
         # Test 'conforms_to'
@@ -284,7 +279,7 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
                'unique_id=&rights=&license_url=&temporal=&described_by=&described_by_type=&conforms_to=%s'
                '&landing_page=&language=&investment_uii=&references=&issued=&system_of_records=' % test_input)
-        res = self.app.get(url, extra_environ=self.extra_environ)
+        res = self.app.get(url, headers={'Authorization': self.sysadmin["token"]})
         assert 'Success' in res
 
         # Test 'landing_page'
@@ -292,7 +287,7 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
                'unique_id=&rights=&license_url=&temporal=&described_by=&described_by_type=&conforms_to='
                '&landing_page=%s&language=&investment_uii=&references=&issued=&system_of_records=' % test_input)
-        res = self.app.get(url, extra_environ=self.extra_environ)
+        res = self.app.get(url, headers={'Authorization': self.sysadmin["token"]})
         assert 'Success' in res
 
         # Test 'language'
@@ -302,7 +297,7 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
                'unique_id=&rights=&license_url=&temporal=&described_by=&described_by_type=&conforms_to='
                '&landing_page=&language=%s&investment_uii=&references=&issued=&system_of_records=' % test_input)
-        res = self.app.get(url, extra_environ=self.extra_environ)
+        res = self.app.get(url, headers={'Authorization': self.sysadmin["token"]})
         assert 'Success' in res
 
         # Test 'investment_uii'
@@ -310,7 +305,7 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
                'unique_id=&rights=&license_url=&temporal=&described_by=&described_by_type=&conforms_to='
                '&landing_page=&language=&investment_uii=%s&references=&issued=&system_of_records=' % test_input)
-        res = self.app.get(url, extra_environ=self.extra_environ)
+        res = self.app.get(url, headers={'Authorization': self.sysadmin["token"]})
         assert 'Success' in res
 
         # Test 'references'
@@ -318,7 +313,7 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
                'unique_id=&rights=&license_url=&temporal=&described_by=&described_by_type=&conforms_to='
                '&landing_page=&language=&investment_uii=&references=%s&issued=&system_of_records=' % test_input)
-        res = self.app.get(url, extra_environ=self.extra_environ)
+        res = self.app.get(url, headers={'Authorization': self.sysadmin["token"]})
         assert 'Success' in res
 
         # Test 'issued'
@@ -326,7 +321,7 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
                'unique_id=&rights=&license_url=&temporal=&described_by=&described_by_type=&conforms_to='
                '&landing_page=&language=&investment_uii=&references=&issued=%s&system_of_records=' % test_input)
-        res = self.app.get(url, extra_environ=self.extra_environ)
+        res = self.app.get(url, headers={'Authorization': self.sysadmin["token"]})
         assert 'Success' in res
 
         # Test 'system_of_records'
@@ -335,7 +330,7 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         url = ('/api/2/util/resource/validate_dataset?pkg_name=&owner_org=' + test_organization['id'] + '&'
                'unique_id=&rights=&license_url=&temporal=&described_by=&described_by_type=&conforms_to='
                '&landing_page=&language=&investment_uii=&references=&issued=&system_of_records=%s' % test_input)
-        res = self.app.get(url, extra_environ=self.extra_environ)
+        res = self.app.get(url, headers={'Authorization': self.sysadmin["token"]})
         assert 'Success' in res
 
     def test_validate_resource_action(self):
