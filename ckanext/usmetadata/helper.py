@@ -122,8 +122,6 @@ def primary_it_investment_uii_validator(regex_candidate):
 def string_length_validator(max=100):
     def string_validator(value):
         try:
-            if type(value) is not str:
-                return p.toolkit.Invalid("Attribute is not a string")
             if len(value) <= max:
                 return value
             else:
