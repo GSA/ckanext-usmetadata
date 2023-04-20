@@ -9,7 +9,7 @@ def get_organization_title(dataset_id):
     query = "select id, title from package where package.id = '" + dataset_id + "'"
     connection = model.Session.connection()
     res = connection.execute(query).fetchone()
-    return res._row[1]
+    return res[1]
 
 
 def get_parent_organizations(c):
