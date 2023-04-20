@@ -21,7 +21,7 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         super(TestUsmetadataPlugin, cls).setup_class()
 
     def create_datasets(self):
-        self.sysadmin = factories.Sysadmin(name='admin')
+        self.sysadmin = factories.SysadminWithToken()
         self.user = factories.User()
         self.organization = factories.Organization()
         self.extra_environ = {'REMOTE_USER': self.sysadmin['name']}
@@ -126,7 +126,7 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         # This test added the dataset through the 'package_create' route and then
         # checks that the dataset was created properly.
         package_dict = self.app.post('/api/3/action/package_create',
-                                     headers={'Authorization': self.sysadmin.get('apikey').encode('ascii'),
+                                     headers={'Authorization': self.sysadmin["token"],
                                               'Content-type': 'application/json'},
                                      params=json.dumps(self.dataset2),
                                      extra_environ=self.extra_environ)
@@ -145,8 +145,7 @@ class TestUsmetadataPlugin(FunctionalTestBase):
 
         resource_dict = self.app.post('/api/3/action/resource_create',
                                       params=dataset2b,
-                                      headers={'Authorization': self.sysadmin.get('apikey').encode('ascii'),
-                                               'X-CKAN-API-Key': self.sysadmin.get('apikey').encode('ascii')},
+                                      headers={'Authorization': self.sysadmin["token"]},
                                       extra_environ=self.extra_environ)
 
         result = json.loads(resource_dict.body)['result']
@@ -177,8 +176,7 @@ class TestUsmetadataPlugin(FunctionalTestBase):
 
         package_dict_update = self.app.post('/api/3/action/package_update',
                                             params=update_dict,
-                                            headers={'Authorization': self.sysadmin.get('apikey').encode('ascii'),
-                                                     'X-CKAN-API-Key': self.sysadmin.get('apikey').encode('ascii')},
+                                            headers={'Authorization': self.sysadmin["token"]},
                                             extra_environ=self.extra_environ)
 
         result = json.loads(package_dict_update.body)['result']

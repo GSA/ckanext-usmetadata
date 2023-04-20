@@ -2,6 +2,7 @@
 
 {% block form %}
   <form class="dataset-form form-horizontal add-member-form" method='post'>
+    {{ h.csrf_input() }}
     <div class="row-fluid">
       <div class="control-group control-medium">
         {% if not user %}
