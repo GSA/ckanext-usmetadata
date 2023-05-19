@@ -437,7 +437,6 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             'publishing_status_options': local_helper.publishing_status_options,
             'always_private': True,
             'usmetadata_filter': self.usmetadata_filter,
-            'usmetadata_shorten': self.usmetadata_shorten,
             'redacted_icon': self.redacted_icon,
             'resource_redacted_icon': self.resource_redacted_icon,
             'get_action': logic.get_action
