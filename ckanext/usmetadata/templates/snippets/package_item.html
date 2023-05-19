@@ -27,8 +27,7 @@
         {%- endfor %}
         <h3 class="dataset-heading">
             {{ h.redacted_icon(package, 'title')|safe }}
-            {{ link_truncate = h.usmetadata_filter(title) | truncate(80) }}
-            {{ h.link_to(link_truncate,
+            {{ h.link_to(h.usmetadata_filter(title)|truncate(80),
                     h.url_for(controller='dataset', action='read', id=package.name),
                     class='redacted-md') }}
             {% if package.get('state', '').startswith('draft') %}
