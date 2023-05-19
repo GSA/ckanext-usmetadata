@@ -3,7 +3,6 @@ import re
 from logging import getLogger
 
 from ckan.common import json
-import ckan.lib.helpers as h
 import ckan.lib.base as base
 import ckan.lib.navl.validators as ckan_validators
 import ckan.logic as logic
