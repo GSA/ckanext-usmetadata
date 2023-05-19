@@ -44,6 +44,6 @@ def get_parent_organizations(c):
     connection = model.Session.connection()
     res = connection.execute(query).fetchall()
     for result in res:
-        items[result._row[0]] = result._row[1]
+        items[result[0]] = result[1]
 
     return items
