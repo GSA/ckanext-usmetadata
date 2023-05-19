@@ -79,12 +79,6 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         return data
 
     @classmethod
-    def usmetadata_shorten(cls, plain=None, extract_length=180):
-        if not extract_length or len(plain) < extract_length:
-            return plain
-        return str(h.truncate(plain, length=extract_length, indicator='...', whole_word=True))
-
-    @classmethod
     def resource_redacted_icon(cls, package, resource, field):
         redacted_key = 'redacted_' + field
         if 'extras' in package:

@@ -49,10 +49,8 @@
               </thead>
               <tbody>
                 {% for package in c.packages %}
-                  {% set truncate = truncate or 180 %}
-                  {% set truncate_title = truncate_title or 80 %}
                   {% set title = package.title or package.name %}
-                  {% set notes = h.markdown_extract(package.notes, extract_length=truncate) %}
+                  {% set notes = h.markdown_extract(package.notes, extract_length=180) %}
                   <tr>
                     <td>
                       <input type="checkbox" name="dataset_{{ package.id }}">
@@ -63,7 +61,8 @@
                       </a>
                       <h3 class="dataset-heading">
                         {{ h.redacted_icon(package,'title')|safe }}
-                        {{ h.link_to(h.truncate(h.usmetadata_filter(title), truncate_title), h.url_for(controller='dataset', action='read', id=package.name), class="redacted-md") }}
+                        {{ set link_truncate = h.usmetadata_filter(title) | truncate(80) }}
+                        {{ h.link_to(link_truncate, h.url_for(controller='dataset', action='read', id=package.name), class="redacted-md") }}
                         {% if package.get('state', '').startswith('draft') %}
                           <span class="label label-info">{{ _('Draft') }}</span>
                         {% elif package.get('state', '').startswith('deleted') %}
