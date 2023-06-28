@@ -109,3 +109,25 @@ done at some point before deployment.  It was thought that this could wait until
 
 - No tangible consequencees.
 - Just slightly different development pipelines.
+
+## 5. Remove resource view
+
+Date: 2023-06-28
+
+### Status
+
+Implemented
+
+### Context
+
+To fix a broken layout, a call to CKAN core's resource view was removed. This allowed for a preview of the asset in CKAN.
+
+### Decision
+
+As it was not working, and wouldn't result in a loss of necessary functionality it was decided to remove this block.
+
+
+### Consquences
+
+- Cleaner layout on resource pages
+- No preview of resources
