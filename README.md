@@ -7,11 +7,7 @@ This CKAN Extension expands CKAN to offer a number of custom fields related to t
 
 ### Installation
 
-To install this package, activate CKAN virtualenv (e.g. "source /path/to/virtenv/bin/activate"), then run
-
-
-    (virtenv) 'pip install -e git+https://github.com/gsa/usmetadata#egg=ckanext-usmetadata'
-    (virtenv) 'python setup.py develop'
+Add `ckanext-usmetadata` to your requirements.txt, and then pip install
     
 Then in your CKAN .ini file, add `usmetadata`
 to your ckan.plugins line:
@@ -24,13 +20,12 @@ This extension is compatible with these versions of CKAN.
 
 CKAN version | Compatibility
 ------------ | -------------
-<=2.8        | no
-2.9          | yes
+>=2.10       | yes
 
 ### Development
 
 You may also install by cloning the git repo, then running ''python setup.py develop'' from the root of your source
-directory, which will install an egg link so that you can modify the code and see results without yest [localhost:5000](http://localhost:5000/).
+directory, which will install an egg link so that you can modify the code and see results [localhost:5000](http://localhost:5000/).
 
 Clean up any containers and volumes.
 
@@ -60,7 +55,6 @@ To run the extension tests, start the containers with `make up`, then:
 Lint the code.
 
     $ make lint
-
 
 ### Matrix builds
 
