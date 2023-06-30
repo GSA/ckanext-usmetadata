@@ -20,7 +20,8 @@ This extension is compatible with these versions of CKAN.
 
 CKAN version | Compatibility
 ------------ | -------------
->=2.10       | yes
+<=2.9        | no
+2.10         | yes
 
 ### Development
 
