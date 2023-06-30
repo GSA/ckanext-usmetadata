@@ -71,7 +71,6 @@
         </div>
       </div>
       {% block data_preview %}
-        {{ super() }}
       {% endblock %}
     </section>
   {% endblock %}
@@ -113,10 +112,10 @@
 
               {% for key, value in h.format_resource_items(res.items()) %}
                 {% if key != 'labels' and 'redacted ' not in key %}
-                  {% if res['labels'][key] %}
+                  {% if res[key] %}
                     <tr class="toggle-more">
                         <th scope="row">
-                            {{ res['labels'][key] }}
+                            {{ res[key] }}
                         </th>
                         <td>
                             {{ h.resource_redacted_icon(c.package,res,key)|safe }}
@@ -134,7 +133,6 @@
                   {% endif %}
                 {% endif %}
               {% endfor %}
-
             </tbody>
           </table>
         </div>

@@ -4,6 +4,7 @@ import re
 
 import ckan.lib.helpers as h
 import ckan.plugins as p
+import ckan.lib.navl.validators as ckan_validators
 
 log = getLogger(__name__)
 
@@ -132,41 +133,45 @@ def string_length_validator(max=100):
     return string_validator
 
 
+def string(value):
+    return str(value)
+
+
 # excluded title, description, tags and last update as they're part of the default ckan dataset metadata
 required_metadata = (
-    {'id': 'title', 'validators': [p.toolkit.get_validator('not_empty'), str]},
-    {'id': 'notes', 'validators': [p.toolkit.get_validator('not_empty'), str]},
-    {'id': 'publisher', 'validators': [p.toolkit.get_validator('not_empty'), str, string_length_validator(max=300)]},
-    {'id': 'contact_name', 'validators': [p.toolkit.get_validator('not_empty'), str, string_length_validator(max=300)]},
-    {'id': 'contact_email', 'validators': [p.toolkit.get_validator('not_empty'), str, string_length_validator(max=200)]},
+    {'id': 'title', 'validators': [ckan_validators.not_empty, string]},
+    {'id': 'notes', 'validators': [ckan_validators.not_empty, string]},
+    {'id': 'publisher', 'validators': [ckan_validators.not_empty, string, string_length_validator(max=300)]},
+    {'id': 'contact_name', 'validators': [ckan_validators.not_empty, string, string_length_validator(max=300)]},
+    {'id': 'contact_email', 'validators': [ckan_validators.not_empty, string, string_length_validator(max=200)]},
     # TODO should this unique_id be validated against any other unique IDs for this agency?
-    {'id': 'unique_id', 'validators': [p.toolkit.get_validator('not_empty'), str, string_length_validator(max=100)]},
-    {'id': 'modified', 'validators': [p.toolkit.get_validator('not_empty'), str, string_length_validator(max=100)]},
-    {'id': 'public_access_level', 'validators': [str, public_access_level_validator]},
-    {'id': 'bureau_code', 'validators': [str, bureau_code_validator, string_length_validator(max=2100)]},
-    {'id': 'program_code', 'validators': [str, program_code_validator, string_length_validator(max=2100)]}
+    {'id': 'unique_id', 'validators': [ckan_validators.not_empty, string, string_length_validator(max=100)]},
+    {'id': 'modified', 'validators': [ckan_validators.not_empty, string, string_length_validator(max=100)]},
+    {'id': 'public_access_level', 'validators': [string, public_access_level_validator]},
+    {'id': 'bureau_code', 'validators': [string, bureau_code_validator, string_length_validator(max=2100)]},
+    {'id': 'program_code', 'validators': [string, program_code_validator, string_length_validator(max=2100)]}
 )
 
 
 # used to bypass validation on create
 required_metadata_update = (
-    {'id': 'public_access_level', 'validators': [str, public_access_level_validator]},
+    {'id': 'public_access_level', 'validators': [string, public_access_level_validator]},
     {'id': 'publisher', 'validators': [string_length_validator(max=300)]},
     {'id': 'contact_name', 'validators': [string_length_validator(max=300)]},
     {'id': 'contact_email', 'validators': [string_length_validator(max=200)]},
     # TODO should this unique_id be validated against any other unique IDs for this agency?
     {'id': 'unique_id', 'validators': [string_length_validator(max=100)]},
     {'id': 'modified', 'validators': [string_length_validator(max=100)]},
-    {'id': 'bureau_code', 'validators': [str, bureau_code_validator]},
-    {'id': 'program_code', 'validators': [str, program_code_validator]}
+    {'id': 'bureau_code', 'validators': [string, bureau_code_validator]},
+    {'id': 'program_code', 'validators': [string, program_code_validator]}
 )
 
 # some of these could be excluded (e.g. related_documents) which can be captured from other ckan default data
 expanded_metadata = (
     # issued
-    {'id': 'release_date', 'validators': [str, release_date_validator]},
-    {'id': 'accrual_periodicity', 'validators': [str, accrual_periodicity_validator]},
-    {'id': 'language', 'validators': [str, language_validator]},
+    {'id': 'release_date', 'validators': [string, release_date_validator]},
+    {'id': 'accrual_periodicity', 'validators': [string, accrual_periodicity_validator]},
+    {'id': 'language', 'validators': [string, language_validator]},
     {'id': 'data_quality', 'validators': [string_length_validator(max=1000)]},
     {'id': 'publishing_status', 'validators': [string_length_validator(max=1000)]},
     {'id': 'is_parent', 'validators': [string_length_validator(max=1000)]},
@@ -300,7 +305,7 @@ media_types = list(set([row[1] for row in list(h.resource_formats().values())]))
 def get_req_metadata_for_create():
     log.debug('get_req_metadata_for_create')
     new_req_meta = copy.copy(required_metadata)
-    validator = p.toolkit.get_validator('not_empty')
+    validator = ckan_validators.not_empty
     for meta in new_req_meta:
         meta['validators'].append(validator)
     return new_req_meta
@@ -310,7 +315,7 @@ def get_req_metadata_for_create():
 def get_req_metadata_for_update():
     log.debug('get_req_metadata_for_update')
     new_req_meta = copy.copy(required_metadata_update)
-    validator = p.toolkit.get_validator('ignore_missing')
+    validator = ckan_validators.ignore_missing
     for meta in new_req_meta:
         meta['validators'].insert(0, validator)
     return new_req_meta
@@ -318,23 +323,23 @@ def get_req_metadata_for_update():
 
 def get_req_metadata_for_show_update():
     new_req_meta = copy.copy(required_metadata)
-    validator = p.toolkit.get_validator('ignore_missing')
+    validator = ckan_validators.ignore_missing
     for meta in new_req_meta:
         meta['validators'].insert(0, validator)
     return new_req_meta
 
 
 for meta in required_if_applicable_metadata:
-    meta['validators'].insert(0, p.toolkit.get_validator('ignore_missing'))
+    meta['validators'].insert(0, ckan_validators.ignore_missing)
 
 for meta in expanded_metadata:
-    meta['validators'].insert(0, p.toolkit.get_validator('ignore_missing'))
+    meta['validators'].insert(0, ckan_validators.ignore_missing)
 
 for meta in required_if_applicable_metadata_by_pass_validation:
-    meta['validators'].insert(0, p.toolkit.get_validator('ignore_missing'))
+    meta['validators'].insert(0, ckan_validators.ignore_missing)
 
 for meta in expanded_metadata_by_pass_validation:
-    meta['validators'].insert(0, p.toolkit.get_validator('ignore_missing'))
+    meta['validators'].insert(0, ckan_validators.ignore_missing)
 
 schema_updates_for_create = [{meta['id']: meta['validators'] + [p.toolkit.get_converter('convert_to_extras')]} for meta
                              in (get_req_metadata_for_create() + required_if_applicable_metadata + expanded_metadata)]

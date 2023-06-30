@@ -3,8 +3,8 @@ import re
 from logging import getLogger
 
 from ckan.common import json
-import ckan.lib.helpers as h
 import ckan.lib.base as base
+import ckan.lib.navl.validators as ckan_validators
 import ckan.logic as logic
 import ckan.plugins as p
 from ckan.plugins.toolkit import requires_ckan_version, c
@@ -27,7 +27,6 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
     p.implements(p.IConfigurer, inherit=False)
     p.implements(p.IDatasetForm, inherit=False)
     p.implements(p.IResourceController, inherit=True)
-    p.implements(p.interfaces.IRoutes, inherit=True)
     p.implements(p.interfaces.IPackageController, inherit=True)
     p.implements(p.interfaces.IOrganizationController, inherit=True)
     p.implements(p.IFacets, inherit=True)
@@ -77,12 +76,6 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
         data = data.replace('[[/REDACTED]]', mask)
         # render our custom snippet
         return data
-
-    @classmethod
-    def usmetadata_shorten(cls, plain=None, extract_length=180):
-        if not extract_length or len(plain) < extract_length:
-            return plain
-        return str(h.truncate(plain, length=extract_length, indicator='...', whole_word=True))
 
     @classmethod
     def resource_redacted_icon(cls, package, resource, field):
@@ -324,13 +317,13 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
     def _default_extras_schema(self):
         schema = {
-            'id': [p.toolkit.get_validator('ignore')],
-            'key': [p.toolkit.get_validator('not_empty'), str],
-            'value': [p.toolkit.get_validator('not_missing')],
-            'state': [p.toolkit.get_validator('ignore')],
-            'deleted': [p.toolkit.get_validator('ignore_missing')],
-            'revision_timestamp': [p.toolkit.get_validator('ignore')],
-            '__extras': [p.toolkit.get_validator('ignore')],
+            'id': [ckan_validators.ignore],
+            'key': [ckan_validators.not_empty, local_helper.string],
+            'value': [ckan_validators.not_missing],
+            'state': [ckan_validators.ignore],
+            'deleted': [ckan_validators.ignore_missing],
+            'revision_timestamp': [ckan_validators.ignore],
+            '__extras': [ckan_validators.ignore],
         }
         return schema
 
@@ -353,12 +346,12 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
         # use convert_to_tags functions for taxonomy
         schema.update({
-            'tag_string': [p.toolkit.get_validator('not_empty'),
+            'tag_string': [ckan_validators.not_empty,
                            p.toolkit.get_converter('convert_to_tags')],
             'extras': self._default_extras_schema()
             # 'resources': {
-            # 'name': [p.toolkit.get_validator('not_empty')],
-            # 'format': [p.toolkit.get_validator('not_empty')],
+            # 'name': [ckan_validators.not_empty],
+            # 'format': [ckan_validators.not_empty],
             # }
         })
         return schema
@@ -370,7 +363,7 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
 
         # use convert_to_tags functions for taxonomy
         schema.update({
-            'tag_string': [p.toolkit.get_validator('ignore_empty'),
+            'tag_string': [ckan_validators.ignore_empty,
                            p.toolkit.get_converter('convert_to_tags')],
             'extras': self._default_extras_schema()
         })
@@ -444,7 +437,6 @@ class CommonCoreMetadataFormPlugin(p.SingletonPlugin, p.toolkit.DefaultDatasetFo
             'publishing_status_options': local_helper.publishing_status_options,
             'always_private': True,
             'usmetadata_filter': self.usmetadata_filter,
-            'usmetadata_shorten': self.usmetadata_shorten,
             'redacted_icon': self.redacted_icon,
             'resource_redacted_icon': self.resource_redacted_icon,
             'get_action': logic.get_action

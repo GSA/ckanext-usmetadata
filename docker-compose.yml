@@ -13,7 +13,7 @@ services:
       CKAN_SOLR_URL: http://solr:8983/solr/ckan
       CKAN_REDIS_URL: redis://redis:6379/1
       CKAN_DATAPUSHER_URL: http://localhost:8080/  # datapusher is not really enabled
-      CKAN__PLUGINS: usmetadata
+      CKAN__PLUGINS: usmetadata envvars
       PYTHONDONTWRITEBYTECODE: 1
     ports:
       - "5000:5000"
@@ -22,10 +22,14 @@ services:
       - redis
       - solr
     volumes:
-      - .:/app
-      - ckan_storage:/var/lib/ckan
+      - ./ckanext:/srv/app/ckanext
+      - ./test.sh:/srv/app/test.sh
+      - ./test.ini:/srv/app/test.ini
+      - ./setup.py:/srv/app/setup.py
+      - /etc/timezone:/etc/timezone:ro
+
   db:
-    image: ckan/ckan-postgres-dev:${CKAN_VERSION}
+    image: ckan/ckan-postgres-dev:2.9
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres

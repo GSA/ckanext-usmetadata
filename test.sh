@@ -9,9 +9,9 @@ set -o errexit
 set -o pipefail
 
 # Database is listening, but still unavailable. Just keep trying...
-while ! ckan -c /app/test.ini db init; do 
+while ! ckan -c /srv/app/test.ini db init; do 
   echo Retrying in 5 seconds...
   sleep 5
 done
 
-pytest --ckan-ini=/app/test.ini --cov=ckanext.usmetadata --disable-warnings /app/ckanext/usmetadata/tests/
+pytest --ckan-ini=/srv/app/test.ini --cov=ckanext.usmetadata --disable-warnings /srv/app/ckanext/usmetadata/tests/
