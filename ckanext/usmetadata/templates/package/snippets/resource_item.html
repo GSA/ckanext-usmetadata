@@ -14,7 +14,6 @@
           </span>
       </div>
       <span class="format-label" property="dc:format" data-format="{{ res.format.lower() or 'data' }}">{{ res.format }}</span>
-    {{ h.popular('views', res.tracking_summary.total, min=10) }}
   </a>
   {% endblock %}
   <p class="description">
