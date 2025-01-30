@@ -14,7 +14,7 @@ REDACTION_STROKE_REGEX = re.compile(
 
 
 def public_access_level_validator(regex_candidate):
-    if type(regex_candidate) == str:
+    if isinstance(regex_candidate, str):
         validator = re.compile(r'^(public)|(restricted public)|(non-public)$')
         if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
             return regex_candidate
@@ -25,7 +25,7 @@ def public_access_level_validator(regex_candidate):
 
 
 def bureau_code_validator(regex_candidate):
-    if type(regex_candidate) == str:
+    if isinstance(regex_candidate, str):
         validator = re.compile(r'^\d{3}:\d{2}(\s*,\s*\d{3}:\d{2}\s*)*$')
         if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
             return regex_candidate
@@ -36,7 +36,7 @@ def bureau_code_validator(regex_candidate):
 
 
 def program_code_validator(regex_candidate):
-    if type(regex_candidate) == str:
+    if isinstance(regex_candidate, str):
         validator = re.compile(r'^\d{3}:\d{3}(\s*,\s*\d{3}:\d{3}\s*)*$')
         if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
             return regex_candidate
@@ -47,7 +47,7 @@ def program_code_validator(regex_candidate):
 
 
 def temporal_validator(regex_candidate):
-    if type(regex_candidate) == str:
+    if isinstance(regex_candidate, str):
         validator = re.compile(r'^([\-\dTWRZP/YMWDHMS:\+]{3,}/[\-\dTWRZP/YMWDHMS:\+]{3,})|(\[\[REDACTED).*?(\]\])$')
         if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
             return regex_candidate
@@ -58,7 +58,7 @@ def temporal_validator(regex_candidate):
 
 
 def release_date_validator(regex_candidate):
-    if type(regex_candidate) == str:
+    if isinstance(regex_candidate, str):
         validator = re.compile(
             r'^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?'
             r'|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]'
@@ -73,7 +73,7 @@ def release_date_validator(regex_candidate):
 
 
 def accrual_periodicity_validator(regex_candidate):
-    if type(regex_candidate) == str:
+    if isinstance(regex_candidate, str):
         validator = re.compile(
             r'^([Dd]ecennial)|([Qq]uadrennial)|([Aa]nnual)|([Bb]imonthly)|([Ss]emiweekly)|([Dd]aily)|([Bb]iweekly)'
             r'|([Ss]emiannual)|([Bb]iennial)|([Tt]riennial)|([Tt]hree times a week)|([Tt]hree times a month)'
@@ -91,7 +91,7 @@ def accrual_periodicity_validator(regex_candidate):
 
 
 def language_validator(regex_candidate):
-    if type(regex_candidate) == str:
+    if isinstance(regex_candidate, str):
         validator = re.compile(
             r'^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?'
             r'(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z]'
@@ -109,7 +109,7 @@ def language_validator(regex_candidate):
 
 
 def primary_it_investment_uii_validator(regex_candidate):
-    if type(regex_candidate) == str:
+    if isinstance(regex_candidate, str):
         validator = re.compile(r'^([0-9]{3}-[0-9]{9})|(\[\[REDACTED).*?(\]\])$')
         if isinstance(validator.match(regex_candidate), type(re.match("", ""))):
             return regex_candidate

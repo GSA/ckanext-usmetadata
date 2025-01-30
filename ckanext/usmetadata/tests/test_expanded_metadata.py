@@ -20,7 +20,7 @@ def validate(sid, values):
             try:
                 if validator in [release_date_validator, accrual_periodicity_validator, language_validator]:
                     valid = validator(test)
-                    if type(valid) != Invalid:
+                    if type(valid) is not Invalid:
                         print(" - OK {} for {} at {}".format(test, sid, validator))
                         ok.append(test)
                     else:

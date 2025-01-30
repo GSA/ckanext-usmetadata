@@ -136,7 +136,7 @@ class MetadataPluginTest(unittest.TestCase):
         schema = self.__getSchemaFromMetadataDict__('public_access_level')
 
         converted_data, errors = df.validate(data, schema)
-        assert type(converted_data['public_access_level']) == Invalid
+        assert type(converted_data['public_access_level']) is Invalid
 
     def testFieldValidationPublicAccessLevelRejectsEmpty(self):
 
@@ -148,7 +148,7 @@ class MetadataPluginTest(unittest.TestCase):
         # We want to update the schema to have this test reject empty parameters again
         # When updated, the assertion should be similar to the below comment
         # self.assertEqual(errors, {'public_access_level':[u'Missing value']})
-        assert type(converted_data['public_access_level']) == Invalid
+        assert type(converted_data['public_access_level']) is Invalid
 
     def testFieldValidationPublicAccessLevelRejectsMissing(self):
 
@@ -178,7 +178,7 @@ class MetadataPluginTest(unittest.TestCase):
         schema = self.__getSchemaFromMetadataDict__('publisher')
 
         converted_data, errors = df.validate(data, schema)
-        assert type(converted_data['publisher']) == Invalid
+        assert type(converted_data['publisher']) is Invalid
         assert converted_data['publisher'].error == 'Attribute is too long. (character limit = 300)'
 
     def testFieldValidationPublisherRejectsMissing(self):
@@ -219,7 +219,7 @@ class MetadataPluginTest(unittest.TestCase):
         schema = self.__getSchemaFromMetadataDict__('contact_name')
 
         converted_data, errors = df.validate(data, schema)
-        assert type(converted_data['contact_name']) == Invalid
+        assert type(converted_data['contact_name']) is Invalid
         assert converted_data['contact_name'].error == 'Attribute is too long. (character limit = 300)'
 
     def testFieldValidationContactRejectsMissing(self):
@@ -258,7 +258,7 @@ class MetadataPluginTest(unittest.TestCase):
         schema = self.__getSchemaFromMetadataDict__('contact_email')
 
         converted_data, errors = df.validate(data, schema)
-        assert type(converted_data['contact_email']) == Invalid
+        assert type(converted_data['contact_email']) is Invalid
         assert converted_data['contact_email'].error == 'Attribute is too long. (character limit = 200)'
 
     def testFieldValidationContactEmailRejectsMissing(self):
@@ -298,7 +298,7 @@ class MetadataPluginTest(unittest.TestCase):
         schema = self.__getSchemaFromMetadataDict__('unique_id')
 
         converted_data, errors = df.validate(data, schema)
-        assert type(converted_data['unique_id']) == Invalid
+        assert type(converted_data['unique_id']) is Invalid
         assert converted_data['unique_id'].error == 'Attribute is too long. (character limit = 100)'
 
     def testFieldValidationUIDRejectsMissing(self):
@@ -349,7 +349,7 @@ class MetadataPluginTest(unittest.TestCase):
         schema = self.__getSchemaFromMetadataDict__('data_dictionary')
 
         converted_data, errors = df.validate(data, schema)
-        assert type(converted_data['data_dictionary']) == Invalid
+        assert type(converted_data['data_dictionary']) is Invalid
         assert converted_data['data_dictionary'].error == 'Attribute is too long. (character limit = 2048)'
 
     def testFieldValidationDataDictionaryIgnoresMissing(self):
@@ -422,7 +422,7 @@ class MetadataPluginTest(unittest.TestCase):
         schema = self.__getSchemaFromMetadataDict__('spatial')
 
         converted_data, errors = df.validate(data, schema)
-        assert type(converted_data['spatial']) == Invalid
+        assert type(converted_data['spatial']) is Invalid
         assert converted_data['spatial'].error == 'Attribute is too long. (character limit = 500)'
 
     def testFieldValidationSpatialIgnoresMissing(self):
@@ -499,7 +499,7 @@ class MetadataPluginTest(unittest.TestCase):
         schema = self.__getSchemaFromMetadataDict__('accrual_periodicity')
 
         converted_data, errors = df.validate(data, schema)
-        assert type(converted_data['accrual_periodicity']) == Invalid
+        assert type(converted_data['accrual_periodicity']) is Invalid
 
     def testFieldValidationAccrualPeriodicityIgnoresMissing(self):
 
@@ -550,7 +550,7 @@ class MetadataPluginTest(unittest.TestCase):
         schema = self.__getSchemaFromMetadataDict__('bureau_code')
 
         converted_data, errors = df.validate(data, schema)
-        assert type(converted_data['bureau_code']) == Invalid
+        assert type(converted_data['bureau_code']) is Invalid
 
     def testFieldValidationBureauCodeInvalid2(self):
 
@@ -558,7 +558,7 @@ class MetadataPluginTest(unittest.TestCase):
         schema = self.__getSchemaFromMetadataDict__('bureau_code')
 
         converted_data, errors = df.validate(data, schema)
-        assert type(converted_data['bureau_code']) == Invalid
+        assert type(converted_data['bureau_code']) is Invalid
 
     def testFieldValidationBureauCodeValid(self):
 
@@ -611,7 +611,7 @@ class MetadataPluginTest(unittest.TestCase):
         schema = self.__getSchemaFromMetadataDict__('program_code')
 
         converted_data, errors = df.validate(data, schema)
-        assert type(converted_data['program_code']) == Invalid
+        assert type(converted_data['program_code']) is Invalid
 
     def testFieldValidationProgramCodeInvalid2(self):
 
@@ -619,7 +619,7 @@ class MetadataPluginTest(unittest.TestCase):
         schema = self.__getSchemaFromMetadataDict__('program_code')
 
         converted_data, errors = df.validate(data, schema)
-        assert type(converted_data['program_code']) == Invalid
+        assert type(converted_data['program_code']) is Invalid
 
     def testFieldValidationProgramCodeValid(self):
 
@@ -672,7 +672,7 @@ class MetadataPluginTest(unittest.TestCase):
         schema = self.__getSchemaFromMetadataDict__('access_level_comment')
 
         converted_data, errors = df.validate(data, schema)
-        assert type(converted_data['access_level_comment']) == Invalid
+        assert type(converted_data['access_level_comment']) is Invalid
         assert converted_data['access_level_comment'].error == 'Attribute is too long. (character limit = 255)'
 
     def testFieldValidationAccessLevelCommentIgnoresMissing(self):
@@ -699,7 +699,7 @@ class MetadataPluginTest(unittest.TestCase):
         schema = self.__getSchemaFromMetadataDict__('primary_it_investment_uii')
 
         converted_data, errors = df.validate(data, schema)
-        assert type(converted_data['primary_it_investment_uii']) == Invalid
+        assert type(converted_data['primary_it_investment_uii']) is Invalid
         assert converted_data['primary_it_investment_uii'].error == 'Attribute is too long. (character limit = 2100)'
 
     def testFieldValidationInvestmentUIIIgnoresMissing(self):
