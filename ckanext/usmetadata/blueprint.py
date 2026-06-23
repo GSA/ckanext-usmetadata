@@ -561,6 +561,11 @@ def cc_clone_dataset_metadata(id):
 
 def cuc_get_content_type():
     # set content type (charset required or pylons throws an error)
+    # Restrict to authenticated users.
+    # abort() must run outside the try below or the broad except would swallow
+    # it and return a 200 "unknown error".
+    if not c.user:
+        abort(403, _('Not authorized to access this resource'))
     try:
         url = request.params.get('url', '')
 
