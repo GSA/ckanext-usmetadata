@@ -359,7 +359,7 @@ class TestUsmetadataPlugin(FunctionalTestBase):
             '/api/2/util/resource/content_type?url=badulr',
             expect_errors=True,
         )
-        assert getattr(res, 'status_code', getattr(res, 'status_int', None)) == 403
+        assert res.status_int == 403
 
     def test_get_media_types_action(self):
         self.create_datasets()
