@@ -355,11 +355,10 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         self.create_datasets()
         self.app = self._get_test_app()
 
-        res = self.app.get(
+        self.app.get(
             '/api/2/util/resource/content_type?url=badulr',
-            expect_errors=True,
+            status=403,
         )
-        assert res.status_int == 403
 
     def test_get_media_types_action(self):
         self.create_datasets()
