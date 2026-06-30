@@ -10,7 +10,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='ckanext-usmetadata',
-    version='0.3.3',
+    version='0.3.4',
     description='US Metadata Plugin for CKAN',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -26,8 +26,7 @@ setup(
     namespace_packages=['ckanext', 'ckanext.usmetadata'],
     include_package_data=True,
     zip_safe=False,
-    install_requires=[
-    ],
+    install_requires=[],
     setup_requires=['wheel'],
     entry_points="""
         [ckan.plugins]

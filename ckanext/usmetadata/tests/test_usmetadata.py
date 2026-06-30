@@ -345,8 +345,20 @@ class TestUsmetadataPlugin(FunctionalTestBase):
         self.create_datasets()
         self.app = self._get_test_app()
 
-        res = self.app.get('/api/2/util/resource/content_type?url=badulr')
+        res = self.app.get(
+            '/api/2/util/resource/content_type?url=badulr',
+            headers={'Authorization': self.sysadmin["token"]},
+        )
         assert 'InvalidFormat' in res
+
+    def test_get_content_type_action_requires_auth(self):
+        self.create_datasets()
+        self.app = self._get_test_app()
+
+        self.app.get(
+            '/api/2/util/resource/content_type?url=badulr',
+            status=403,
+        )
 
     def test_get_media_types_action(self):
         self.create_datasets()
