@@ -10,7 +10,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='ckanext-usmetadata',
-    version='0.3.4',
+    version='0.3.5',
     description='US Metadata Plugin for CKAN',
     long_description=long_description,
     long_description_content_type='text/markdown',
